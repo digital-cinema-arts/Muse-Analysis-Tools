@@ -1,6 +1,6 @@
 # Muse-Analysis-Tools
  
-# ABCS - Algorithmic Biofeedback Control System - Chart Tools
+# Algorithmic Biofeedback Control System - Chart Tools
 
 
 This script wil generate a number of charts from Muse headband EEG CSV data files created by the Mind Monitor app.  Future versions of these tools will support Muse DIrect and Muse Lab files.
