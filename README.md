@@ -14,6 +14,22 @@ Install instructions:
 
 NOTE: At the moment the setup.py & Python distribution isn't ready yet for this application.  You will have to install the python libraries manually.  For example:
 
+$ pip3 install scipy
+Requirement already satisfied: scipy in /usr/local/lib/python3.7/site-packages (1.3.1)
+Requirement already satisfied: numpy>=1.13.3 in /usr/local/lib/python3.7/site-packages (from scipy) (1.17.3)
+
+$ pip3 show scipy
+Name: scipy
+Version: 1.3.1
+Summary: SciPy: Scientific Library for Python
+Home-page: https://www.scipy.org
+Author: None
+Author-email: None
+License: BSD
+Location: /usr/local/lib/python3.7/site-packages
+Requires: numpy
+Required-by: scikit-learn
+
 
 
 --------------------------------------------------------------------
