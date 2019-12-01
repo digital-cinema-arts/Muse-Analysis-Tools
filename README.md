@@ -6,15 +6,18 @@
 This script wil generate a number of charts from Muse headband EEG data. 
 
 Options: 
+Tethys:analyze_eeg dperi$ analyze_muse_monitor_data.py -h
+Platform:  darwin
+usage: analyze_muse_monitor_data.py [-h] [-c CSV_FILE] [-v VERBOSE] [-d]
 
-   "-c", "--csv_file", help="CSV file to read)")
-   "-v", "--verbose", help="Increase output verbosity", type=int)
-   "-p", "--power", help="Plot Power Bands", action="store_true")
-   "-e", "--eeg", help="Plot EEG Data", action="store_true")
-   "-i", "--integrate", help="Integrate EEG Data", action="store_true")
-   "-s", "--step_size", help="Integration Step Size", type=int)
-   "-f", "--filter_data", help="Filter EEG Data", action="store_true")
-   "-l", "--logging_level", help="Logging verbosity: 1 = info, 2 = warning, 2 = debug", type=int)    
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CSV_FILE, --csv_file CSV_FILE
+                        CSV file to read)
+  -v VERBOSE, --verbose VERBOSE
+                        Increase output verbosity
+  -d, --display_plots   Display Plots
+
 
  
 Muse Monitor CSV file format
