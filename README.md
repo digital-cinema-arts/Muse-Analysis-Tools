@@ -29,9 +29,9 @@ Notes:
 
 Options: 
 
-analyze_muse_monitor_data.py -h
-
-usage: analyze_muse_monitor_data.py [-h] [-c CSV_FILE] [-v VERBOSE] [-d]
+analyze_mind_monitor_data.py -h 
+ 
+usage: analyze_mind_monitor_data.py [-h] [-c CSV_FILE] [-v VERBOSE] [-d]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -40,7 +40,7 @@ optional arguments:
   -v VERBOSE, --verbose VERBOSE
                         Increase output verbosity
   -d, --display_plots   Display Plots
-
+  
 
  
 
