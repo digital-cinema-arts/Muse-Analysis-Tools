@@ -10,10 +10,14 @@ Install instructions:
 
 1) Download the archive file, unzip in a temp directory
 2) Copy the Python script (analyze_mind_monitor_data.py) to a directory that's in your $PATH, for example:  cp analyze_mind_monitor_data.py ~/bin.  (This makes it easier to execute the script from any locaiton in your filesystem)
-3) Change directory to where the Mind Monitor CSV files are located.  
-4) Startup the application: analyze_mind_monitor_data.py
-5) Select the options and CSV file you want to process.
+3) This application requires Python version 3 installed on your computer. To check for which version of python you have installed simply bring up a terminal/console and type in "python", the version number is in the prompt when starting. 
 
+
+Usage:
+1) Change directory to where the Mind Monitor CSV files are located.  
+2) Startup the application: analyze_mind_monitor_data.py
+3) Select the options and CSV file you want to process.
+4) Make plots!
 
 
 Notes:
@@ -21,9 +25,7 @@ Notes:
 
 
 
-
-
-
+--------------------------------------------------------------------
 
 Options: 
 
