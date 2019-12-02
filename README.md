@@ -15,8 +15,7 @@ Install instructions:
 
 NOTE: At the moment the setup.py & Python distribution isn't ready yet for this application.  You will have to install the python libraries manually.  For example:
 
-'code()'
-
+`
 $ pip3 install scipy
 
 $ pip3 show scipy
@@ -30,7 +29,7 @@ License: BSD
 Location: /usr/local/lib/python3.7/site-packages
 Requires: numpy
 Required-by: scikit-learn
-
+``
 
 
 --------------------------------------------------------------------
