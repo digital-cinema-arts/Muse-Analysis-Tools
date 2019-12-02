@@ -17,16 +17,11 @@ import math
 import bitstring
 import pandas as pd
 import os
-# from sys import platform
 from time import time, sleep, strftime, gmtime
 import sys
 import csv
 import argparse
 import math
-# import logging
-# from binascii import hexlify
-# import timeit
-# import io
 from progress.bar import Bar, IncrementalBar
 import json
 from pathlib import Path
@@ -36,8 +31,6 @@ from scipy.signal import butter, lfilter
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
-# from mpl_toolkits.mplot3d import Axes3D
-# import matplotlib.patches as mpatches
 import matplotlib
 # matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -45,11 +38,8 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as md
 import matplotlib.ticker as ticker
 
-    # from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QPushButton, QVBoxLayout
 from PyQt5.QtWidgets import *
-# from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPalette, QIcon, QPixmap
-# from PyQt5.QtWidgets import QApplication, QPushButton
 
 from PyQt5.QtCore import QDateTime, Qt, QTimer
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
@@ -153,12 +143,6 @@ class The_GUI(QDialog):
         mainLayout.setColumnStretch(1, 1)
         self.setLayout(mainLayout)
 
-#         self.lineFirstNameEdit = QLineEdit(self)
-#         self.lineLastNameEdit = QLineEdit(self)
-
-#         self.lineFirstNameEdit = QLineEdit('First Name')
-#         self.lineLastNameEdit = QLineEdit('Last Name')
-
 
         self.left = 40
         self.top = 100
@@ -233,25 +217,9 @@ class The_GUI(QDialog):
     #     print(session_json)
 
         first_name = self.lineFirstNameEdit.text()
-#         print("plot_button_clicked(): ", self.lineFirstNameEdit.text())
-#         print("plot_button_clicked(): first_name ", first_name)
-
         last_name = self.lineLastNameEdit.text()
-#         print("plot_button_clicked(): ", self.lineLastNameEdit.text())
-#         print("plot_button_clicked(): last_name ", last_name)
-
-#         textboxValue = self.textbox.text()
-#         print("plot_button_clicked(): textboxValue ", textboxValue)
-
         interative_GUI = self.checkBoxInteractive.isChecked()
-#         if interative_GUI:
-#             print("plot_button_clicked(): checkBoxInteractive CHECKED")
-
         coherence = self.checkBoxCoherence.isChecked()
-#         if coherence:
-#             print("plot_button_clicked(): checkBoxCoherence CHECKED")
-
-
         power_bands = self.checkBoxPowerBands.isChecked()
         mellow_concentrate = self.checkBoxMellowConcentration.isChecked()
         accel_gyro = self.checkBoxAccelGyro.isChecked()
@@ -262,7 +230,6 @@ class The_GUI(QDialog):
         HDF5 = self.checkBoxHFDF5.isChecked()
 
         mood = self.moodComboBox.currentText()
-#         print("plot_button_clicked() - mood: ", mood)
 
         
         global gui_dict      
@@ -436,40 +403,13 @@ class The_GUI(QDialog):
         self.bottomLeftGroupBox = QGroupBox("Create Plots")
 
         l1 = QLabel(self)
-#         l2 = QLabel(self)
-#         l3 = QLabel(self)
-# 
-#         l1.setText("Equal Ground Wellness Coop")
-#         l2.setText("Make Plots with you EEG data")
         l1.setText("Choose File:")
         l1.setAlignment(Qt.AlignCenter)
-
-#         l3.setAlignment(Qt.AlignCenter)
-
-#         l2.setPixmap(QPixmap("full-moon-3.png"))
-
-#         pixmap = QPixmap("full-moon-3.png") 
-#         pixmap = pixmap.scaled(128, 128, Qt.KeepAspectRatio)
-# #         pixmap = QPixmap("full-moon-3.png")
-#         l3.setPixmap(pixmap)
-    
-#         l1.setOpenExternalLinks(True)
-#         l2.linkHovered.connect(self.hovered)
-#         l1.setTextInteractionFlags(Qt.TextSelectableByMouse)
-
-#         self.bottomLeftGroupBox.setCheckable(True)
-#         self.bottomLeftGroupBox.setChecked(True)
-
 
         layout = QVBoxLayout()
         layout.addWidget(l1)
         layout.addWidget(filePushButton)
         layout.addWidget(plotPushButton)
-#         layout.addWidget(l2)
-#         layout.addWidget(l3)
-      
-#         layout.addWidget(togglePushButton)
-#         layout.addWidget(flatPushButton)
 
         layout.addStretch(1)
         self.bottomLeftGroupBox.setLayout(layout)
@@ -491,8 +431,8 @@ class The_GUI(QDialog):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(self,
-        "Select Muse Monitor CSV File", "","MM CSV files (*.csv)", options=options)
-#         "Select Muse Monitor CSV File", "","All Files (*);;MM CSV files (*.csv)", options=options)
+        "Select Mind Monitor CSV File", "","MM CSV files (*.csv)", options=options)
+#         "Select Mind Monitor CSV File", "","All Files (*);;MM CSV files (*.csv)", options=options)
 #         "QFileDialog.getOpenFileName()", "","All Files (*);;Python Files (*.py)", options=options)
         if fileName:
             print(fileName)
@@ -502,14 +442,16 @@ class The_GUI(QDialog):
         MM_CVS_fname = fileName
     
         gui_dict = {'fileName': MM_CVS_fname}
+  
     
 #     def openFileNamesDialog(self):
 #         options = QFileDialog.Options()
 #         options |= QFileDialog.DontUseNativeDialog
 #         files, _ = QFileDialog.getOpenFileNames(self,
-#         "Select Muse Monitor CSV Files", "","All Files (*);;Python Files (*.py)", options=options)
+#         "Select Mind Monitor CSV Files", "","All Files (*);;Python Files (*.py)", options=options)
 #         if files:
 #             print(files)
+  
     
     def saveFileDialog(self):
         options = QFileDialog.Options()
@@ -522,60 +464,60 @@ class The_GUI(QDialog):
             
             
 
-def manage_session_data(session_dict, EEG_Dict):
-
-    session_dict = {
-        'Session_Data':{
-        'date': date_time_now,
-        'data_file_fname': 'foo',
-        'mood': 'calm',
-        'location': 'home',
-        'activity': "sitting",
-        'misc': 'This field is for misc. data to be stored in the database'
-        },
-        'Participants':{ 
-            'Meditators':{
-                0:{
-                    'name': 'Debra',
-                    'age': 63,
-                    'gender': 'female'
-                    },          
-                1:{
-                    'name': 'Savahn',
-                    'age': 38,
-                    'gender': 'female'
-                    }     
-                },
-            'Coordinators':{
-                0:{
-                    'name': 'Patti',
-                    'age': 32,
-                    'gender': 'female'
-                    }
-                },
-            'Helpers':{
-                0:{
-                    'name': 'Oni',
-                    'age': 23,
-                    'gender': 'male'
-                    }
-                },
-            'Participants':{
-                0:{
-                    'name': 'Shiloh',
-                    'age': 34,
-                    'gender': 'male'
-                    }
-                }
-            }
-        }
-
-
-    session_dict.update(EEG_Dict)
-
-    return(session_dict)
- 
- 
+# def manage_session_data(session_dict, EEG_Dict):
+# 
+#     session_dict = {
+#         'Session_Data':{
+#         'date': date_time_now,
+#         'data_file_fname': 'foo',
+#         'mood': 'calm',
+#         'location': 'home',
+#         'activity': "sitting",
+#         'misc': 'This field is for misc. data to be stored in the database'
+#         },
+#         'Participants':{ 
+#             'Meditators':{
+#                 0:{
+#                     'name': 'Debra',
+#                     'age': 63,
+#                     'gender': 'female'
+#                     },          
+#                 1:{
+#                     'name': 'Savahn',
+#                     'age': 38,
+#                     'gender': 'female'
+#                     }     
+#                 },
+#             'Coordinators':{
+#                 0:{
+#                     'name': 'Patti',
+#                     'age': 32,
+#                     'gender': 'female'
+#                     }
+#                 },
+#             'Helpers':{
+#                 0:{
+#                     'name': 'Oni',
+#                     'age': 23,
+#                     'gender': 'male'
+#                     }
+#                 },
+#             'Participants':{
+#                 0:{
+#                     'name': 'Shiloh',
+#                     'age': 34,
+#                     'gender': 'male'
+#                     }
+#                 }
+#             }
+#         }
+# 
+# 
+#     session_dict.update(EEG_Dict)
+# 
+#     return(session_dict)
+#  
+#  
 
    
 
@@ -585,7 +527,7 @@ def read_eeg_data(fname, date_time_now):
 
     global session_dict
 
-# Muse Monitor CSV format:
+# Mind Monitor CSV format:
 # TimeStamp,
 # Delta_TP9,Delta_AF7,Delta_AF8,Delta_TP10,
 # Theta_TP9,Theta_AF7,Theta_AF8,Theta_TP10,
@@ -707,25 +649,10 @@ def read_eeg_data(fname, date_time_now):
             }
         }
 
-
-
-#     print('***********  session_dict *****************')
-#     print('session_dict:', session_dict)
-#     sleep(3)
     
     session_dict.update(EEG_Dict)
 
-#     print('*********** updated EEG_Dict *****************')
-#     print('session_dict:', session_dict)
-#     sleep(3)
-
-
     session_dict.update(parms_dict)
-
-#     print('************* updated parms_dict ***************')
-#     print('session_dict:', session_dict)
-#     sleep(3)
-
 
     session_json = json.dumps(session_dict, sort_keys=True)
 #     print(session_json)
@@ -753,6 +680,7 @@ def scale(x, out_range=(-1, 1), axis=None):
     return y * (out_range[1] - out_range[0]) + (out_range[1] + out_range[0]) / 2
 
 
+
 def smooth_data(data_in, win):
     # Tail-rolling average transform
     rolling = data_in.rolling(window=win)
@@ -771,6 +699,7 @@ def filter_data(data_in, win):
     return smoothed_data
 
 
+
 def butter_bandpass(lowcut, highcut, fs, order=5):
     nyq = 0.5 * fs
     low = lowcut / nyq
@@ -784,6 +713,8 @@ def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
     b, a = butter_bandpass(lowcut, highcut, fs, order=order)
     y = lfilter(b, a, data)
     return y
+
+
 
 
 
@@ -807,17 +738,6 @@ def plot_coherence(x, y, a, b, title, data_fname, plot_fname, date_time_now, ana
     plt.rcParams.update(params)
 
 
-#     plt.axis([0, len(af7), 0, len(af8)])
-
-#     x1 = np.linspace(0.0, 50.0)
-#     y1 = np.linspace(0.0, 20.0)
-
-#     plt.axis(xlim=(-50, 50), ylim=(-50, 50), option='scaled')
-#     plt.axis(xlim=(-x1, x1), ylim=(-y1, y1), option='scaled')
-
-#     plt.axis(option='auto')
-    
-#     ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))
     plt_axes = plt.gca()
 #     plt_axes.set_xlim([0, len(x)])
 #     plt_axes.set_ylim([-1000, 1000])
@@ -851,20 +771,6 @@ def plot_coherence(x, y, a, b, title, data_fname, plot_fname, date_time_now, ana
 #     create_file_date_text(-0.12, -0.11, 0.9, -0.11, plt_axes, basename, date_time_now)
     create_file_date_text(-0.1, -0.055, -0.1, -0.15, plt_axes, basename, date_time_now)
          
-#     plt.text(-0.12, -0.11, "file: " + data_fname, 
-#         transform=plt_axes.transAxes, fontsize=5, style='italic',
-#         bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
-# 
-#     plt.text(0.9, -0.11, "Date: " + date_time_now, 
-#         transform=plt_axes.transAxes, fontsize=5, style='italic',
-#         bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
-         
-
-# ax.text(left, bottom, 'left top',
-# horizontalalignment='left',
-# verticalalignment='top',
-# transform=ax.transAxes)
-
         
     plt.savefig(plot_fname, dpi=300)
 
@@ -1029,12 +935,6 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
 
     print('plot_all_power_bands() called')
 
-#     x1 = np.arange(0.0, len(delta))
-#     x2 = np.arange(0.0, len(theta))
-#     x3 = np.arange(0.0, len(alpha))
-#     x4 = np.arange(0.0, len(beta))
-#     x5 = np.arange(0.0, len(gamma))
-
     gamma_mean = np.mean(np.nan_to_num(gamma))
     gamma_std = np.std(np.nan_to_num(gamma))
     gamma_max = np.max(np.nan_to_num(gamma))
@@ -1096,29 +996,14 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
 
     xmin, xmax, ymin, ymax = plt.axis()
 
-    print("xmin: ", xmin)
-    print("xmax: ", xmax)
-    print("ymin: ", ymin)
-    print("ymax: ", ymax)
+#     print("xmin: ", xmin)
+#     print("xmax: ", xmax)
+#     print("ymin: ", ymin)
+#     print("ymax: ", ymax)
 
     t_len = len(delta)
     period = (1.0/SAMPLING_RATE)
     x_series = np.arange(0, t_len * period, period)
-
-
-
-# MM_Colors = {
-# 'RawTP9': '#cc0000',
-# 'RawAF7': '#cc98e5',
-# 'RawAF8': '#7fcce5',
-# 'RawTP10': '#b2cc7f',
-# 'Delta': '#d42727',
-# 'Theta': '#9933cc',
-# 'Alpha': '#0d90cc',
-# 'Beta':  '#669900',
-# 'Gamma': '#ff900c'
-# }
-
 
 
     l0 = axs[0].plot(x_series, gamma,  ms=1, color=MM_Colors['Gamma'], alpha=plot_alpha
@@ -1246,11 +1131,6 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
 
     plot_alpha = 0.8
 
-#     x1 = np.arange(0.0, len(delta))
-#     x2 = np.arange(0.0, len(theta))
-#     x3 = np.arange(0.0, len(alpha))
-#     x4 = np.arange(0.0, len(beta))
-#     x5 = np.arange(0.0, len(gamma))
 
     gamma_mean = np.mean(np.nan_to_num(gamma))
     gamma_std = np.std(np.nan_to_num(gamma))
@@ -1304,19 +1184,6 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
 
 #     plt.plot(tp10_delta_int, color='c', alpha=0.3, label='TP10 ')
 #     plt.scatter(x_axis, tp9_delta_int, s=point_sz, color='b', alpha=1.0)
-
-
-# MM_Colors = {
-# 'RawTP9': '#cc0000',
-# 'RawAF7': '#cc98e5',
-# 'RawAF8': '#7fcce5',
-# 'RawTP10': '#b2cc7f',
-# 'Delta': '#d42727',
-# 'Theta': '#9933cc',
-# 'Alpha': '#0d90cc',
-# 'Beta':  '#669900',
-# 'Gamma': '#ff900c'
-# }
 
 
     t_len = len(delta)
@@ -1373,11 +1240,6 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
 
 
     fig.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
-
-    # Hide x labels and tick labels for all but bottom plot.
-#     for ax in axs:
-#         ax.label_outer()
-
 
 #     plt.title(title)
 
@@ -1462,11 +1324,6 @@ def plot_mellow_concentration(mellow, concentration,
 
     print('plot_mellow_concentration() called')
 
-#     x1 = np.arange(0.0, len(delta))
-#     x2 = np.arange(0.0, len(theta))
-#     x3 = np.arange(0.0, len(alpha))
-#     x4 = np.arange(0.0, len(beta))
-#     x5 = np.arange(0.0, len(gamma))
 
     mellow_mean = np.mean(np.nan_to_num(mellow))
     mellow_std = np.std(np.nan_to_num(mellow))
@@ -1509,20 +1366,6 @@ def plot_mellow_concentration(mellow, concentration,
     t_len = len(mellow)
     period = (1.0/SAMPLING_RATE)
     x_series = np.arange(0, t_len * period, period)
-
-
-# MM_Colors = {
-# 'RawTP9': '#cc0000',
-# 'RawAF7': '#cc98e5',
-# 'RawAF8': '#7fcce5',
-# 'RawTP10': '#b2cc7f',
-# 'Delta': '#d42727',
-# 'Theta': '#9933cc',
-# 'Alpha': '#0d90cc',
-# 'Beta':  '#669900',
-# 'Gamma': '#ff900c'
-# }
-
 
     l0 = axs[0].plot(x_series, mellow,  ms=1, color='b', alpha=plot_alpha, label='Mellow')
     axs[0].legend(loc='upper right', prop={'size': 6})     
@@ -2066,7 +1909,7 @@ def main(date_time_now):
     
     generate_plots(muse_EEG_data, MM_CVS_fname, date_time_now)
 
-    session_dict = manage_session_data(session_dict, EEG_Dict)
+#     session_dict = manage_session_data(session_dict, EEG_Dict)
     
 #     print(session_dict)
     
