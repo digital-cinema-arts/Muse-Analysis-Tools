@@ -1,8 +1,8 @@
 # Muse-Analysis-Tools
  
-# Algorithmic Biofeedback Control System - Chart Tools
+## Algorithmic Biofeedback Control System - Chart Tools
 
-## NOTE: This project is still in active development! There may be bugs, there may be missing features, but will be released officially very soon.  Thank you for your patience.
+#### NOTE: This project is still in active development! There may be bugs, there may be missing features, but will be released officially very soon.  Thank you for your patience.
 
 This script wil generate a number of charts from Muse headband EEG CSV data files created by the Mind Monitor app.  Future versions of these tools will support Muse DIrect and Muse Lab files.
 
@@ -15,11 +15,11 @@ Install instructions:
 
 NOTE: At the moment the setup.py & Python distribution isn't ready yet for this application.  You will have to install the python libraries manually.  For example:
 
-$ pip3 install scipy
+'$ pip3 install scipy'
 Requirement already satisfied: scipy in /usr/local/lib/python3.7/site-packages (1.3.1)
 Requirement already satisfied: numpy>=1.13.3 in /usr/local/lib/python3.7/site-packages (from scipy) (1.17.3)
 
-$ pip3 show scipy
+'$ pip3 show scipy'
 Name: scipy
 Version: 1.3.1
 Summary: SciPy: Scientific Library for Python
@@ -84,5 +84,6 @@ https://xion.org/VinyasaKramaYogaOlympia/index.php/rainbow-goddess/
 
 
 
+:droplet:
 
 
