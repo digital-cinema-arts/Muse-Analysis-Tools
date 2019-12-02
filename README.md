@@ -20,6 +20,7 @@ NOTE: At the moment the setup.py & Python distribution isn't ready yet for this 
 $ pip3 install scipy
 
 $ pip3 show scipy
+
 Name: scipy
 Version: 1.3.1
 Summary: SciPy: Scientific Library for Python
