@@ -16,7 +16,6 @@ Install instructions:
 NOTE: At the moment the setup.py & Python distribution isn't ready yet for this application.  You will have to install the python libraries manually.  For example:
 
 ~~~~
-
 $ pip3 install scipy
 
 $ pip3 show scipy
@@ -31,7 +30,6 @@ License: BSD
 Location: /usr/local/lib/python3.7/site-packages
 Requires: numpy
 Required-by: scikit-learn
-
 ~~~~
 
 
@@ -55,7 +53,9 @@ Notes:
 
 Options: 
 
-analyze_mind_monitor_data.py -h 
+~~~~
+
+$ analyze_mind_monitor_data.py -h 
  
 usage: analyze_mind_monitor_data.py [-h] [-c CSV_FILE] [-v VERBOSE] [-d]
 
@@ -66,7 +66,8 @@ optional arguments:
   -v VERBOSE, --verbose VERBOSE
                         Increase output verbosity
   -d, --display_plots   Display Plots
-  
+  ~~~~
+
 
 ---------------------------------------------------------------------
 
