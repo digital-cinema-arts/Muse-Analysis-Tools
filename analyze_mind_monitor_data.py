@@ -446,11 +446,11 @@ class The_GUI(QDialog):
 
 #         l3.setAlignment(Qt.AlignCenter)
 
-#         l2.setPixmap(QPixmap("full-moon-3.jpg"))
+#         l2.setPixmap(QPixmap("full-moon-3.png"))
 
-#         pixmap = QPixmap("full-moon-3.jpg") 
+#         pixmap = QPixmap("full-moon-3.png") 
 #         pixmap = pixmap.scaled(128, 128, Qt.KeepAspectRatio)
-# #         pixmap = QPixmap("full-moon-3.jpg")
+# #         pixmap = QPixmap("full-moon-3.png")
 #         l3.setPixmap(pixmap)
     
 #         l1.setOpenExternalLinks(True)
@@ -515,7 +515,7 @@ class The_GUI(QDialog):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getSaveFileName(self,
-        "Select Output file","","All Files (*);;JPG Files (*.jpg)", options=options)
+        "Select Output file","","All Files (*);;PNG Files (*.png)", options=options)
         if fileName:
             print(fileName)
             
@@ -1435,7 +1435,7 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
 
 
 #     plt.legend(loc='upper left')
-#     fname = 'eeg_semilog_bandpass_data.jpg'       
+#     fname = 'eeg_semilog_bandpass_data.png'       
 
     plt.savefig(plot_fname, dpi=300)
 
@@ -1755,7 +1755,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
     
     plot_sensor_data(df['TimeStamp'], df['RAW_TP9'], df['RAW_AF7'], 
                         df['RAW_AF8'], df['RAW_TP10'], data_fname, 
-         out_dirname + '/plots/2-ABCS_eeg_raw_' + date_time_now + '.jpg',
+         out_dirname + '/plots/2-ABCS_eeg_raw_' + date_time_now + '.png',
         date_time_now,  "Raw EEG", data_stats, analysis_parms)
 
     
@@ -1766,7 +1766,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
                         smooth_data(df['RAW_AF8'], smooth_sz), 
                         smooth_data(df['RAW_TP10'], smooth_sz), 
                         data_fname, 
-         out_dirname + '/plots/2-ABCS_eeg_smoothed_' + date_time_now + '.jpg',
+         out_dirname + '/plots/2-ABCS_eeg_smoothed_' + date_time_now + '.png',
         date_time_now,  "Smoothed EEG", data_stats, analysis_parms)
 
 
@@ -1778,7 +1778,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
                             filter_data(df['RAW_AF8'], smooth_sz), 
                             filter_data(df['RAW_TP10'], smooth_sz), 
                             data_fname, 
-             out_dirname + '/plots/2-ABCS_eeg_filtered_' + date_time_now + '.jpg',
+             out_dirname + '/plots/2-ABCS_eeg_filtered_' + date_time_now + '.png',
             date_time_now,  "Filtered EEG", data_stats, analysis_parms)
 
 
@@ -1792,7 +1792,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
                             butter_bandpass_filter(df['RAW_TP10'], 
                             Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, Filter_Order), 
                             data_fname, 
-             out_dirname + '/plots/2-ABCS_eeg_bandpass_filtered_' + date_time_now + '.jpg',
+             out_dirname + '/plots/2-ABCS_eeg_bandpass_filtered_' + date_time_now + '.png',
             date_time_now,  "Filtered (Bandpass) EEG", data_stats, analysis_parms)
 
 
@@ -1800,7 +1800,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
 
 #    data_stats = (EEG_Dict['RAW_TP9']['25%'], EEG_Dict['RAW_TP9']['75%'])
 #     plot_sensor_data(df['RAW_TP9'], df['RAW_TP10'], data_fname, 
-#         out_dirname + '/plots/2-ABCS_eeg_TP9_TP10_time_series_data_' + date_time_now + '.jpg',
+#         out_dirname + '/plots/2-ABCS_eeg_TP9_TP10_time_series_data_' + date_time_now + '.png',
 #         date_time_now,  "RAW_AF7 & RAW_AF8", data_stats, analysis_parms)
  
                 
@@ -1809,7 +1809,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
 
         plot_coherence(df['RAW_AF7'], df['RAW_AF8'], df['RAW_TP9'], df['RAW_TP10'],
             "EF7 & EF8 Raw Data - Coherance", data_fname,
-             out_dirname + '/plots/1-ABCS_eeg_raw_coherence_data_' + date_time_now + '.jpg', 
+             out_dirname + '/plots/1-ABCS_eeg_raw_coherence_data_' + date_time_now + '.png', 
              date_time_now, analysis_parms)
 
 
@@ -1826,7 +1826,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
         pause_and_prompt(0.1, "Plotting 3D")
 
         plot_3D(muse_EEG_data, filt_df, data_fname,
-             out_dirname + '/plots/77-ABCS_3D_' + date_time_now + '.jpg', 
+             out_dirname + '/plots/77-ABCS_3D_' + date_time_now + '.png', 
              date_time_now, analysis_parms)
 
         
@@ -1888,7 +1888,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
                     alpha_df, beta_df, gamma_df,
                     Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, point_sz,
                     'Power Bands (All Sensors-Raw)', data_fname,
-                     out_dirname + '/plots/50-ABCS_all_sensors_power_raw_' + date_time_now + '.jpg',
+                     out_dirname + '/plots/50-ABCS_all_sensors_power_raw_' + date_time_now + '.png',
                      date_time_now, analysis_parms)
 
 
@@ -1896,13 +1896,13 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
                     alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
                     Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, point_sz,
                     'Power Bands (Mean Average)', data_fname,
-                     out_dirname + '/plots/51-ABCS_power_mean_' + date_time_now + '.jpg',
+                     out_dirname + '/plots/51-ABCS_power_mean_' + date_time_now + '.png',
                      date_time_now, analysis_parms)
 
     #     plot_all_power_bands(all_delta, all_theta, all_alpha, all_beta, all_gamma,
     #                 Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, point_sz,
     #                 'Power Bands (Filtered)', data_fname,
-    #                  out_dirname + '/plots/51-ABCS_power_flitered_' + date_time_now + '.jpg',
+    #                  out_dirname + '/plots/51-ABCS_power_flitered_' + date_time_now + '.png',
     #                  date_time_now, analysis_parms)
 
 
@@ -1913,7 +1913,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
                     alpha_df.median(axis=1), beta_df.median(axis=1), gamma_df.median(axis=1),
                     Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, 
                     point_sz,'Power Bands Mean & Median', data_fname,
-                     out_dirname + '/plots/55-ABCS_power_bands_median_mean' + date_time_now + '.jpg', 
+                     out_dirname + '/plots/55-ABCS_power_bands_median_mean' + date_time_now + '.png', 
                      date_time_now, analysis_parms)
 
 
@@ -1923,7 +1923,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
     #                 alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
     #                 Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, 
     #                 point_sz,'Power Bands Mean & Raw', data_fname,
-    #                  out_dirname + '/plots/56-ABCS_power_bands_raw_mean' + date_time_now + '.jpg', 
+    #                  out_dirname + '/plots/56-ABCS_power_bands_raw_mean' + date_time_now + '.png', 
     #                  date_time_now, analysis_parms)
 
 
@@ -1956,7 +1956,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
 
         plot_accel_gryo_data(acc_gyro_df, "Accelerometer/Gyro", data_fname, 
                         out_dirname + '/plots/60-ABCS_accel_gyro_' + date_time_now + 
-                        '.jpg', date_time_now, analysis_parms)
+                        '.png', date_time_now, analysis_parms)
 
 
     if (gui_dict['checkBoxMellowConcentration']):
@@ -1975,7 +1975,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
             plot_mellow_concentration(mc_df['Mellow'], mc_df['Concentration'], 
                          Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, point_sz,
                          'Mellow/Concentration', data_fname, 
-                         out_dirname + '/plots/60-ABCS_accel_gyro_' + date_time_now + '.jpg', 
+                         out_dirname + '/plots/60-ABCS_accel_gyro_' + date_time_now + '.png', 
                          date_time_now, analysis_parms)
 
         else: 
