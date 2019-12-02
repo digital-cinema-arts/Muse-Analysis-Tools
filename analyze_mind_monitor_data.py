@@ -133,7 +133,7 @@ class The_GUI(QDialog):
         self.createTopRightGroupBox()
         self.createBottomLeftTabWidget()
         self.createBottomRightGroupBox()
-        self.createProgressBar()
+#         self.createProgressBar()
 
 #         self.openFileNameDialog()
 
