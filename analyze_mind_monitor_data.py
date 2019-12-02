@@ -146,7 +146,7 @@ class The_GUI(QDialog):
         mainLayout.addWidget(self.topRightGroupBox, 1, 1)
         mainLayout.addWidget(self.bottomRightTabWidget, 2, 1)
         mainLayout.addWidget(self.bottomLeftGroupBox, 2, 0)
-        mainLayout.addWidget(self.progressBar, 3, 0, 1, 2)
+#         mainLayout.addWidget(self.progressBar, 3, 0, 1, 2)
         mainLayout.setRowStretch(1, 1)
         mainLayout.setRowStretch(2, 1)
         mainLayout.setColumnStretch(0, 1)
