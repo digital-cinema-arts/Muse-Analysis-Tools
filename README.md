@@ -68,6 +68,12 @@ optional arguments:
   -d, --display_plots   Display Plots
   
 
+---------------------------------------------------------------------
+
+![picture alt](http://via.placeholder.com/200x150 "Title is optional")
+
+![picture alt](https://github.com/digital-cinema-arts/Muse-Analysis-Tools/blob/master/GUI.png "The GUI")
+
  
 ---------------------------------------------------------------------
 Donations
