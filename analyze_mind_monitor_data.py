@@ -168,9 +168,8 @@ class The_GUI(QDialog):
 
         QApplication.setStyle(QStyleFactory.create('macintosh'))
 
-        
-        
-        
+
+
     def advanceProgressBar(self):
         curVal = self.progressBar.value()
         maxVal = self.progressBar.maximum()
@@ -1930,7 +1929,7 @@ if __name__ == '__main__':
     import pkg_resources
     import sys
 
-if sys.platform in ['darwin', 'linux', 'linux2']:
+if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
 #     liblo_path = pkg_resources.resource_filename('liblo', 'liblo.so')
 #     dso_path = [(liblo_path, '.')]
 #     print("DSO path:", dso_path)    
