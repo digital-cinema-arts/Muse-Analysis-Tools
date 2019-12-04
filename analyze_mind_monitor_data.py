@@ -22,6 +22,7 @@ import sys
 import csv
 import argparse
 import math
+from tqdm import tqdm
 from progress.bar import Bar, IncrementalBar
 import json
 from pathlib import Path
@@ -63,6 +64,7 @@ NOTCH_B, NOTCH_A = butter(4, np.array([55, 65]) / (256 / 2), btype='bandstop')
 
 session_dict = {}
 gui_dict = {}
+plot_color_scheme = {}
 first_name = ""
 last_name = ""
 data_dir = ""
@@ -73,7 +75,6 @@ FIGURE_SIZE = (8, 6)
 PLOT_DPI = 100
 
 # Muse Monitor Colors
-
 MM_Colors = {
 'RawTP9': '#cc0000',
 'RawAF7': '#cc98e5',
@@ -84,6 +85,19 @@ MM_Colors = {
 'Alpha': '#0d90cc',
 'Beta':  '#669900',
 'Gamma': '#ff900c'
+}
+
+# ABCS Colors
+ABCS_Colors = {
+'RawTP9': '#E27A59',
+'RawAF7': '#12A714',
+'RawAF8': '#3E40E0',
+'RawTP10':'#E2D659',
+'Delta': '#A20000',
+'Theta': '#D1A70C',
+'Alpha': '#64D606',
+'Beta':  '#25B2E3',
+'Gamma': '#A259E2'
 }
 
 
@@ -547,7 +561,12 @@ def read_eeg_data(fname, date_time_now):
 # df = pd.read_csv(infile, parse_dates=['datetime'], date_parser=dateparse)
 
 
-    muse_EEG_data = pd.read_csv(fname)
+#     df = pd.read_csv("weather.csv")
+#     tqdm.pandas(desc="Reading CSV")
+#     df.progress_apply(lambda x: x)
+
+
+    muse_EEG_data = pd.read_csv(fname, verbose=7)
 
 
     time_df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp'])    
@@ -852,6 +871,9 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
 #     axs[0].scatter(x_series, af8, alpha=0.7, s=pt_size, color=MM_Colors['RawAF8'], label='AF8')
 #     axs[0].scatter(x_series, tp10, alpha=0.7, s=pt_size, color=MM_Colors['RawTP10'], label='TP10')
 
+    plot_color_scheme = MM_Colors
+    
+    
     axs[0].plot(x_series, tp9, alpha=0.8, ms=pt_size, color=MM_Colors['RawTP9'], label='TP9')
     axs[0].plot(x_series, af7, alpha=0.8, ms=pt_size, color=MM_Colors['RawAF7'], label='AF7')
     axs[0].plot(x_series, af8, alpha=0.8, ms=pt_size, color=MM_Colors['RawAF8'], label='AF8')
@@ -1000,10 +1022,24 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
 #     print("ymin: ", ymin)
 #     print("ymax: ", ymax)
 
+    params = {
+        'axes.titlesize' : 12,
+        'axes.labelsize' : 8,
+        'lines.linewidth' : 1,
+        'lines.markersize' : 8,
+        'xtick.labelsize' : 8,
+        'ytick.labelsize' : 8,
+        'legend.fontsize': 7,
+        'legend.handlelength': 2}
+    plt.rcParams.update(params)
+
+
+
     t_len = len(delta)
     period = (1.0/SAMPLING_RATE)
     x_series = np.arange(0, t_len * period, period)
 
+    axs[0].set(title=title) 
 
     l0 = axs[0].plot(x_series, gamma,  ms=1, color=MM_Colors['Gamma'], alpha=plot_alpha
  , label='Gamma')
@@ -1048,10 +1084,12 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
 
 #     plt.title(title)
 
-    plt.text(0.3, 5.15, title, 
-        transform=plt_axes.transAxes, fontsize=8, style='italic',
-        bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
 
+# 
+#     plt.text(0.3, 5.15, title, 
+#         transform=plt_axes.transAxes, fontsize=8, style='italic',
+#         bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
+# 
      
     plt.text(0.01, 4.75, 
         'Mean: ' + "{:.3f}".format(gamma_mean) + 
@@ -1112,6 +1150,272 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
     print("Finished writing " + title + " data plot ")
     print(plot_fname)
     print
+
+
+
+
+
+
+def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
+                lowcut, highcut, fs, point_sz, title, 
+                data_fname, plot_fname, date_time_now, analysis_parms):
+
+
+# TODO:  Make multiple windows
+
+    plot_alpha = 0.8
+
+    print('plot_sensor_power_bands() called')
+
+    gamma_mean = np.mean(np.nan_to_num(gamma))
+    gamma_std = np.std(np.nan_to_num(gamma))
+    gamma_max = np.max(np.nan_to_num(gamma))
+    gamma_min = np.min(np.nan_to_num(gamma))
+
+    print("gamma_mean: ", gamma_mean)
+    print("gamma_std: ", gamma_std)
+    print("gamma_max: ", gamma_max)
+    print("gamma_min: ", gamma_min)
+    
+    beta_mean = np.mean(np.nan_to_num(beta))
+    beta_std = np.std(np.nan_to_num(beta))
+    beta_max = np.max(np.nan_to_num(beta))
+    beta_min = np.min(np.nan_to_num(beta))
+
+    print("beta_mean: ", beta_mean)
+    print("beta_std: ", beta_std)
+    print("beta_max: ", beta_max)
+    print("beta_min: ", beta_min)
+
+    alpha_mean = np.mean(np.nan_to_num(alpha))
+    alpha_std = np.std(np.nan_to_num(alpha))
+    alpha_max = np.max(np.nan_to_num(alpha))
+    alpha_min = np.min(np.nan_to_num(alpha))
+
+    print("alpha_mean: ", alpha_mean)
+    print("alpha_std: ", alpha_std)
+    print("alpha_max: ", alpha_max)
+    print("alpha_min: ", alpha_min)
+
+    theta_mean = np.mean(np.nan_to_num(theta))
+    theta_std = np.std(np.nan_to_num(theta))
+    theta_max = np.max(np.nan_to_num(theta))
+    theta_min = np.min(np.nan_to_num(theta))
+
+    print("theta_mean: ", theta_mean)
+    print("theta_std: ", theta_std)
+    print("theta_max: ", theta_max)
+    print("theta_min: ", theta_min)
+
+    delta_mean = np.mean(np.nan_to_num(delta))
+    delta_std = np.std(np.nan_to_num(delta))
+    delta_max = np.max(np.nan_to_num(delta))
+    delta_min = np.min(np.nan_to_num(delta))
+
+    print("delta_mean: ", delta_mean)
+    print("delta_std: ", delta_std)
+    print("delta_max: ", delta_max)
+    print("delta_min: ", delta_min)
+
+
+
+
+    params = {
+        'axes.titlesize' : 12,
+        'axes.labelsize' : 8,
+        'lines.linewidth' : 1,
+        'lines.markersize' : 3,
+#         'lines.markercolor' : 'k',
+        'xtick.labelsize' : 8,
+        'ytick.labelsize' : 8,
+        'legend.fontsize': 7,
+        'legend.handlelength': 2}
+    plt.rcParams.update(params)
+
+
+
+
+    fig, axs = plt.subplots(num=27, nrows=5, figsize=(FIGURE_SIZE), 
+                            sharex=True, sharey=True, gridspec_kw={'hspace': 0})
+
+#     fig.subplots_adjust(top=0.85)
+
+    plt_axes = plt.gca()
+#     plt.axis('auto')
+
+    xmin, xmax, ymin, ymax = plt.axis()
+
+#     print("xmin: ", xmin)
+#     print("xmax: ", xmax)
+#     print("ymin: ", ymin)
+#     print("ymax: ", ymax)
+
+    t_len = len(delta)
+    period = (1.0/SAMPLING_RATE)
+    x_series = np.arange(0, t_len * period, period)
+
+    axs[0].set(title=title) 
+
+    loop_cntr = 0 
+    
+#     markers = { 0: 'o', 1: '*', 2: '^', 3: '$'}
+    markers = ('o', 's', '^', 'D')
+    
+    for key, value in gamma.iteritems():
+        loop_cntr  += 1
+
+        l0 = axs[0].plot(x_series, value, color=MM_Colors['Gamma'], markerfacecolor=('#000000'), markevery=50,
+                    marker=markers[loop_cntr - 1], alpha=plot_alpha, label=key)
+    axs[0].legend(loc='upper right', prop={'size': 6})     
+    axs[0].grid(True)
+    #     axs[0].hlines([-a, a], 0, T, linestyles='--')
+
+
+    loop_cntr = 0 
+    for key, value in beta.iteritems():
+        loop_cntr  += 1
+
+        l1 = axs[1].plot(x_series, value, color=MM_Colors['Beta'], markerfacecolor=('#000000'), markevery=50,
+                    marker=markers[loop_cntr - 1], alpha=plot_alpha, label=key)
+
+#     l1 = axs[1].plot(x_series, beta,  ms=1, color=MM_Colors['Beta'], alpha=plot_alpha
+#  , label='Beta')
+    axs[1].legend(loc='upper right', prop={'size': 6})
+    axs[1].grid(True)
+#     axs[1].hlines([-a, a], 0, T, linestyles='--')
+
+
+    loop_cntr = 0 
+    for key, value in alpha.iteritems():
+        loop_cntr  += 1
+
+        l2 = axs[2].plot(x_series, value, color=MM_Colors['Alpha'], markerfacecolor=('#000000'), markevery=50,
+                    marker=markers[loop_cntr - 1], alpha=plot_alpha, label=key)
+
+
+#     l2 = axs[2].plot(x_series, alpha,  ms=1, color=MM_Colors['Alpha'], alpha=plot_alpha
+#  , label='Alpha')
+    axs[2].legend(loc='upper right', prop={'size': 6})
+    axs[2].grid(True)
+#     axs[2].hlines([-a, a], 0, T, linestyles='--')
+
+
+
+    loop_cntr = 0 
+    for key, value in theta.iteritems():
+        loop_cntr  += 1
+
+        l3 = axs[3].plot(x_series, value, color=MM_Colors['Theta'], markerfacecolor=('#000000'), markevery=50,
+                    marker=markers[loop_cntr - 1], alpha=plot_alpha, label=key)
+
+
+#     l3 = axs[3].plot(x_series, theta,  ms=1, color=MM_Colors['Theta'], alpha=plot_alpha
+#  , label='Theta')
+    axs[3].legend(loc='upper right', prop={'size': 6})
+    axs[3].grid(True)
+#     axs[3].hlines([-a, a], 0, T, linestyles='--')
+
+
+
+    loop_cntr = 0 
+    for key, value in delta.iteritems():
+        loop_cntr  += 1
+
+        l4 = axs[4].plot(x_series, value, color=MM_Colors['Delta'], markerfacecolor=('#000000'), markevery=50,
+                    marker=markers[loop_cntr - 1], alpha=plot_alpha, label=key)
+
+
+#     l4 = axs[4].plot(x_series, delta,  ms=1, color=MM_Colors['Delta'], alpha=plot_alpha
+#  , label='Delta')
+    axs[4].legend(loc='upper right', prop={'size': 6})
+    axs[4].grid(True)
+#     axs[4].hlines([-a, a], 0, T, linestyles='--')
+
+#     fig.legend((l0, l1, l2, l3, l4), ('gamma', 'beta', 'alpha', 'theta', 'delta'), 'upper left')
+#     fig.legend((l0, l1), ('gamma', 'beta'), 'upper left')
+#     fig.legend((l2, l3), ('alpha', 'theta'), 'upper right')
+
+    fig.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
+
+
+    # Hide x labels and tick labels for all but bottom plot.
+#     for ax in axs:
+#         ax.label_outer()
+
+#     plt.title(title)
+
+
+# 
+#     plt.text(0.3, 5.15, title, 
+#         transform=plt_axes.transAxes, fontsize=8, style='italic',
+#         bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
+# 
+     
+    plt.text(0.01, 4.75, 
+        'Mean: ' + "{:.3f}".format(gamma_mean) + 
+        ' Std: ' + "{:.3f}".format(gamma_std) + 
+        '\nMin: ' + "{:.3f}".format(gamma_min) +
+        ' Max: ' + "{:.3f}".format(gamma_max), style='italic', 
+        transform=plt_axes.transAxes, fontsize=5, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 2})
+
+    plt.text(0.01, 3.75, 
+        'Mean: ' + "{:.3f}".format(beta_mean) + 
+        ' Std: ' + "{:.3f}".format(beta_std) +
+        '\nMin: ' + "{:.3f}".format(beta_min) +
+        ' Max: ' + "{:.3f}".format(beta_max), style='italic', 
+        transform=plt_axes.transAxes, fontsize=5, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 2})
+        
+    plt.text(0.01, 2.75, 
+        'Mean: ' + "{:.3f}".format(alpha_mean) + 
+        ' Std: ' + "{:.3f}".format(alpha_std) +
+        '\nMin: ' + "{:.3f}".format(alpha_min) +
+        ' Max: ' + "{:.3f}".format(alpha_max), style='italic', 
+        
+        transform=plt_axes.transAxes, fontsize=5, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 2})
+        
+    plt.text(0.01, 1.75, 
+        'Mean: ' + "{:.3f}".format(theta_mean) + 
+        ' Std: ' + "{:.3f}".format(theta_std) +
+        '\nMin: ' + "{:.3f}".format(theta_min) +
+        ' Max: ' + "{:.3f}".format(theta_max), style='italic', 
+        transform=plt_axes.transAxes, fontsize=5, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 2})
+        
+    plt.text(0.01, 0.75, 
+        'Mean: ' + "{:.3f}".format(delta_mean) + 
+        ' Std: ' + "{:.3f}".format(delta_std) + 
+        '\nMin: ' + "{:.3f}".format(delta_min) +
+        ' Max: ' + "{:.3f}".format(delta_max), style='italic', 
+        transform=plt_axes.transAxes, fontsize=5, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 2})
+
+    create_analysis_parms_text(0.7, 5.07, plt_axes, analysis_parms)    
+    basename = os.path.basename(data_fname)
+    create_file_date_text(-0.12, -0.5, 0.9, -0.5, plt_axes, basename, date_time_now)
+
+    
+#     plt.legend(loc='upper left')
+
+    plt.savefig(plot_fname, dpi=300)
+
+    if (args.display_plots or gui_dict['checkBoxInteractive']):
+#     if args.display_plots:
+        plt.show()
+
+    plt.close()
+
+    print("Finished writing " + title + " data plot ")
+    print(plot_fname)
+    print
+
+
+
+
+
+
 
 
 
@@ -1189,6 +1493,8 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     period = (1.0/SAMPLING_RATE)
     x_series = np.arange(0, t_len * period, period)
 
+    axs[0].set(title=title) 
+
 
     l0 = axs[0].plot(x_series, gamma_raw, ms=1, color=MM_Colors['Gamma'], 
                 alpha=plot_alpha, label='Gamma Raw')
@@ -1242,9 +1548,9 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
 
 #     plt.title(title)
 
-    plt.text(0.3, 5.15, title, 
-        transform=plt_axes.transAxes, fontsize=8, style='italic',
-        bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
+#     plt.text(0.3, 5.15, title, 
+#         transform=plt_axes.transAxes, fontsize=8, style='italic',
+#         bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
 
      
     plt.text(0.01, 4.75, 
@@ -1366,6 +1672,9 @@ def plot_mellow_concentration(mellow, concentration,
     period = (1.0/SAMPLING_RATE)
     x_series = np.arange(0, t_len * period, period)
 
+    axs[0].set(title=title) 
+
+
     l0 = axs[0].plot(x_series, mellow,  ms=1, color='b', alpha=plot_alpha, label='Mellow')
     axs[0].legend(loc='upper right', prop={'size': 6})     
     axs[0].grid(True)
@@ -1378,9 +1687,9 @@ def plot_mellow_concentration(mellow, concentration,
     fig.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
 
 
-    plt.text(0.3, 5.15, title, 
-        transform=plt_axes.transAxes, fontsize=8, style='italic',
-        bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
+#     plt.text(0.3, 5.15, title, 
+#         transform=plt_axes.transAxes, fontsize=8, style='italic',
+#         bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
 
      
     plt.text(0.01, 4.75, 
@@ -1443,14 +1752,22 @@ def create_file_date_text(x1, y1, x2, y2, plt_axes, data_fname, date_time_now):
 
 def create_analysis_parms_text(x, y, plt_axes, analysis_parms):
 
-    plt.text(x, y, 
-        'Low Cut: ' + "{:.1f}".format(analysis_parms['lowcut']) + " HZ " + 
-        ' High Cut: ' + "{:.1f}".format(analysis_parms['highcut']) + " HZ "+ 
-        ' Filter Order: ' + "{:.1f}".format(analysis_parms['filter_order']) +
-        '\nSample Time: ' + "{:.2f}".format(analysis_parms['sample_time_min']) +
+#     plt.text(x, y, 
+#         'Low Cut: ' + "{:.1f}".format(analysis_parms['lowcut']) + " HZ " + 
+#         ' High Cut: ' + "{:.1f}".format(analysis_parms['highcut']) + " HZ "+ 
+#         ' Filter Order: ' + "{:.1f}".format(analysis_parms['filter_order']) +
+#         '\nSample Time: ' + "{:.2f}".format(analysis_parms['sample_time_min']) +
+#         ' (minutes) ' + "{:.2f}".format(analysis_parms['sample_time_sec']) + " (seconds)" + 
+#         '\nSample Length: ' + "{:d}".format(analysis_parms['sample_length']),
+#         style='italic', transform=plt_axes.transAxes, fontsize=5, 
+#         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 2})
+
+
+   plt.text(x, y, 
+        'Sample Time: ' + "{:.2f}".format(analysis_parms['sample_time_min']) +
         ' (minutes) ' + "{:.2f}".format(analysis_parms['sample_time_sec']) + " (seconds)" + 
         '\nSample Length: ' + "{:d}".format(analysis_parms['sample_length']),
-        style='italic', transform=plt_axes.transAxes, fontsize=5, 
+        style='italic', transform=plt_axes.transAxes, fontsize=6, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 2})
 
 
@@ -1479,6 +1796,9 @@ def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_n
 
     plt_axes.set_ylim(-10, 10)
  
+    axs[0].set(title=title) 
+
+
     plt.ylabel('Accelerometer/Gyro')
             
     l0 = axs[0].plot(x_axis, acc_gyro_df['Accelerometer_X'], ms=1, color='#00AAFF', 
@@ -1650,7 +1970,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
     if (gui_dict['checkBoxCoherence']):
 
         plot_coherence(df['RAW_AF7'], df['RAW_AF8'], df['RAW_TP9'], df['RAW_TP10'],
-            "EF7 & EF8 Raw Data - Coherance", data_fname,
+            "Raw Data - Coherance", data_fname,
              out_dirname + '/plots/1-ABCS_eeg_raw_coherence_data_' + date_time_now + '.png', 
              date_time_now, analysis_parms)
 
@@ -1726,12 +2046,20 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
     #     print("***************************")
 
 
-        plot_all_power_bands(delta_df, theta_df, 
+#         plot_all_power_bands(delta_df, theta_df, 
+#                     alpha_df, beta_df, gamma_df,
+#                     Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, point_sz,
+#                     'Power Bands (All Sensors-Raw)', data_fname,
+#                      out_dirname + '/plots/50-ABCS_all_sensors_power_raw_' + date_time_now + '.png',
+#                      date_time_now, analysis_parms)
+
+        plot_sensor_power_bands(delta_df, theta_df, 
                     alpha_df, beta_df, gamma_df,
                     Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, point_sz,
                     'Power Bands (All Sensors-Raw)', data_fname,
                      out_dirname + '/plots/50-ABCS_all_sensors_power_raw_' + date_time_now + '.png',
                      date_time_now, analysis_parms)
+
 
 
         plot_all_power_bands(delta_df.mean(axis=1), theta_df.mean(axis=1), 
