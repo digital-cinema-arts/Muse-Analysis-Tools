@@ -239,6 +239,8 @@ class The_GUI(QDialog):
         plot_3D = self.checkBox3D.isChecked()
         filter = self.checkBoxFilter.isChecked()
         integrate = self.checkBoxIntegrate.isChecked()
+        verbosity = self.verbosityComboBox.currentText()
+        sample_rate_sel = self.sample_rate_selComboBox.currentText()
         DB = self.checkBoxDB.isChecked()
         HDF5 = self.checkBoxHFDF5.isChecked()
 
@@ -261,7 +263,8 @@ class The_GUI(QDialog):
                 "checkBoxHFDF5": HDF5,
                 "Mood": mood})
 
-        print("plot_button_clicked(): gui_dict ", gui_dict)
+        if Verbosity > 1:
+            print("plot_button_clicked(): gui_dict ", gui_dict)
 
 #         self.accept()
         self.close()
@@ -279,7 +282,7 @@ class The_GUI(QDialog):
         self.checkBoxInteractive.setChecked(True)
         self.checkBoxInteractive.setEnabled(True)
 
-        self.checkBoxCoherence = QCheckBox("Create Coherance Plots")
+        self.checkBoxCoherence = QCheckBox("Create Coherence Plots")
         self.checkBoxCoherence.setChecked(False)
         self.checkBoxCoherence.setEnabled(True)
         
@@ -328,9 +331,22 @@ class The_GUI(QDialog):
         layout.addWidget(self.checkBoxDB)
         layout.addWidget(self.checkBoxHFDF5)
         
+
+        self.verbosityComboBox = QComboBox()
+        self.verbosityComboBox.addItems(['Quiet', 'Informative', 'Verbose', 'Debug'])
+        verbosityLabel = QLabel("Verbosity")
+        verbosityLabel.setBuddy(self.verbosityComboBox)
+        layout.addWidget(self.verbosityComboBox)
+
+        
+        self.sample_rate_selComboBox = QComboBox()
+        self.sample_rate_selComboBox.addItems(['250 HZ', '0.5 HZ', '1.0 HZ', '2.0 HZ', '60 Sec'])
+        sample_rate_selLabel = QLabel("Mood")
+        sample_rate_selLabel.setBuddy(self.sample_rate_selComboBox)
+        layout.addWidget(self.sample_rate_selComboBox)
+
         self.moodComboBox = QComboBox()
         self.moodComboBox.addItems(['Calm', 'Awake', 'Excited', 'Stressed', 'Sleepy'])
-
         moodLabel = QLabel("Mood")
         moodLabel.setBuddy(self.moodComboBox)
         layout.addWidget(self.moodComboBox)
@@ -477,56 +493,67 @@ class The_GUI(QDialog):
             
             
 
-def manage_session_data(session_dict, EEG_Dict):
+def manage_session_data(init=False, session_date='', date_time=''):
 
-    session_dict = {
-        'Session_Data':{
-        'date': date_time_now,
-        'data_file_fname': 'foo',
-        'mood': 'calm',
-        'location': 'home',
-        'activity': "sitting",
-        'misc': 'This field is for misc. data to be stored in the database'
-        },
-        'Participants':{ 
-            'Meditators':{
-                0:{
-                    'name': 'Debra',
-                    'age': 63,
-                    'gender': 'female'
-                    },          
-                1:{
-                    'name': 'Savahn',
-                    'age': 38,
-                    'gender': 'female'
-                    }     
-                },
-            'Coordinators':{
-                0:{
-                    'name': 'Patti',
-                    'age': 32,
-                    'gender': 'female'
-                    }
-                },
-            'Helpers':{
-                0:{
-                    'name': 'Oni',
-                    'age': 23,
-                    'gender': 'male'
-                    }
-                },
-            'Participants':{
-                0:{
-                    'name': 'Shiloh',
-                    'age': 34,
-                    'gender': 'male'
+    print("manage_session_data()")
+
+    global session_dict
+    global EEG_Dict
+
+    if init:
+
+        if Verbosity > 1:
+            print("manage_session_data(): Initialize Session Data")
+
+        session_dict = {
+            'Session_Data':{
+            'session_date': session_date,
+            'date': date_time,
+            'data_file_fname': 'foo',
+            'mood': 'calm',
+            'location': 'home',
+            'activity': "sitting",
+            'misc': 'This field is for misc. data to be stored in the database'
+            },
+            'Participants':{ 
+                'Meditators':{
+                    0:{
+                        'name': 'Debra',
+                        'age': 63,
+                        'gender': 'female'
+                        },          
+                    1:{
+                        'name': 'Savahn',
+                        'age': 38,
+                        'gender': 'female'
+                        }     
+                    },
+                'Coordinators':{
+                    0:{
+                        'name': 'Patti',
+                        'age': 32,
+                        'gender': 'female'
+                        }
+                    },
+                'Helpers':{
+                    0:{
+                        'name': 'Oni',
+                        'age': 23,
+                        'gender': 'male'
+                        }
+                    },
+                'Participants':{
+                    0:{
+                        'name': 'Shiloh',
+                        'age': 34,
+                        'gender': 'male'
+                        }
                     }
                 }
             }
-        }
 
 
-    session_dict.update(EEG_Dict)
+        session_dict.update(EEG_Dict)
 
     return(session_dict)
  
@@ -539,6 +566,8 @@ def read_eeg_data(fname, date_time_now):
     print("read_eeg_data(): Reading EEG data ...")
 
     global session_dict
+    global EEG_Dict
+
 
 # Mind Monitor CSV format:
 # TimeStamp,
@@ -561,16 +590,12 @@ def read_eeg_data(fname, date_time_now):
 # df = pd.read_csv(infile, parse_dates=['datetime'], date_parser=dateparse)
 
 
-#     df = pd.read_csv("weather.csv")
-#     tqdm.pandas(desc="Reading CSV")
-#     df.progress_apply(lambda x: x)
-
-
-    muse_EEG_data = pd.read_csv(fname, verbose=7)
+    muse_EEG_data = pd.read_csv(fname, verbose=Verbosity)
 
 
     time_df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp'])    
-    print("read_eeg_data(): Session Date: ", time_df['TimeStamp'][0])
+    if Verbosity > 1:
+        print("read_eeg_data(): Session Date: ", time_df['TimeStamp'][0])
 
     raw_df = pd.DataFrame(muse_EEG_data, 
             columns=['RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
@@ -586,14 +611,13 @@ def read_eeg_data(fname, date_time_now):
             columns=['Gamma_TP9', 'Gamma_AF7', 'Gamma_AF8', 'Gamma_TP10'])
     
 
-    global EEG_Dict
-#     EEG_Dict = {}
 
     for temp_df in (raw_df, delta_df, theta_df, alpha_df, beta_df, gamma_df):
-        if args.verbose:
-            print("verbose turned on")
+#         if args.verbose:
+#             print("verbose turned on")
 
-        print("read_eeg_data(): Sensor data description", temp_df.describe())
+        if Verbosity > 1:
+            print("read_eeg_data(): Sensor data description", temp_df.describe())
 #         data_str = temp_df.mean()
         data_str = temp_df.describe()
 #         print("type", type(data_str))
@@ -602,12 +626,6 @@ def read_eeg_data(fname, date_time_now):
 #         print("EEG_Dict: ", EEG_Dict)
 #         print("data_str.to_dict()", data_str.to_dict())
     
-                      
-#     print("SAMPLING_RATE: ", SAMPLING_RATE)
-#     print("Filter_Lowcut: ", Filter_Lowcut)
-#     print("Filter_Highcut: ", Filter_Highcut)
-#     print("filter_order: ", Filter_Order)
-
 
     sample_length = len(raw_df['RAW_AF7'])
     sample_time_sec = (sample_length/SAMPLING_RATE)
@@ -619,57 +637,10 @@ def read_eeg_data(fname, date_time_now):
                         "sample_length":sample_length, "sample_time_sec":sample_time_sec, 
                         "sample_time_min":sample_time_min}
             }
+ 
             
-    session_dict = {
-        'Session_Data':{
-        'session_date': str(time_df['TimeStamp'][0]),
-        'date': date_time_now,
-        'data_file_fname': fname,
-        'mood': 'calm',
-        'location': 'home',
-        'activity': "sitting",
-        'misc': 'This field is for misc. data to be stored in the database'
-        },
-        'Participants':{ 
-            'Meditators':{
-                0:{
-                    'name': 'Debra',
-                    'age': 63,
-                    'gender': 'female'
-                    },          
-                1:{
-                    'name': 'Savahn',
-                    'age': 38,
-                    'gender': 'female'
-                    }     
-                },
-            'Coordinators':{
-                0:{
-                    'name': 'Patti',
-                    'age': 32,
-                    'gender': 'female'
-                    }
-                },
-            'Helpers':{
-                0:{
-                    'name': 'Oni',
-                    'age': 23,
-                    'gender': 'male'
-                    }
-                },
-            'Participants':{
-                0:{
-                    'name': 'Shiloh',
-                    'age': 34,
-                    'gender': 'male'
-                    }
-                }
-            }
-        }
-
-    
+    session_dict = manage_session_data(init=True, session_date=str(time_df['TimeStamp'][0]), date_time=date_time_now)
     session_dict.update(EEG_Dict)
-
     session_dict.update(parms_dict)
 
     session_json = json.dumps(session_dict, sort_keys=True)
@@ -738,11 +709,11 @@ def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
 
 #  *************************************
 
-def plot_coherence(x, y, a, b, title, data_fname, plot_fname, date_time_now, analysis_parms):
+def plot_coherence(x, y, a, b, title, data_fname, plot_fname, date_time_now, analysis_parms, fig_num):
 
     print('plot_coherence() called')
 
-    fig = plt.figure(num=41, figsize=(FIGURE_SIZE), dpi=PLOT_DPI, facecolor='w', edgecolor='k')
+    fig = plt.figure(num=fig_num, figsize=(FIGURE_SIZE), dpi=PLOT_DPI, facecolor='w', edgecolor='k')
 
     params = {
         'axes.titlesize' : 12,
@@ -773,7 +744,7 @@ def plot_coherence(x, y, a, b, title, data_fname, plot_fname, date_time_now, ana
     plt.title(title)
     plt.legend(loc='upper left')
 
-    plt.text(0.15, 1.03, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+    plt.text(0.175, 1.03, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
             transform=plt_axes.transAxes, style='italic', fontsize=6, horizontalalignment='right',
             bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
 
@@ -782,7 +753,7 @@ def plot_coherence(x, y, a, b, title, data_fname, plot_fname, date_time_now, ana
 
     create_analysis_parms_text(0.76, 1.01, plt_axes, analysis_parms)    
     basename = os.path.basename(data_fname)
-    create_file_date_text(-0.1, -0.055, -0.1, -0.15, plt_axes, basename, date_time_now)
+    create_file_date_text(-0.1, -0.12, -0.1, -0.065, plt_axes, basename, date_time_now)
          
         
     plt.savefig(plot_fname, dpi=300)
@@ -793,7 +764,7 @@ def plot_coherence(x, y, a, b, title, data_fname, plot_fname, date_time_now, ana
         plt.show()
 
     plt.close()
-    print("Finished writing EEG EF7 & EF8 Integrated Data - Coherance plot")
+    print("Finished writing EEG EF7 & EF8 Integrated Data - Coherence plot")
     print(plot_fname)
     print
 
@@ -804,7 +775,7 @@ def plot_coherence(x, y, a, b, title, data_fname, plot_fname, date_time_now, ana
 #  *************************************
 
 def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, date_time_now, 
-                        title, data_stats, analysis_parms):
+                        title, data_stats, analysis_parms, fig_num):
 
     global session_dict
     
@@ -820,8 +791,8 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
  
 #     print('plot_sensor_data() x_series: ', x_series)
 
-    fig, axs = plt.subplots(nrows=5, num=11, figsize=FIGURE_SIZE, 
-                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=True, 
+    fig, axs = plt.subplots(nrows=5, num=fig_num, figsize=FIGURE_SIZE, 
+                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=False, 
                         gridspec_kw={'hspace': 0.25}, tight_layout=False)
     
     
@@ -863,12 +834,13 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
     pt_size = 2
 
     plot_color_scheme = MM_Colors
+    plot_color_scheme = ABCS_Colors
     
-        
-    axs[0].plot(x_series, tp9, alpha=0.8, ms=pt_size, color=MM_Colors['RawTP9'], label='TP9')
-    axs[0].plot(x_series, af7, alpha=0.8, ms=pt_size, color=MM_Colors['RawAF7'], label='AF7')
-    axs[0].plot(x_series, af8, alpha=0.8, ms=pt_size, color=MM_Colors['RawAF8'], label='AF8')
-    axs[0].plot(x_series, tp10, alpha=0.8, ms=pt_size, color=MM_Colors['RawTP10'], label='TP10')
+       
+    axs[0].plot(x_series, tp9, alpha=0.8, ms=pt_size, color=plot_color_scheme['RawTP9'], label='TP9')
+    axs[0].plot(x_series, af7, alpha=0.8, ms=pt_size, color=plot_color_scheme['RawAF7'], label='AF7')
+    axs[0].plot(x_series, af8, alpha=0.8, ms=pt_size, color=plot_color_scheme['RawAF8'], label='AF8')
+    axs[0].plot(x_series, tp10, alpha=0.8, ms=pt_size, color=plot_color_scheme['RawTP10'], label='TP10')
   
     axs[0].xaxis.set_major_locator(ticker.MultipleLocator(SAMPLING_RATE))
     axs[0].xaxis.set_minor_locator(ticker.MultipleLocator(SAMPLING_RATE/10))
@@ -891,7 +863,7 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
             transform=axs[0].transAxes, style='italic', fontsize=6, horizontalalignment='right',
             bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
 
-    create_analysis_parms_text(0.75, 1.1, axs[0], analysis_parms)    
+    create_analysis_parms_text(0.78, 1.1, axs[0], analysis_parms)    
             
 #     axs[0].annotate('Notable Data Point', xy=([data_stats[0], data_stats[1]]), 
 #                             xytext=([data_stats[2], data_stats[3]]),
@@ -933,7 +905,7 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
 
 def plot_all_power_bands(delta, theta, alpha, beta, gamma,
                 lowcut, highcut, fs, point_sz, title, 
-                data_fname, plot_fname, date_time_now, analysis_parms):
+                data_fname, plot_fname, date_time_now, analysis_parms, fig_num):
 
 
 # TODO:  Make multiple windows
@@ -1000,8 +972,8 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
         print("delta_min: ", delta_min)
 
 
-    fig, axs = plt.subplots(num=27, nrows=5, figsize=(FIGURE_SIZE), 
-                            sharex=True, sharey=True, gridspec_kw={'hspace': 0})
+    fig, axs = plt.subplots(num=fig_num, nrows=5, figsize=(FIGURE_SIZE), 
+                            sharex=True, sharey=False, gridspec_kw={'hspace': 0})
 
 #     fig.subplots_adjust(top=0.85)
 
@@ -1111,9 +1083,15 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
         transform=plt_axes.transAxes, fontsize=5, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 2})
 
-    create_analysis_parms_text(0.7, 5.07, plt_axes, analysis_parms)    
+
+    plt.text(-0.1, 5.075, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+            transform=plt_axes.transAxes, style='italic', fontsize=6, horizontalalignment='right',
+            bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
+
+
+    create_analysis_parms_text(0.7, 5.075, plt_axes, analysis_parms)    
     basename = os.path.basename(data_fname)
-    create_file_date_text(-0.12, -0.5, 0.9, -0.5, plt_axes, basename, date_time_now)
+    create_file_date_text(-0.12, -0.55, -0.1, -0.45, plt_axes, basename, date_time_now)
 
     plt.savefig(plot_fname, dpi=300)
 
@@ -1132,7 +1110,7 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
 
 def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
                 lowcut, highcut, fs, point_sz, title, 
-                data_fname, plot_fname, date_time_now, analysis_parms):
+                data_fname, plot_fname, date_time_now, analysis_parms, fig_num):
 
 # TODO:  Make multiple windows
 
@@ -1208,8 +1186,8 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
     plt.rcParams.update(params)
 
 
-    fig, axs = plt.subplots(num=27, nrows=5, figsize=(FIGURE_SIZE), 
-                            sharex=True, sharey=True, gridspec_kw={'hspace': 0})
+    fig, axs = plt.subplots(num=fig_num, nrows=5, figsize=(FIGURE_SIZE), 
+                            sharex=True, sharey=False, gridspec_kw={'hspace': 0})
 
 #     fig.subplots_adjust(top=0.85)
 
@@ -1333,9 +1311,14 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
         transform=plt_axes.transAxes, fontsize=5, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 2})
 
-    create_analysis_parms_text(0.7, 5.07, plt_axes, analysis_parms)    
+    plt.text(-0.1, 5.03, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+            transform=plt_axes.transAxes, style='italic', fontsize=6, horizontalalignment='right',
+            bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
+
+
+    create_analysis_parms_text(0.7, 5.08, plt_axes, analysis_parms)    
     basename = os.path.basename(data_fname)
-    create_file_date_text(-0.12, -0.5, 0.9, -0.5, plt_axes, basename, date_time_now)
+    create_file_date_text(-0.12, -0.55, -0.1, -0.40, plt_axes, basename, date_time_now)
 
     
     plt.savefig(plot_fname, dpi=300)
@@ -1359,7 +1342,7 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
 def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_raw,
                 delta, theta, alpha, beta, gamma,
                 lowcut, highcut, fs, point_sz, title, 
-                data_fname, plot_fname, date_time_now, analysis_parms):
+                data_fname, plot_fname, date_time_now, analysis_parms, fig_num):
 
 
 # TODO:  Make multiple windows correctly
@@ -1395,8 +1378,8 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     delta_min = np.min(np.nan_to_num(delta))
 
     
-    fig, axs = plt.subplots(5, num=11, figsize=(FIGURE_SIZE), 
-                sharex=True, sharey=True, gridspec_kw={'hspace': 0})
+    fig, axs = plt.subplots(5, num=fig_num, figsize=(FIGURE_SIZE), 
+                sharex=True, sharey=False, gridspec_kw={'hspace': 0})
 
 
     params = {
@@ -1539,9 +1522,14 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
 
     plt.axis('auto')
 
+    plt.text(-0.1, 5.03, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+            transform=plt_axes.transAxes, style='italic', fontsize=6, horizontalalignment='right',
+            bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
+
+
     create_analysis_parms_text(0.75, 5.07, plt_axes, analysis_parms)
     basename = os.path.basename(data_fname)
-    create_file_date_text(-0.12, -0.5, 0.9, -0.5, plt_axes, basename, date_time_now)
+    create_file_date_text(-0.12, -0.55, -0.1, -0.45, plt_axes, basename, date_time_now)
 
 
     plt.savefig(plot_fname, dpi=300)
@@ -1562,7 +1550,7 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
 
 def plot_mellow_concentration(mellow, concentration,
                 lowcut, highcut, fs, point_sz, title, 
-                data_fname, plot_fname, date_time_now, analysis_parms):
+                data_fname, plot_fname, date_time_now, analysis_parms, fig_num):
 
 
     plot_alpha = 0.8
@@ -1575,24 +1563,25 @@ def plot_mellow_concentration(mellow, concentration,
     mellow_max = np.max(np.nan_to_num(mellow))
     mellow_min = np.min(np.nan_to_num(mellow))
 
-    print("mellow_mean: ", mellow_mean)
-    print("mellow_std: ", mellow_std)
-    print("mellow_max: ", mellow_max)
-    print("mellow_min: ", mellow_min)
-    
     concentration_mean = np.mean(np.nan_to_num(concentration))
     concentration_std = np.std(np.nan_to_num(concentration))
     concentration_max = np.max(np.nan_to_num(concentration))
     concentration_min = np.min(np.nan_to_num(concentration))
 
-    print("concentration_mean: ", concentration_mean)
-    print("concentration_std: ", concentration_std)
-    print("concentration_max: ", concentration_max)
-    print("concentration_min: ", concentration_min)
+    if Verbosity > 1:
+        print("mellow_mean: ", mellow_mean)
+        print("mellow_std: ", mellow_std)
+        print("mellow_max: ", mellow_max)
+        print("mellow_min: ", mellow_min)
+    
+        print("concentration_mean: ", concentration_mean)
+        print("concentration_std: ", concentration_std)
+        print("concentration_max: ", concentration_max)
+        print("concentration_min: ", concentration_min)
 
   
-    fig, axs = plt.subplots(num=17, nrows=2, figsize=(FIGURE_SIZE), 
-                            sharex=True, sharey=True, gridspec_kw={'hspace': 0})
+    fig, axs = plt.subplots(num=fig_num, nrows=2, figsize=(FIGURE_SIZE), 
+                            sharex=True, sharey=False, gridspec_kw={'hspace': 0})
 
     params = {
         'axes.titlesize' : 12,
@@ -1656,10 +1645,19 @@ def plot_mellow_concentration(mellow, concentration,
         ' Max: ' + "{:.3f}".format(concentration_max), style='italic', 
         transform=plt_axes.transAxes, fontsize=5, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 2})
-        
-    create_analysis_parms_text(0.7, 5.07, plt_axes, analysis_parms)    
+ 
+    plt.text(0.175, 2.03, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+        transform=plt_axes.transAxes, style='italic', fontsize=6, horizontalalignment='right',
+        bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
+
     basename = os.path.basename(data_fname)
-    create_file_date_text(-0.12, -0.5, 0.9, -0.5, plt_axes, basename, date_time_now)
+    create_file_date_text(-0., -0., -0., -0., plt_axes, basename, date_time_now)
+    create_analysis_parms_text(0.7, 2.07, plt_axes, analysis_parms)
+
+       
+#     create_analysis_parms_text(0.7, 5.07, plt_axes, analysis_parms)    
+#     basename = os.path.basename(data_fname)
+#     create_file_date_text(-0.12, -0.5, 0.9, -0.5, plt_axes, basename, date_time_now)
 
     plt.savefig(plot_fname, dpi=300)
 
@@ -1677,7 +1675,7 @@ def plot_mellow_concentration(mellow, concentration,
 
 
 
-def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_now, analysis_parms):
+def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_now, analysis_parms, fig_num):
 
     print('plot_accel_gryo_data() called')
 
@@ -1687,7 +1685,7 @@ def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_n
     period = (1.0/SAMPLING_RATE)
     x_series = np.arange(0, t_len * period, period)
 
-    fig, axs = plt.subplots(6, num=24, figsize=(FIGURE_SIZE), 
+    fig, axs = plt.subplots(6, num=fig_num, figsize=(FIGURE_SIZE), 
                     sharex=True, sharey=False, gridspec_kw={'hspace': 0})
 #     fig.subplots_adjust(top=0.85)
 
@@ -1758,8 +1756,12 @@ def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_n
     plt.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
 #     plt.title(title)
        
+    plt.text(-0.1, 6.03, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+        transform=plt_axes.transAxes, style='italic', fontsize=6, horizontalalignment='right',
+        bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
+
     basename = os.path.basename(data_fname)
-    create_file_date_text(-0.1, -0.5, 0.85, -0.5, plt_axes, basename, date_time_now)
+    create_file_date_text(-0.1, -0.45, -0.1, -0.55, plt_axes, basename, date_time_now)
     create_analysis_parms_text(0.7, 6.07, plt_axes, analysis_parms)
 
     plt.savefig(plot_fname, dpi=300)
@@ -1840,35 +1842,37 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
     df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp', 'RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
 #     df = np.clip(df, -100.0, 100.0)
 
-    print("SAMPLING_RATE: ", SAMPLING_RATE)
-    print("Filter_Lowcut: ", Filter_Lowcut)
-    print("Filter_Highcut: ", Filter_Highcut)
-    print("Filter_Order: ", Filter_Order)
+    if Verbosity > 1:
+        print("SAMPLING_RATE: ", SAMPLING_RATE)
+        print("Filter_Lowcut: ", Filter_Lowcut)
+        print("Filter_Highcut: ", Filter_Highcut)
+        print("Filter_Order: ", Filter_Order)
 
 
     sample_length = len(df['RAW_AF7'])
     sample_time_sec = (sample_length/SAMPLING_RATE)
     sample_time_min = sample_time_sec/60.0
 
-    print("sample_length: ", sample_length)
-    print("sample_time_sec: ", sample_time_sec)
-    print("sample_time_min: ", sample_time_min)
-    print
+    if Verbosity > 1:
+        print("sample_length: ", sample_length)
+        print("sample_time_sec: ", sample_time_sec)
+        print("sample_time_min: ", sample_time_min)
+        print("\n")
 
     
     analysis_parms = {"lowcut":Filter_Lowcut, 
-                        "highcut": Filter_Highcut, "filter_order":Filter_Order, 
-                        "sample_length":sample_length, "sample_time_sec":sample_time_sec, 
-                        "sample_time_min":sample_time_min}
+        "highcut": Filter_Highcut, "filter_order":Filter_Order, 
+        "sample_length":sample_length, "sample_time_sec":sample_time_sec, 
+        "sample_time_min":sample_time_min}
 
 
     point_sz = 1                    
 
     # Generate plots 
 
-    print("generate_plots() - EEG_Dict['RAW_TP9']: ", EEG_Dict['RAW_TP9'])
-    print("generate_plots() - EEG_Dict['RAW_TP9']: ", 
-                EEG_Dict['RAW_TP9']['25%'], EEG_Dict['RAW_TP9']['75%'])
+#     print("generate_plots() - EEG_Dict['RAW_TP9']: ", EEG_Dict['RAW_TP9'])
+#     print("generate_plots() - EEG_Dict['RAW_TP9']: ", 
+#                 EEG_Dict['RAW_TP9']['25%'], EEG_Dict['RAW_TP9']['75%'])
 
 
     data_stats = (EEG_Dict['RAW_AF7']['25%'], EEG_Dict['RAW_AF7']['75%'],
@@ -1878,48 +1882,52 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
     
     
     plot_sensor_data(df['TimeStamp'], df['RAW_TP9'], df['RAW_AF7'], 
-                        df['RAW_AF8'], df['RAW_TP10'], data_fname, 
-         out_dirname + '/plots/2-ABCS_eeg_raw_' + date_time_now + '.png',
-        date_time_now,  "Raw EEG", data_stats, analysis_parms)
+        df['RAW_AF8'], df['RAW_TP10'], data_fname, 
+        out_dirname + '/plots/20-ABCS_eeg_raw_' + date_time_now + '.png',
+        date_time_now,  "Raw EEG", data_stats, analysis_parms, 20)
 
     
     smooth_sz = 25
 
     plot_sensor_data(df['TimeStamp'], smooth_data(df['RAW_TP9'], smooth_sz), 
-                        smooth_data(df['RAW_AF7'], smooth_sz), 
-                        smooth_data(df['RAW_AF8'], smooth_sz), 
-                        smooth_data(df['RAW_TP10'], smooth_sz), 
-                        data_fname, 
-         out_dirname + '/plots/2-ABCS_eeg_smoothed_' + date_time_now + '.png',
-        date_time_now,  "Smoothed EEG", data_stats, analysis_parms)
+        smooth_data(df['RAW_AF7'], smooth_sz), 
+        smooth_data(df['RAW_AF8'], smooth_sz), 
+        smooth_data(df['RAW_TP10'], smooth_sz), data_fname, 
+        out_dirname + '/plots/21-ABCS_eeg_smoothed_' + date_time_now + '.png',
+        date_time_now, "Smoothed EEG", data_stats, analysis_parms, 21)
+
+
+#     plot_sensor_data(df['TimeStamp'], 
+#                     df['RAW_TP9'] - df['RAW_TP10'], 
+#                     df['RAW_AF7'] - df['RAW_AF8'], 
+#                     df['RAW_AF7'] + df['RAW_AF8'], 
+#                     df['RAW_TP9'] + df['RAW_TP10'], data_fname, 
+#         out_dirname + '/plots/25-ABCS_eeg_raw_' + date_time_now + '.png',
+#         date_time_now,  "Raw EEG/Differences/Sums", data_stats, analysis_parms, 25)
 
 
 
 # TODO fix filtering (Add resampling) 
     if False:
         plot_sensor_data(df['TimeStamp'], filter_data(df['RAW_TP9'], smooth_sz), 
-                            filter_data(df['RAW_AF7'], smooth_sz), 
-                            filter_data(df['RAW_AF8'], smooth_sz), 
-                            filter_data(df['RAW_TP10'], smooth_sz), 
-                            data_fname, 
-             out_dirname + '/plots/2-ABCS_eeg_filtered_' + date_time_now + '.png',
-            date_time_now,  "Filtered EEG", data_stats, analysis_parms)
+            filter_data(df['RAW_AF7'], smooth_sz), 
+            filter_data(df['RAW_AF8'], smooth_sz), 
+            filter_data(df['RAW_TP10'], smooth_sz), 
+            data_fname,  out_dirname + '/plots/22-ABCS_eeg_filtered_' + date_time_now + '.png',
+            date_time_now,  "Filtered EEG", data_stats, analysis_parms, 22)
 
 
     if False:
         plot_sensor_data(df['TimeStamp'], butter_bandpass_filter(df['RAW_TP9'], 
-                            Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, Filter_Order), 
-                            butter_bandpass_filter(df['RAW_AF7'],
-                            Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, Filter_Order), 
-                            butter_bandpass_filter(df['RAW_AF8'], 
-                            Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, Filter_Order), 
-                            butter_bandpass_filter(df['RAW_TP10'], 
-                            Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, Filter_Order), 
-                            data_fname, 
-             out_dirname + '/plots/2-ABCS_eeg_bandpass_filtered_' + date_time_now + '.png',
-            date_time_now,  "Filtered (Bandpass) EEG", data_stats, analysis_parms)
-
-
+            Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, Filter_Order), 
+            butter_bandpass_filter(df['RAW_AF7'],
+            Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, Filter_Order), 
+            butter_bandpass_filter(df['RAW_AF8'], 
+            Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, Filter_Order), 
+            butter_bandpass_filter(df['RAW_TP10'], 
+            Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, Filter_Order), 
+            data_fname,  out_dirname + '/plots/23-ABCS_eeg_bandpass_filtered_' + date_time_now + '.png',
+            date_time_now,  "Filtered (Bandpass) EEG", data_stats, analysis_parms, 23)
 
 
 #    data_stats = (EEG_Dict['RAW_TP9']['25%'], EEG_Dict['RAW_TP9']['75%'])
@@ -1932,11 +1940,9 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
     if (gui_dict['checkBoxCoherence']):
 
         plot_coherence(df['RAW_AF7'], df['RAW_AF8'], df['RAW_TP9'], df['RAW_TP10'],
-            "Raw Data - Coherance", data_fname,
-             out_dirname + '/plots/1-ABCS_eeg_raw_coherence_data_' + date_time_now + '.png', 
-             date_time_now, analysis_parms)
-
-
+            "Raw Data - Coherence", data_fname,
+             out_dirname + '/plots/10-ABCS_eeg_raw_coherence_data_' + date_time_now + '.png', 
+             date_time_now, analysis_parms, 10)
 
     if False:
 #         if args.plot_3D:
@@ -1950,11 +1956,9 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
         pause_and_prompt(0.1, "Plotting 3D")
 
         plot_3D(muse_EEG_data, filt_df, data_fname,
-             out_dirname + '/plots/77-ABCS_3D_' + date_time_now + '.png', 
-             date_time_now, analysis_parms)
+             out_dirname + '/plots/70-ABCS_3D_' + date_time_now + '.png', 
+             date_time_now, analysis_parms, 70)
 
-        
-        
 
 # Delta_TP9,Delta_AF7,Delta_AF8,Delta_TP10,
 # Theta_TP9,Theta_AF7,Theta_AF8,Theta_TP10,
@@ -1967,69 +1971,48 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
 
     if (gui_dict['checkBoxPowerBands']):
 
-#         raw_df = pd.DataFrame(muse_EEG_data, 
-#             columns=['RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
-    #     df = np.clip(df, -1.0, 1.0)
-
-    #     print("Data description\n", raw_df.describe())                    
-
         delta_df = pd.DataFrame(muse_EEG_data, 
             columns=['Delta_TP9', 'Delta_AF7', 'Delta_AF8', 'Delta_TP10'])    
-    #     print("Data description\n", delta_df.describe())                    
         theta_df = pd.DataFrame(muse_EEG_data, 
             columns=['Theta_TP9', 'Theta_AF7', 'Theta_AF8', 'Theta_TP10'])    
-    #     print("Data description\n", theta_df.describe())                    
         alpha_df = pd.DataFrame(muse_EEG_data, 
             columns=['Alpha_TP9', 'Alpha_AF7', 'Alpha_AF8', 'Alpha_TP10'])    
-    #     print("Data description\n", alpha_df.describe())                    
         beta_df = pd.DataFrame(muse_EEG_data, 
             columns=['Beta_TP9', 'Beta_AF7', 'Beta_AF8', 'Beta_TP10'])    
-    #     print("Data description\n", beta_df.describe())                    
         gamma_df = pd.DataFrame(muse_EEG_data, 
             columns=['Gamma_TP9', 'Gamma_AF7', 'Gamma_AF8', 'Gamma_TP10'])    
-    #     print("Data description\n", gamma_df.describe())                    
 
-
-
-    #     all_delta = (delta_df['Delta_TP9'] + delta_df['Delta_AF7'] + 
-    #                 delta_df['Delta_AF8'] + delta_df['Delta_TP10']) / 4.0
     
         # Row mean of the dataframe
-    #     print("***************************")
-    #     print(delta_df.mean(axis=1))
-    #     print("***************************")
-    #     print(theta_df.mean(axis=1))
-    #     print("***************************")
-    #     print(alpha_df.mean(axis=1))
-    #     print("***************************")
-    #     print(beta_df.mean(axis=1))
-    #     print("***************************")
-    #     print(gamma_df.mean(axis=1))
-    #     print("***************************")
+        if Verbosity > 2:
+            print("***************************")
+            print(delta_df.mean(axis=1))
+            print("***************************")
+            print(theta_df.mean(axis=1))
+            print("***************************")
+            print(alpha_df.mean(axis=1))
+            print("***************************")
+            print(beta_df.mean(axis=1))
+            print("***************************")
+            print(gamma_df.mean(axis=1))
+            print("***************************")
 
-
-#         plot_all_power_bands(delta_df, theta_df, 
-#                     alpha_df, beta_df, gamma_df,
-#                     Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, point_sz,
-#                     'Power Bands (All Sensors-Raw)', data_fname,
-#                      out_dirname + '/plots/50-ABCS_all_sensors_power_raw_' + date_time_now + '.png',
-#                      date_time_now, analysis_parms)
 
         plot_sensor_power_bands(delta_df, theta_df, 
-                    alpha_df, beta_df, gamma_df,
-                    Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, point_sz,
-                    'Power Bands (All Sensors-Raw)', data_fname,
-                     out_dirname + '/plots/50-ABCS_all_sensors_power_raw_' + date_time_now + '.png',
-                     date_time_now, analysis_parms)
-
+            alpha_df, beta_df, gamma_df,
+            Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, point_sz,
+            'Power Bands (All Sensors-Raw)', data_fname,
+            out_dirname + '/plots/30-ABCS_all_sensors_power_raw_' + date_time_now + '.png',
+            date_time_now, analysis_parms, 30)
 
 
         plot_all_power_bands(delta_df.mean(axis=1), theta_df.mean(axis=1), 
-                    alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
-                    Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, point_sz,
-                    'Power Bands (Mean Average)', data_fname,
-                     out_dirname + '/plots/51-ABCS_power_mean_' + date_time_now + '.png',
-                     date_time_now, analysis_parms)
+            alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
+            Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, point_sz,
+            'Power Bands (Mean Average)', data_fname,
+            out_dirname + '/plots/31-ABCS_power_mean_' + date_time_now + '.png',
+            date_time_now, analysis_parms, 31)
+
 
     #     plot_all_power_bands(all_delta, all_theta, all_alpha, all_beta, all_gamma,
     #                 Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, point_sz,
@@ -2038,15 +2021,14 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
     #                  date_time_now, analysis_parms)
 
 
-
         plot_combined_power_bands(delta_df.mean(axis=1), theta_df.mean(axis=1), 
-                    alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
-                    delta_df.median(axis=1), theta_df.median(axis=1), 
-                    alpha_df.median(axis=1), beta_df.median(axis=1), gamma_df.median(axis=1),
-                    Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, 
-                    point_sz,'Power Bands Mean & Median', data_fname,
-                     out_dirname + '/plots/55-ABCS_power_bands_median_mean' + date_time_now + '.png', 
-                     date_time_now, analysis_parms)
+            alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
+            delta_df.median(axis=1), theta_df.median(axis=1), 
+            alpha_df.median(axis=1), beta_df.median(axis=1), gamma_df.median(axis=1),
+            Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, 
+            point_sz,'Power Bands Mean & Median', data_fname,
+            out_dirname + '/plots/32-ABCS_power_bands_median_mean' + date_time_now + '.png', 
+            date_time_now, analysis_parms, 32)
 
 
     #     plot_combined_power_bands(delta_df, theta_df, 
@@ -2071,8 +2053,8 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
     #         af8_beta_filtered, tp10_beta_filtered], axis=0 )
     #     gamma_avg = np.mean([tp9_gamma_filtered, af7_gamma_filtered, 
     #         af8_gamma_filtered, tp10_gamma_filtered], axis=0 )
-    # 
-    # 
+
+
     #     delta_avg = np.nan_to_num(delta_avg)
     #     theta_avg = np.nan_to_num(theta_avg)
     #     alpha_avg = np.nan_to_num(alpha_avg)
@@ -2087,8 +2069,8 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
                       'Gyro_X', 'Gyro_Y', 'Gyro_Z'])    
 
         plot_accel_gryo_data(acc_gyro_df, "Accelerometer/Gyro", data_fname, 
-                        out_dirname + '/plots/60-ABCS_accel_gyro_' + date_time_now + 
-                        '.png', date_time_now, analysis_parms)
+                        out_dirname + '/plots/40-ABCS_accel_gyro_' + date_time_now + 
+                        '.png', date_time_now, analysis_parms, 40)
 
 
     if (gui_dict['checkBoxMellowConcentration']):
@@ -2099,7 +2081,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
 
 
         if 'Mellow' in muse_EEG_data.keys(): 
-            print("Mellow Present, ", end =" ") 
+#             print("Mellow Present, ", end =" ") 
 #             print("value =", muse_EEG_data['Mellow']) 
             
 #         if len(mc_df['Mellow']) > 1:
@@ -2107,14 +2089,14 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
             plot_mellow_concentration(mc_df['Mellow'], mc_df['Concentration'], 
                          Filter_Lowcut, Filter_Highcut, SAMPLING_RATE, point_sz,
                          'Mellow/Concentration', data_fname, 
-                         out_dirname + '/plots/60-ABCS_accel_gyro_' + date_time_now + '.png', 
-                         date_time_now, analysis_parms)
+                         out_dirname + '/plots/50-ABCS_accel_gyro_' + date_time_now + '.png', 
+                         date_time_now, analysis_parms, 50)
 
         else: 
 #             print("Mellow  Not present") 
 #         else:
             print("generate_plots() -  ********* ")
-            print("generate_plots() -  Mellow/Concentration not in data file!!! ")
+            print("generate_plots() -  Mellow/Concentration not in data file!")
             print("generate_plots() -  ********* ")
         
 
@@ -2146,7 +2128,8 @@ def main(date_time_now):
 
         # parse file
         rc_obj = json.loads(data)
-        print("main() - rc_obj: ", rc_obj)
+        if Verbosity > 1:
+            print("main() - rc_obj: ", rc_obj)
         first_name = rc_obj['First Name']
         last_name = rc_obj['Last Name']
         data_dir = rc_obj['Data Dir']
@@ -2178,9 +2161,10 @@ def main(date_time_now):
   
 
     if len(MM_CVS_fname) != 0:
-        print("main() - Processing file: ", MM_CVS_fname)
         out_dirname = head_tail[0] + "/output/" + head_tail[1][:len( head_tail[1]) - 4] 
-        print("main() - Output directory: ", out_dirname)
+        if Verbosity > 1:
+            print("main() - Processing file: ", MM_CVS_fname)
+            print("main() - Output directory: ", out_dirname)
         
     else:
         print("main() - Filename not specified, exiting ...")
@@ -2198,7 +2182,7 @@ def main(date_time_now):
     
     generate_plots(muse_EEG_data, MM_CVS_fname, date_time_now)
 
-#     session_dict = manage_session_data(session_dict, EEG_Dict)
+#     session_dict = manage_session_data(init=False)
     
 #     print(session_dict)
     
@@ -2225,7 +2209,8 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
 #     print("DSO path:", dso_path)    
 #     print("LIBLO path:", liblo_path)    
 
-    print("Platform: ", sys.platform)
+    if Verbosity > 1:
+        print("Platform: ", sys.platform)
     
     date_time_now = strftime('%Y-%m-%d-%H.%M.%S', gmtime())
 
