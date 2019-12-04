@@ -61,7 +61,7 @@ Filter_Lowcut  = 2.0
 Filter_Highcut  = 60.0
 Filter_Order = 3
 NOTCH_B, NOTCH_A = butter(4, np.array([55, 65]) / (256 / 2), btype='bandstop')
-
+Verbosity = 0
 session_dict = {}
 gui_dict = {}
 plot_color_scheme = {}
@@ -477,60 +477,60 @@ class The_GUI(QDialog):
             
             
 
-# def manage_session_data(session_dict, EEG_Dict):
-# 
-#     session_dict = {
-#         'Session_Data':{
-#         'date': date_time_now,
-#         'data_file_fname': 'foo',
-#         'mood': 'calm',
-#         'location': 'home',
-#         'activity': "sitting",
-#         'misc': 'This field is for misc. data to be stored in the database'
-#         },
-#         'Participants':{ 
-#             'Meditators':{
-#                 0:{
-#                     'name': 'Debra',
-#                     'age': 63,
-#                     'gender': 'female'
-#                     },          
-#                 1:{
-#                     'name': 'Savahn',
-#                     'age': 38,
-#                     'gender': 'female'
-#                     }     
-#                 },
-#             'Coordinators':{
-#                 0:{
-#                     'name': 'Patti',
-#                     'age': 32,
-#                     'gender': 'female'
-#                     }
-#                 },
-#             'Helpers':{
-#                 0:{
-#                     'name': 'Oni',
-#                     'age': 23,
-#                     'gender': 'male'
-#                     }
-#                 },
-#             'Participants':{
-#                 0:{
-#                     'name': 'Shiloh',
-#                     'age': 34,
-#                     'gender': 'male'
-#                     }
-#                 }
-#             }
-#         }
-# 
-# 
-#     session_dict.update(EEG_Dict)
-# 
-#     return(session_dict)
-#  
-#  
+def manage_session_data(session_dict, EEG_Dict):
+
+    session_dict = {
+        'Session_Data':{
+        'date': date_time_now,
+        'data_file_fname': 'foo',
+        'mood': 'calm',
+        'location': 'home',
+        'activity': "sitting",
+        'misc': 'This field is for misc. data to be stored in the database'
+        },
+        'Participants':{ 
+            'Meditators':{
+                0:{
+                    'name': 'Debra',
+                    'age': 63,
+                    'gender': 'female'
+                    },          
+                1:{
+                    'name': 'Savahn',
+                    'age': 38,
+                    'gender': 'female'
+                    }     
+                },
+            'Coordinators':{
+                0:{
+                    'name': 'Patti',
+                    'age': 32,
+                    'gender': 'female'
+                    }
+                },
+            'Helpers':{
+                0:{
+                    'name': 'Oni',
+                    'age': 23,
+                    'gender': 'male'
+                    }
+                },
+            'Participants':{
+                0:{
+                    'name': 'Shiloh',
+                    'age': 34,
+                    'gender': 'male'
+                    }
+                }
+            }
+        }
+
+
+    session_dict.update(EEG_Dict)
+
+    return(session_dict)
+ 
+ 
 
    
 
@@ -759,16 +759,9 @@ def plot_coherence(x, y, a, b, title, data_fname, plot_fname, date_time_now, ana
     plt_axes = plt.gca()
 #     plt_axes.set_xlim([0, len(x)])
 #     plt_axes.set_ylim([-1000, 1000])
-
-#     print("plt_axes ", plt_axes)
     
     plt.scatter(x, y, s=1, color='r', alpha=0.7, label='AF7/AF8')
     plt.scatter(a, b, s=1, color='g', alpha=0.7, label='TP9/TP10')
-#     plt.plot(x, s=1, color='r', label='AF7')
-#     plt.plot(y, s=1, color='g', label='AF8')
-    
-#     plt.plot(x, color='c', alpha=0.3, label='1')
-#     plt.plot(y, color='b', alpha=0.3, label='2')
 
     
     plt.xlabel('Amp uV')
@@ -784,9 +777,11 @@ def plot_coherence(x, y, a, b, title, data_fname, plot_fname, date_time_now, ana
             transform=plt_axes.transAxes, style='italic', fontsize=6, horizontalalignment='right',
             bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
 
+    plt_axes.xaxis.set_major_locator(ticker.MultipleLocator(SAMPLING_RATE))
+    plt_axes.xaxis.set_minor_locator(ticker.MultipleLocator(SAMPLING_RATE/10))
+
     create_analysis_parms_text(0.76, 1.01, plt_axes, analysis_parms)    
     basename = os.path.basename(data_fname)
-#     create_file_date_text(-0.12, -0.11, 0.9, -0.11, plt_axes, basename, date_time_now)
     create_file_date_text(-0.1, -0.055, -0.1, -0.15, plt_axes, basename, date_time_now)
          
         
@@ -856,24 +851,20 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
 
     data_min = np.min((data_stats[0], data_stats[2], data_stats[4], data_stats[6]))
     data_max = np.max((data_stats[1], data_stats[3], data_stats[5], data_stats[7]))
-    
-    print('plot_sensor_data() data_stats: ', data_stats)
-    print('plot_sensor_data() data_min: ', data_min)
-    print('plot_sensor_data() data_max: ', data_max)
+  
+    if Verbosity > 1:  
+        print('plot_sensor_data() data_stats: ', data_stats)
+        print('plot_sensor_data() data_min: ', data_min)
+        print('plot_sensor_data() data_max: ', data_max)
 
 
     plt_axes.set_ylim(data_min - 100, data_max + 100)
  
     pt_size = 2
 
-#     axs[0].scatter(x_series, tp9, alpha=0.7, s=pt_size, color=MM_Colors['RawTP9'], label='TP9')
-#     axs[0].scatter(x_series, af7, alpha=0.7, s=pt_size, color=MM_Colors['RawAF7'], label='AF7')
-#     axs[0].scatter(x_series, af8, alpha=0.7, s=pt_size, color=MM_Colors['RawAF8'], label='AF8')
-#     axs[0].scatter(x_series, tp10, alpha=0.7, s=pt_size, color=MM_Colors['RawTP10'], label='TP10')
-
     plot_color_scheme = MM_Colors
     
-    
+        
     axs[0].plot(x_series, tp9, alpha=0.8, ms=pt_size, color=MM_Colors['RawTP9'], label='TP9')
     axs[0].plot(x_series, af7, alpha=0.8, ms=pt_size, color=MM_Colors['RawAF7'], label='AF7')
     axs[0].plot(x_series, af8, alpha=0.8, ms=pt_size, color=MM_Colors['RawAF8'], label='AF8')
@@ -940,11 +931,6 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
 
 
 
-  
-
-
-
-
 def plot_all_power_bands(delta, theta, alpha, beta, gamma,
                 lowcut, highcut, fs, point_sz, title, 
                 data_fname, plot_fname, date_time_now, analysis_parms):
@@ -956,55 +942,62 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
 
     print('plot_all_power_bands() called')
 
+#     print("plot_all_power_bands: ***********************")
+#     print("plot_all_power_bands: EEG_Dict\n\n", EEG_Dict)
+#     print("plot_all_power_bands: ***********************")
+        
+    # Run the stats of the incoming data which is specific to each call to this function
     gamma_mean = np.mean(np.nan_to_num(gamma))
     gamma_std = np.std(np.nan_to_num(gamma))
     gamma_max = np.max(np.nan_to_num(gamma))
     gamma_min = np.min(np.nan_to_num(gamma))
 
-    print("gamma_mean: ", gamma_mean)
-    print("gamma_std: ", gamma_std)
-    print("gamma_max: ", gamma_max)
-    print("gamma_min: ", gamma_min)
-    
     beta_mean = np.mean(np.nan_to_num(beta))
     beta_std = np.std(np.nan_to_num(beta))
     beta_max = np.max(np.nan_to_num(beta))
     beta_min = np.min(np.nan_to_num(beta))
-
-    print("beta_mean: ", beta_mean)
-    print("beta_std: ", beta_std)
-    print("beta_max: ", beta_max)
-    print("beta_min: ", beta_min)
 
     alpha_mean = np.mean(np.nan_to_num(alpha))
     alpha_std = np.std(np.nan_to_num(alpha))
     alpha_max = np.max(np.nan_to_num(alpha))
     alpha_min = np.min(np.nan_to_num(alpha))
 
-    print("alpha_mean: ", alpha_mean)
-    print("alpha_std: ", alpha_std)
-    print("alpha_max: ", alpha_max)
-    print("alpha_min: ", alpha_min)
-
     theta_mean = np.mean(np.nan_to_num(theta))
     theta_std = np.std(np.nan_to_num(theta))
     theta_max = np.max(np.nan_to_num(theta))
     theta_min = np.min(np.nan_to_num(theta))
-
-    print("theta_mean: ", theta_mean)
-    print("theta_std: ", theta_std)
-    print("theta_max: ", theta_max)
-    print("theta_min: ", theta_min)
 
     delta_mean = np.mean(np.nan_to_num(delta))
     delta_std = np.std(np.nan_to_num(delta))
     delta_max = np.max(np.nan_to_num(delta))
     delta_min = np.min(np.nan_to_num(delta))
 
-    print("delta_mean: ", delta_mean)
-    print("delta_std: ", delta_std)
-    print("delta_max: ", delta_max)
-    print("delta_min: ", delta_min)
+
+    if Verbosity > 1:  
+        print("gamma_mean: ", gamma_mean)
+        print("gamma_std: ", gamma_std)
+        print("gamma_max: ", gamma_max)
+        print("gamma_min: ", gamma_min)
+    
+        print("beta_mean: ", beta_mean)
+        print("beta_std: ", beta_std)
+        print("beta_max: ", beta_max)
+        print("beta_min: ", beta_min)
+
+        print("alpha_mean: ", alpha_mean)
+        print("alpha_std: ", alpha_std)
+        print("alpha_max: ", alpha_max)
+        print("alpha_min: ", alpha_min)
+
+        print("theta_mean: ", theta_mean)
+        print("theta_std: ", theta_std)
+        print("theta_max: ", theta_max)
+        print("theta_min: ", theta_min)
+
+        print("delta_mean: ", delta_mean)
+        print("delta_std: ", delta_std)
+        print("delta_max: ", delta_max)
+        print("delta_min: ", delta_min)
 
 
     fig, axs = plt.subplots(num=27, nrows=5, figsize=(FIGURE_SIZE), 
@@ -1034,12 +1027,15 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
     plt.rcParams.update(params)
 
 
-
     t_len = len(delta)
     period = (1.0/SAMPLING_RATE)
     x_series = np.arange(0, t_len * period, period)
 
     axs[0].set(title=title) 
+
+    axs[0].xaxis.set_major_locator(ticker.MultipleLocator(SAMPLING_RATE))
+    axs[0].xaxis.set_minor_locator(ticker.MultipleLocator(SAMPLING_RATE/10))
+
 
     l0 = axs[0].plot(x_series, gamma,  ms=1, color=MM_Colors['Gamma'], alpha=plot_alpha
  , label='Gamma')
@@ -1071,25 +1067,8 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
     axs[4].grid(True)
 #     axs[4].hlines([-a, a], 0, T, linestyles='--')
 
-#     fig.legend((l0, l1, l2, l3, l4), ('gamma', 'beta', 'alpha', 'theta', 'delta'), 'upper left')
-#     fig.legend((l0, l1), ('gamma', 'beta'), 'upper left')
-#     fig.legend((l2, l3), ('alpha', 'theta'), 'upper right')
 
     fig.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
-
-
-    # Hide x labels and tick labels for all but bottom plot.
-#     for ax in axs:
-#         ax.label_outer()
-
-#     plt.title(title)
-
-
-# 
-#     plt.text(0.3, 5.15, title, 
-#         transform=plt_axes.transAxes, fontsize=8, style='italic',
-#         bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
-# 
      
     plt.text(0.01, 4.75, 
         'Mean: ' + "{:.3f}".format(gamma_mean) + 
@@ -1136,9 +1115,6 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
     basename = os.path.basename(data_fname)
     create_file_date_text(-0.12, -0.5, 0.9, -0.5, plt_axes, basename, date_time_now)
 
-    
-#     plt.legend(loc='upper left')
-
     plt.savefig(plot_fname, dpi=300)
 
     if (args.display_plots or gui_dict['checkBoxInteractive']):
@@ -1154,12 +1130,9 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
 
 
 
-
-
 def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
                 lowcut, highcut, fs, point_sz, title, 
                 data_fname, plot_fname, date_time_now, analysis_parms):
-
 
 # TODO:  Make multiple windows
 
@@ -1167,57 +1140,59 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
 
     print('plot_sensor_power_bands() called')
 
+    # Run the stats of the incoming data which is specific to each call to this function
     gamma_mean = np.mean(np.nan_to_num(gamma))
     gamma_std = np.std(np.nan_to_num(gamma))
     gamma_max = np.max(np.nan_to_num(gamma))
     gamma_min = np.min(np.nan_to_num(gamma))
 
-    print("gamma_mean: ", gamma_mean)
-    print("gamma_std: ", gamma_std)
-    print("gamma_max: ", gamma_max)
-    print("gamma_min: ", gamma_min)
-    
     beta_mean = np.mean(np.nan_to_num(beta))
     beta_std = np.std(np.nan_to_num(beta))
     beta_max = np.max(np.nan_to_num(beta))
     beta_min = np.min(np.nan_to_num(beta))
-
-    print("beta_mean: ", beta_mean)
-    print("beta_std: ", beta_std)
-    print("beta_max: ", beta_max)
-    print("beta_min: ", beta_min)
 
     alpha_mean = np.mean(np.nan_to_num(alpha))
     alpha_std = np.std(np.nan_to_num(alpha))
     alpha_max = np.max(np.nan_to_num(alpha))
     alpha_min = np.min(np.nan_to_num(alpha))
 
-    print("alpha_mean: ", alpha_mean)
-    print("alpha_std: ", alpha_std)
-    print("alpha_max: ", alpha_max)
-    print("alpha_min: ", alpha_min)
-
     theta_mean = np.mean(np.nan_to_num(theta))
     theta_std = np.std(np.nan_to_num(theta))
     theta_max = np.max(np.nan_to_num(theta))
     theta_min = np.min(np.nan_to_num(theta))
-
-    print("theta_mean: ", theta_mean)
-    print("theta_std: ", theta_std)
-    print("theta_max: ", theta_max)
-    print("theta_min: ", theta_min)
 
     delta_mean = np.mean(np.nan_to_num(delta))
     delta_std = np.std(np.nan_to_num(delta))
     delta_max = np.max(np.nan_to_num(delta))
     delta_min = np.min(np.nan_to_num(delta))
 
-    print("delta_mean: ", delta_mean)
-    print("delta_std: ", delta_std)
-    print("delta_max: ", delta_max)
-    print("delta_min: ", delta_min)
 
+    if Verbosity > 1:  
 
+        print("gamma_mean: ", gamma_mean)
+        print("gamma_std: ", gamma_std)
+        print("gamma_max: ", gamma_max)
+        print("gamma_min: ", gamma_min)
+    
+        print("beta_mean: ", beta_mean)
+        print("beta_std: ", beta_std)
+        print("beta_max: ", beta_max)
+        print("beta_min: ", beta_min)
+
+        print("alpha_mean: ", alpha_mean)
+        print("alpha_std: ", alpha_std)
+        print("alpha_max: ", alpha_max)
+        print("alpha_min: ", alpha_min)
+
+        print("theta_mean: ", theta_mean)
+        print("theta_std: ", theta_std)
+        print("theta_max: ", theta_max)
+        print("theta_min: ", theta_min)
+
+        print("delta_mean: ", delta_mean)
+        print("delta_std: ", delta_std)
+        print("delta_max: ", delta_max)
+        print("delta_min: ", delta_min)
 
 
     params = {
@@ -1231,8 +1206,6 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
         'legend.fontsize': 7,
         'legend.handlelength': 2}
     plt.rcParams.update(params)
-
-
 
 
     fig, axs = plt.subplots(num=27, nrows=5, figsize=(FIGURE_SIZE), 
@@ -1256,9 +1229,10 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
 
     axs[0].set(title=title) 
 
+    axs[0].xaxis.set_major_locator(ticker.MultipleLocator(SAMPLING_RATE))
+    axs[0].xaxis.set_minor_locator(ticker.MultipleLocator(SAMPLING_RATE/10))
+
     loop_cntr = 0 
-    
-#     markers = { 0: 'o', 1: '*', 2: '^', 3: '$'}
     markers = ('o', 's', '^', 'D')
     
     for key, value in gamma.iteritems():
@@ -1270,7 +1244,6 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
     axs[0].grid(True)
     #     axs[0].hlines([-a, a], 0, T, linestyles='--')
 
-
     loop_cntr = 0 
     for key, value in beta.iteritems():
         loop_cntr  += 1
@@ -1278,12 +1251,9 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
         l1 = axs[1].plot(x_series, value, color=MM_Colors['Beta'], markerfacecolor=('#000000'), markevery=50,
                     marker=markers[loop_cntr - 1], alpha=plot_alpha, label=key)
 
-#     l1 = axs[1].plot(x_series, beta,  ms=1, color=MM_Colors['Beta'], alpha=plot_alpha
-#  , label='Beta')
     axs[1].legend(loc='upper right', prop={'size': 6})
     axs[1].grid(True)
 #     axs[1].hlines([-a, a], 0, T, linestyles='--')
-
 
     loop_cntr = 0 
     for key, value in alpha.iteritems():
@@ -1292,14 +1262,9 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
         l2 = axs[2].plot(x_series, value, color=MM_Colors['Alpha'], markerfacecolor=('#000000'), markevery=50,
                     marker=markers[loop_cntr - 1], alpha=plot_alpha, label=key)
 
-
-#     l2 = axs[2].plot(x_series, alpha,  ms=1, color=MM_Colors['Alpha'], alpha=plot_alpha
-#  , label='Alpha')
     axs[2].legend(loc='upper right', prop={'size': 6})
     axs[2].grid(True)
 #     axs[2].hlines([-a, a], 0, T, linestyles='--')
-
-
 
     loop_cntr = 0 
     for key, value in theta.iteritems():
@@ -1308,14 +1273,9 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
         l3 = axs[3].plot(x_series, value, color=MM_Colors['Theta'], markerfacecolor=('#000000'), markevery=50,
                     marker=markers[loop_cntr - 1], alpha=plot_alpha, label=key)
 
-
-#     l3 = axs[3].plot(x_series, theta,  ms=1, color=MM_Colors['Theta'], alpha=plot_alpha
-#  , label='Theta')
     axs[3].legend(loc='upper right', prop={'size': 6})
     axs[3].grid(True)
 #     axs[3].hlines([-a, a], 0, T, linestyles='--')
-
-
 
     loop_cntr = 0 
     for key, value in delta.iteritems():
@@ -1324,32 +1284,13 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
         l4 = axs[4].plot(x_series, value, color=MM_Colors['Delta'], markerfacecolor=('#000000'), markevery=50,
                     marker=markers[loop_cntr - 1], alpha=plot_alpha, label=key)
 
-
-#     l4 = axs[4].plot(x_series, delta,  ms=1, color=MM_Colors['Delta'], alpha=plot_alpha
-#  , label='Delta')
     axs[4].legend(loc='upper right', prop={'size': 6})
     axs[4].grid(True)
 #     axs[4].hlines([-a, a], 0, T, linestyles='--')
 
-#     fig.legend((l0, l1, l2, l3, l4), ('gamma', 'beta', 'alpha', 'theta', 'delta'), 'upper left')
-#     fig.legend((l0, l1), ('gamma', 'beta'), 'upper left')
-#     fig.legend((l2, l3), ('alpha', 'theta'), 'upper right')
-
+#
     fig.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
 
-
-    # Hide x labels and tick labels for all but bottom plot.
-#     for ax in axs:
-#         ax.label_outer()
-
-#     plt.title(title)
-
-
-# 
-#     plt.text(0.3, 5.15, title, 
-#         transform=plt_axes.transAxes, fontsize=8, style='italic',
-#         bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
-# 
      
     plt.text(0.01, 4.75, 
         'Mean: ' + "{:.3f}".format(gamma_mean) + 
@@ -1397,8 +1338,6 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
     create_file_date_text(-0.12, -0.5, 0.9, -0.5, plt_axes, basename, date_time_now)
 
     
-#     plt.legend(loc='upper left')
-
     plt.savefig(plot_fname, dpi=300)
 
     if (args.display_plots or gui_dict['checkBoxInteractive']):
@@ -1410,11 +1349,6 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
     print("Finished writing " + title + " data plot ")
     print(plot_fname)
     print
-
-
-
-
-
 
 
 
@@ -1434,7 +1368,7 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
 
     plot_alpha = 0.8
 
-
+    # Run the stats of the incoming data which is specific to each call to this function
     gamma_mean = np.mean(np.nan_to_num(gamma))
     gamma_std = np.std(np.nan_to_num(gamma))
     gamma_max = np.max(np.nan_to_num(gamma))
@@ -1463,6 +1397,19 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     
     fig, axs = plt.subplots(5, num=11, figsize=(FIGURE_SIZE), 
                 sharex=True, sharey=True, gridspec_kw={'hspace': 0})
+
+
+    params = {
+        'axes.titlesize' : 12,
+        'axes.labelsize' : 8,
+        'lines.linewidth' : 1,
+        'lines.markersize' : 8,
+        'xtick.labelsize' : 8,
+        'ytick.labelsize' : 8,
+        'legend.fontsize': 7,
+        'legend.handlelength': 2}
+    plt.rcParams.update(params)
+
 
 #     fig.subplots_adjust(top=0.85)
 
@@ -1494,11 +1441,13 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     x_series = np.arange(0, t_len * period, period)
 
     axs[0].set(title=title) 
+    axs[0].xaxis.set_major_locator(ticker.MultipleLocator(SAMPLING_RATE))
+    axs[0].xaxis.set_minor_locator(ticker.MultipleLocator(SAMPLING_RATE/10))
 
 
     l0 = axs[0].plot(x_series, gamma_raw, ms=1, color=MM_Colors['Gamma'], 
                 alpha=plot_alpha, label='Gamma Raw')
-    l00 = axs[0].scatter(x_series, gamma, s=1, color=MM_Colors['Gamma'], 
+    l00 = axs[0].scatter(x_series, gamma, s=1, color=MM_Colors['Gamma'], marker='+',
                 alpha=plot_alpha, label='Gamma')
     axs[0].legend(loc='upper right', prop={'size': 6})     
     axs[0].grid(True)
@@ -1509,7 +1458,7 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
 
     l1 = axs[1].plot(x_series, beta_raw, ms=1, color=MM_Colors['Beta'], 
         alpha=plot_alpha, label='Beta Raw')
-    l11 = axs[1].scatter(x_series, beta, s=1, color=MM_Colors['Beta'], 
+    l11 = axs[1].scatter(x_series, beta, s=1, color=MM_Colors['Beta'], marker='+',
         alpha=plot_alpha, label='Beta')
     axs[1].legend(loc='upper right', prop={'size': 6})
     axs[1].grid(True)
@@ -1518,7 +1467,7 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
 
     l2 = axs[2].plot(x_series, alpha_raw, ms=1, color=MM_Colors['Alpha'], 
         alpha=plot_alpha, label='Alpha Raw')
-    l22 = axs[2].scatter(x_series, alpha, s=1, color=MM_Colors['Alpha'], 
+    l22 = axs[2].scatter(x_series, alpha, s=1, color=MM_Colors['Alpha'], marker='+', 
         alpha=plot_alpha, label='Alpha')
     axs[2].legend(loc='upper right', prop={'size': 6})
     axs[2].grid(True)
@@ -1527,7 +1476,7 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
 
     l3 = axs[3].plot(x_series, theta_raw, ms=1, color=MM_Colors['Theta'], 
         alpha=plot_alpha, label='Theta Raw')
-    l33 = axs[3].scatter(x_series, theta, s=1, color=MM_Colors['Theta'], 
+    l33 = axs[3].scatter(x_series, theta, s=1, color=MM_Colors['Theta'], marker='+', 
         alpha=plot_alpha, label='Theta')
     axs[3].legend(loc='upper right', prop={'size': 6})
     axs[3].grid(True)
@@ -1536,7 +1485,7 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
 
     l4 = axs[4].plot(x_series, delta_raw, ms=1, color=MM_Colors['Delta'], 
         alpha=plot_alpha, label='Delta Raw')
-    l44 = axs[4].scatter(x_series, delta, s=1, color=MM_Colors['Delta'], 
+    l44 = axs[4].scatter(x_series, delta, s=1, color=MM_Colors['Delta'], marker='+', 
         alpha=plot_alpha, label='Delta')
     axs[4].legend(loc='upper right', prop={'size': 6})
     axs[4].grid(True)
@@ -1545,12 +1494,6 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
 
 
     fig.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
-
-#     plt.title(title)
-
-#     plt.text(0.3, 5.15, title, 
-#         transform=plt_axes.transAxes, fontsize=8, style='italic',
-#         bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
 
      
     plt.text(0.01, 4.75, 
@@ -1601,9 +1544,6 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     create_file_date_text(-0.12, -0.5, 0.9, -0.5, plt_axes, basename, date_time_now)
 
 
-#     plt.legend(loc='upper left')
-#     fname = 'eeg_semilog_bandpass_data.png'       
-
     plt.savefig(plot_fname, dpi=300)
 
     if (args.display_plots or gui_dict['checkBoxInteractive']):
@@ -1629,7 +1569,7 @@ def plot_mellow_concentration(mellow, concentration,
 
     print('plot_mellow_concentration() called')
 
-
+    # Run the stats of the incoming data which is specific to each call to this function
     mellow_mean = np.mean(np.nan_to_num(mellow))
     mellow_std = np.std(np.nan_to_num(mellow))
     mellow_max = np.max(np.nan_to_num(mellow))
@@ -1654,6 +1594,18 @@ def plot_mellow_concentration(mellow, concentration,
     fig, axs = plt.subplots(num=17, nrows=2, figsize=(FIGURE_SIZE), 
                             sharex=True, sharey=True, gridspec_kw={'hspace': 0})
 
+    params = {
+        'axes.titlesize' : 12,
+        'axes.labelsize' : 8,
+        'lines.linewidth' : 1,
+        'lines.markersize' : 8,
+        'xtick.labelsize' : 8,
+        'ytick.labelsize' : 8,
+        'legend.fontsize': 7,
+        'legend.handlelength': 2}
+    plt.rcParams.update(params)
+
+
 #     fig.subplots_adjust(top=0.85)
 
     plt_axes = plt.gca()
@@ -1666,6 +1618,7 @@ def plot_mellow_concentration(mellow, concentration,
 #     print("ymin: ", ymin)
 #     print("ymax: ", ymax)
 
+
     plt_axes.set_ylim(0, 100)
 
     t_len = len(mellow)
@@ -1673,7 +1626,8 @@ def plot_mellow_concentration(mellow, concentration,
     x_series = np.arange(0, t_len * period, period)
 
     axs[0].set(title=title) 
-
+    axs[0].xaxis.set_major_locator(ticker.MultipleLocator(SAMPLING_RATE))
+    axs[0].xaxis.set_minor_locator(ticker.MultipleLocator(SAMPLING_RATE/10))
 
     l0 = axs[0].plot(x_series, mellow,  ms=1, color='b', alpha=plot_alpha, label='Mellow')
     axs[0].legend(loc='upper right', prop={'size': 6})     
@@ -1685,11 +1639,6 @@ def plot_mellow_concentration(mellow, concentration,
     axs[1].grid(True)
 
     fig.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
-
-
-#     plt.text(0.3, 5.15, title, 
-#         transform=plt_axes.transAxes, fontsize=8, style='italic',
-#         bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
 
      
     plt.text(0.01, 4.75, 
@@ -1712,9 +1661,6 @@ def plot_mellow_concentration(mellow, concentration,
     basename = os.path.basename(data_fname)
     create_file_date_text(-0.12, -0.5, 0.9, -0.5, plt_axes, basename, date_time_now)
 
-    
-#     plt.legend(loc='upper left')
-
     plt.savefig(plot_fname, dpi=300)
 
     if (args.display_plots or gui_dict['checkBoxInteractive']):
@@ -1731,12 +1677,107 @@ def plot_mellow_concentration(mellow, concentration,
 
 
 
+def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_now, analysis_parms):
+
+    print('plot_accel_gryo_data() called')
+
+    plot_alpha = 0.8
+    
+    t_len = len(acc_gyro_df['Accelerometer_X'])
+    period = (1.0/SAMPLING_RATE)
+    x_series = np.arange(0, t_len * period, period)
+
+    fig, axs = plt.subplots(6, num=24, figsize=(FIGURE_SIZE), 
+                    sharex=True, sharey=False, gridspec_kw={'hspace': 0})
+#     fig.subplots_adjust(top=0.85)
+
+    params = {
+        'axes.titlesize' : 12,
+        'axes.labelsize' : 8,
+        'lines.linewidth' : 1,
+        'lines.markersize' : 8,
+        'xtick.labelsize' : 8,
+        'ytick.labelsize' : 8,
+        'legend.fontsize': 7,
+        'legend.handlelength': 2}
+    plt.rcParams.update(params)
+
+
+    plt_axes = plt.gca()
+#     plt.axis('auto')
+
+#     plt_axes.set_ylim(-10, 10)
+ 
+    axs[0].set(title=title) 
+    axs[0].xaxis.set_major_locator(ticker.MultipleLocator(SAMPLING_RATE))
+    axs[0].xaxis.set_minor_locator(ticker.MultipleLocator(SAMPLING_RATE/10))
+
+    axs[0].set_ylim(-1, 1)
+    axs[1].set_ylim(-1, 1)
+    axs[2].set_ylim(-1, 1)
+    axs[3].set_ylim(-10, 10)
+    axs[4].set_ylim(-10, 10)
+    axs[5].set_ylim(-10, 10)
+
+
+#     axs[0].ylabel('Accelerometer/Gyro')
+    axs[1].set(ylabel="Accelerometer") 
+    axs[4].set(ylabel="Gyro") 
+ 
+            
+    l0 = axs[0].plot(x_series, acc_gyro_df['Accelerometer_X'], ms=1, color='#00AAFF', 
+            alpha=plot_alpha, label='X')
+    axs[0].legend(loc='upper right', prop={'size': 6})     
+    axs[0].grid(True)
+
+    l1 = axs[1].plot(x_series, acc_gyro_df['Accelerometer_Y'], ms=1, color='#33FF33', 
+            alpha=plot_alpha, label='Y')
+    axs[1].legend(loc='upper right', prop={'size': 6})
+    axs[1].grid(True)
+
+    l2 = axs[2].plot(x_series, acc_gyro_df['Accelerometer_Z'], ms=1, color='#FF8800', 
+            alpha=plot_alpha, label='Z')
+    axs[2].legend(loc='upper right', prop={'size': 6})
+    axs[2].grid(True)
+
+    l3 = axs[3].plot(x_series, acc_gyro_df['Gyro_X'], ms=1, color='#00AAFF', 
+            alpha=plot_alpha, label='X')
+    axs[3].legend(loc='upper right', prop={'size': 6})     
+    axs[3].grid(True)
+
+    l4 = axs[4].plot(x_series, acc_gyro_df['Gyro_Y'], ms=1, color='#33FF33',
+            alpha=plot_alpha, label='Y')
+    axs[4].legend(loc='upper right', prop={'size': 6})
+    axs[4].grid(True)
+
+    l5 = axs[5].plot(x_series, acc_gyro_df['Gyro_Z'], ms=1, color='#FF8800', 
+            alpha=plot_alpha, label='Z')
+    axs[5].legend(loc='upper right', prop={'size': 6})
+    axs[5].grid(True)
+
+    plt.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
+#     plt.title(title)
+       
+    basename = os.path.basename(data_fname)
+    create_file_date_text(-0.1, -0.5, 0.85, -0.5, plt_axes, basename, date_time_now)
+    create_analysis_parms_text(0.7, 6.07, plt_axes, analysis_parms)
+
+    plt.savefig(plot_fname, dpi=300)
+
+    if (args.display_plots or gui_dict['checkBoxInteractive']):
+#     if args.display_plots:
+        plt.show()
+ 
+    plt.close()
+
+    print("Finished writing accel/gyro data plot ")
+    print(plot_fname)
+    print
 
 
 
-
-
-
+   
+   
 
 def create_file_date_text(x1, y1, x2, y2, plt_axes, data_fname, date_time_now):
 
@@ -1774,85 +1815,6 @@ def create_analysis_parms_text(x, y, plt_axes, analysis_parms):
 
 
 
-
-def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_now, analysis_parms):
-
-    print('plot_accel_gryo_data() called')
-
-# ['Accelerometer_X', 'Accelerometer_Y', 'Accelerometer_Z', 'Gyro_X', 'Gyro_Y', 'Gyro_Z']
-               
-    plot_alpha = 0.8
-    
-    x_axis = np.arange(len(acc_gyro_df['Accelerometer_X']))
-
-#     plt.figure(num=16, figsize=(FIGURE_SIZE), dpi=PLOT_DPI, facecolor='w', edgecolor='k')
-
-    fig, axs = plt.subplots(6, num=24, figsize=(FIGURE_SIZE), 
-                    sharex=True, sharey=True, gridspec_kw={'hspace': 0})
-#     fig.subplots_adjust(top=0.85)
-
-    plt_axes = plt.gca()
-#     plt.axis('auto')
-
-    plt_axes.set_ylim(-10, 10)
- 
-    axs[0].set(title=title) 
-
-
-    plt.ylabel('Accelerometer/Gyro')
-            
-    l0 = axs[0].plot(x_axis, acc_gyro_df['Accelerometer_X'], ms=1, color='#00AAFF', 
-            alpha=plot_alpha, label='X')
-    axs[0].legend(loc='upper right', prop={'size': 6})     
-    axs[0].grid(True)
-
-    l1 = axs[1].plot(x_axis, acc_gyro_df['Accelerometer_Y'], ms=1, color='#33FF33', 
-            alpha=plot_alpha, label='Y')
-    axs[1].legend(loc='upper right', prop={'size': 6})
-    axs[1].grid(True)
-
-    l2 = axs[2].plot(x_axis, acc_gyro_df['Accelerometer_Z'], ms=1, color='#FF8800', 
-            alpha=plot_alpha, label='Z')
-    axs[2].legend(loc='upper right', prop={'size': 6})
-    axs[2].grid(True)
-
-    l3 = axs[3].plot(x_axis, acc_gyro_df['Gyro_X'], ms=1, color='#00AAFF', 
-            alpha=plot_alpha, label='X')
-    axs[3].legend(loc='upper right', prop={'size': 6})     
-    axs[3].grid(True)
-
-    l4 = axs[4].plot(x_axis, acc_gyro_df['Gyro_Y'], ms=1, color='#33FF33',
-            alpha=plot_alpha, label='Y')
-    axs[4].legend(loc='upper right', prop={'size': 6})
-    axs[4].grid(True)
-
-    l5 = axs[5].plot(x_axis, acc_gyro_df['Gyro_Z'], ms=1, color='#FF8800', 
-            alpha=plot_alpha, label='Z')
-    axs[5].legend(loc='upper right', prop={'size': 6})
-    axs[5].grid(True)
-
-    plt.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
-#     plt.title(title)
-       
-    basename = os.path.basename(data_fname)
-    create_file_date_text(-0.1, -0.5, 0.85, -0.5, plt_axes, basename, date_time_now)
-    create_analysis_parms_text(0.7, 6.07, plt_axes, analysis_parms)
-
-    plt.savefig(plot_fname, dpi=300)
-
-    if (args.display_plots or gui_dict['checkBoxInteractive']):
-#     if args.display_plots:
-        plt.show()
- 
-    plt.close()
-
-    print("Finished writing accel/gyro data plot ")
-    print(plot_fname)
-    print
-
-
-
-   
 
 
 def pause_and_prompt(pause_time, msg):
@@ -2262,6 +2224,7 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
 #     dso_path = [(liblo_path, '.')]
 #     print("DSO path:", dso_path)    
 #     print("LIBLO path:", liblo_path)    
+
     print("Platform: ", sys.platform)
     
     date_time_now = strftime('%Y-%m-%d-%H.%M.%S', gmtime())
@@ -2270,16 +2233,26 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
     parser.add_argument("-c", "--csv_file", help="CSV file to read)")
     parser.add_argument("-v", "--verbose", help="Increase output verbosity", type=int)
     parser.add_argument("-d", "--display_plots", help="Display Plots", action="store_true")
+    parser.add_argument("-b", "--batch", help="Batch Mode", action="store_true")
+
                         
     args = parser.parse_args()
 
     if args.verbose:
         print("verbose turned on")
         print(args.verbose)
+        Verbosity = args.verbose
 
     if args.display_plots:
         print("display_plots:")
         print(args.display_plots)
+
+
+    if args.display_plots:
+        print("batch:")
+        print(args.batch)
+        BatchMode = True
+
                    
 #     if args.csv_file:
 #         fname = args.csv_file
