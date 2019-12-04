@@ -40,6 +40,7 @@ import matplotlib.dates as md
 import matplotlib.ticker as ticker
 
 from PyQt5.QtWidgets import *
+import PyQt5.QtWidgets as QtWidgets
 from PyQt5.QtGui import QPalette, QIcon, QPixmap
 
 from PyQt5.QtCore import QDateTime, Qt, QTimer
@@ -245,12 +246,14 @@ class The_GUI(QDialog):
         HDF5 = self.checkBoxHFDF5.isChecked()
 
         mood = self.moodComboBox.currentText()
+        session_notes = self.notesTextEdit.toPlainText()
 
         
         global gui_dict      
-        gui_dict.update({'firstName': first_name,'lastName': last_name})
+#         gui_dict.update({'firstName': first_name,'lastName': last_name})
 
         gui_dict.update({'firstName': first_name,'lastName': last_name,
+                "session_notes": session_notes,
                 "checkBoxInteractive": interative_GUI, 
                 "checkBoxCoherence": coherence,
                 "checkBoxPowerBands": power_bands,
@@ -259,6 +262,8 @@ class The_GUI(QDialog):
                 "checkBox3D": plot_3D,
                 "checkBoxFilter": filter,
                 "checkBoxIntegrate": integrate,
+                "verbosityComboBox": verbosity,
+                "sample_rate_selComboBox": sample_rate_sel,
                 "checkBoxDB": DB,
                 "checkBoxHFDF5": HDF5,
                 "Mood": mood})
@@ -277,6 +282,8 @@ class The_GUI(QDialog):
 
     def createTopLeftGroupBox(self):
         self.topLeftGroupBox = QGroupBox("Select Options")
+
+        layout = QVBoxLayout()
 
         self.checkBoxInteractive = QCheckBox("Display Interactive Plots")
         self.checkBoxInteractive.setChecked(True)
@@ -318,8 +325,25 @@ class The_GUI(QDialog):
         self.checkBoxHFDF5.setChecked(False)
         self.checkBoxHFDF5.setEnabled(False)
  
-     
-        layout = QVBoxLayout()
+        self.labelSampleRate = QtWidgets.QLabel(self)
+        self.labelSampleRate.setText('Sample Rate')
+#         labelSampleRate.move(100, 200)
+
+        self.sample_rate_selComboBox = QComboBox()
+        self.sample_rate_selComboBox.addItems(['250 HZ', '0.5 HZ', '1.0 HZ', '2.0 HZ', '60 Sec'])
+        sample_rate_selLabel = QLabel("Mood")
+        sample_rate_selLabel.setBuddy(self.sample_rate_selComboBox)
+
+        self.labelVerbose = QtWidgets.QLabel(self)
+        self.labelVerbose.setText('Verbosity')
+#         labelVerbose.move(100, 350)
+
+        self.verbosityComboBox = QComboBox()
+        self.verbosityComboBox.addItems(['Quiet', 'Informative', 'Verbose', 'Debug'])
+        self.verbosityLabel = QLabel("Verbosity")
+        self.verbosityLabel.setBuddy(self.verbosityComboBox)
+
+
         layout.addWidget(self.checkBoxInteractive)
         layout.addWidget(self.checkBoxCoherence)
         layout.addWidget(self.checkBoxPowerBands)
@@ -329,27 +353,11 @@ class The_GUI(QDialog):
         layout.addWidget(self.checkBoxFilter)
         layout.addWidget(self.checkBoxIntegrate)
         layout.addWidget(self.checkBoxDB)
-        layout.addWidget(self.checkBoxHFDF5)
-        
-
-        self.verbosityComboBox = QComboBox()
-        self.verbosityComboBox.addItems(['Quiet', 'Informative', 'Verbose', 'Debug'])
-        verbosityLabel = QLabel("Verbosity")
-        verbosityLabel.setBuddy(self.verbosityComboBox)
-        layout.addWidget(self.verbosityComboBox)
-
-        
-        self.sample_rate_selComboBox = QComboBox()
-        self.sample_rate_selComboBox.addItems(['250 HZ', '0.5 HZ', '1.0 HZ', '2.0 HZ', '60 Sec'])
-        sample_rate_selLabel = QLabel("Mood")
-        sample_rate_selLabel.setBuddy(self.sample_rate_selComboBox)
+        layout.addWidget(self.checkBoxHFDF5)        
+        layout.addWidget(self.labelSampleRate)
         layout.addWidget(self.sample_rate_selComboBox)
-
-        self.moodComboBox = QComboBox()
-        self.moodComboBox.addItems(['Calm', 'Awake', 'Excited', 'Stressed', 'Sleepy'])
-        moodLabel = QLabel("Mood")
-        moodLabel.setBuddy(self.moodComboBox)
-        layout.addWidget(self.moodComboBox)
+        layout.addWidget(self.labelVerbose)
+        layout.addWidget(self.verbosityComboBox)
 
         layout.addStretch(1)
         self.topLeftGroupBox.setLayout(layout)    
@@ -359,30 +367,49 @@ class The_GUI(QDialog):
     def createTopRightGroupBox(self):
         self.topRightGroupBox = QGroupBox("Meditation Session Details")
 
+        layout = QGridLayout()
+
 #         linePasswordEdit = QLineEdit('Enter a Password')
 #         linePasswordEdit.setEchoMode(QLineEdit.Password)
 
         self.lineFirstNameEdit = QLineEdit(first_name)
-#         self.lineFirstNameEdit = QLineEdit('First Name')
         self.lineFirstNameEdit.setEchoMode(QLineEdit.Normal)
+        
         self.lineLastNameEdit = QLineEdit(last_name)
-#         self.lineLastNameEdit = QLineEdit('Last Name')
         self.lineLastNameEdit.setEchoMode(QLineEdit.Normal)
 
         self.dateTimeEdit = QDateTimeEdit(self.topRightGroupBox)
         self.dateTimeEdit.setDateTime(QDateTime.currentDateTime())
 
-        layout = QGridLayout()
-        layout.addWidget(self.lineFirstNameEdit, 1, 0, 1, 2)
-        layout.addWidget(self.lineLastNameEdit, 2, 0, 1, 2)
+        self.moodComboBox = QComboBox()
+        self.moodComboBox.addItems(['Calm', 'Awake', 'Excited', 'Stressed', 'Sleepy'])
+        moodLabel = QLabel("Mood")
+        moodLabel.setBuddy(self.moodComboBox)
+
+#         labelB = QtWidgets.QLabel(windowExample)
+#         labelB.setPixmap(QtGui.QPixmap('python.jpg'))
+#         labelB.move(100, 40)
+
+
+        layout.addWidget(self.lineFirstNameEdit)
+        layout.addWidget(self.lineLastNameEdit)
+        layout.addWidget(self.moodComboBox)
+        layout.addWidget(self.dateTimeEdit)
+        layout.addWidget(self.moodComboBox)
+
+
+    
+#         layout.addWidget(self.lineFirstNameEdit, 1, 0, 1, 2)
+#         layout.addWidget(self.lineLastNameEdit, 2, 0, 1, 2)
 
 #         layout.addWidget(linePasswordEdit, 3, 0, 1, 2)
                 
 #         layout.addWidget(spinBox, 1, 0, 1, 2)
-        layout.addWidget(self.dateTimeEdit, 0, 0, 1, 2)
+#         layout.addWidget(self.dateTimeEdit, 0, 0, 1, 2)
 #         layout.addWidget(slider, 3, 0)
 #         layout.addWidget(scrollBar, 4, 0)
 #         layout.addWidget(dial, 3, 1, 2, 1)
+  
         layout.setRowStretch(5, 1)
         
     
@@ -403,20 +430,18 @@ class The_GUI(QDialog):
         tab1.setLayout(tab1hbox)
 
         tab2 = QWidget()
-        textEdit = QTextEdit()
 
-        textEdit.setPlainText("Add any details about your meditation session.  "
+        self.notesTextEdit = QTextEdit()
+        self.notesTextEdit.setPlainText("Add any details about your meditation session.  "
                               "For example, mood, place, music,\n" 
                               "have recently eaten, etc.\n")
 
         tab2hbox = QHBoxLayout()
         tab2hbox.setContentsMargins(5, 5, 5, 5)
-        tab2hbox.addWidget(textEdit)
+        tab2hbox.addWidget(self.notesTextEdit)
         tab2.setLayout(tab2hbox)
 
         self.bottomRightTabWidget.addTab(tab2, "Session Notes")
-
-
 
 
     def createBottomRightGroupBox(self):
@@ -553,7 +578,10 @@ def manage_session_data(init=False, session_date='', date_time=''):
             }
 
 
-        session_dict.update(EEG_Dict)
+        session_dict.update(gui_dict)
+
+    print("manage_session_data() - session_dict: ", session_dict)
+
 
     return(session_dict)
  
@@ -753,7 +781,7 @@ def plot_coherence(x, y, a, b, title, data_fname, plot_fname, date_time_now, ana
 
     create_analysis_parms_text(0.76, 1.01, plt_axes, analysis_parms)    
     basename = os.path.basename(data_fname)
-    create_file_date_text(-0.1, -0.12, -0.1, -0.065, plt_axes, basename, date_time_now)
+    create_file_date_text(-0.1, -0.1, -0.1, -0.06, plt_axes, basename, date_time_now)
          
         
     plt.savefig(plot_fname, dpi=300)
@@ -836,7 +864,9 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
     plot_color_scheme = MM_Colors
     plot_color_scheme = ABCS_Colors
     
-       
+    
+    
+        
     axs[0].plot(x_series, tp9, alpha=0.8, ms=pt_size, color=plot_color_scheme['RawTP9'], label='TP9')
     axs[0].plot(x_series, af7, alpha=0.8, ms=pt_size, color=plot_color_scheme['RawAF7'], label='AF7')
     axs[0].plot(x_series, af8, alpha=0.8, ms=pt_size, color=plot_color_scheme['RawAF8'], label='AF8')
@@ -863,7 +893,7 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
             transform=axs[0].transAxes, style='italic', fontsize=6, horizontalalignment='right',
             bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
 
-    create_analysis_parms_text(0.78, 1.1, axs[0], analysis_parms)    
+    create_analysis_parms_text(0.75, 1.1, axs[0], analysis_parms)    
             
 #     axs[0].annotate('Notable Data Point', xy=([data_stats[0], data_stats[1]]), 
 #                             xytext=([data_stats[2], data_stats[3]]),
@@ -1083,15 +1113,13 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
         transform=plt_axes.transAxes, fontsize=5, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 2})
 
-
-    plt.text(-0.1, 5.075, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+    plt.text(0.25, 5.075, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
             transform=plt_axes.transAxes, style='italic', fontsize=6, horizontalalignment='right',
             bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
 
-
-    create_analysis_parms_text(0.7, 5.075, plt_axes, analysis_parms)    
+    create_analysis_parms_text(0.8, 5.075, plt_axes, analysis_parms)    
     basename = os.path.basename(data_fname)
-    create_file_date_text(-0.12, -0.55, -0.1, -0.45, plt_axes, basename, date_time_now)
+    create_file_date_text(-0.1, -0.55, -0.1, -0.4, plt_axes, basename, date_time_now)
 
     plt.savefig(plot_fname, dpi=300)
 
@@ -1311,16 +1339,14 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
         transform=plt_axes.transAxes, fontsize=5, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 2})
 
-    plt.text(-0.1, 5.03, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+    plt.text(0.25, 5.08, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
             transform=plt_axes.transAxes, style='italic', fontsize=6, horizontalalignment='right',
             bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
 
-
-    create_analysis_parms_text(0.7, 5.08, plt_axes, analysis_parms)    
+    create_analysis_parms_text(0.8, 5.08, plt_axes, analysis_parms)    
     basename = os.path.basename(data_fname)
-    create_file_date_text(-0.12, -0.55, -0.1, -0.40, plt_axes, basename, date_time_now)
+    create_file_date_text(-0.11, -0.58, -0.1, -0.35, plt_axes, basename, date_time_now)
 
-    
     plt.savefig(plot_fname, dpi=300)
 
     if (args.display_plots or gui_dict['checkBoxInteractive']):
@@ -1522,14 +1548,14 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
 
     plt.axis('auto')
 
-    plt.text(-0.1, 5.03, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+    plt.text(0.15, 5.07, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
             transform=plt_axes.transAxes, style='italic', fontsize=6, horizontalalignment='right',
             bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
 
 
     create_analysis_parms_text(0.75, 5.07, plt_axes, analysis_parms)
     basename = os.path.basename(data_fname)
-    create_file_date_text(-0.12, -0.55, -0.1, -0.45, plt_axes, basename, date_time_now)
+    create_file_date_text(-0.1, -0.6, -0.1, -0.35, plt_axes, basename, date_time_now)
 
 
     plt.savefig(plot_fname, dpi=300)
@@ -1629,7 +1655,6 @@ def plot_mellow_concentration(mellow, concentration,
 
     fig.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
 
-     
     plt.text(0.01, 4.75, 
         'Mean: ' + "{:.3f}".format(mellow_mean) + 
         ' Std: ' + "{:.3f}".format(mellow_std) + 
@@ -1646,13 +1671,13 @@ def plot_mellow_concentration(mellow, concentration,
         transform=plt_axes.transAxes, fontsize=5, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 2})
  
-    plt.text(0.175, 2.03, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+    plt.text(0.175, 2.05, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
         transform=plt_axes.transAxes, style='italic', fontsize=6, horizontalalignment='right',
         bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
 
     basename = os.path.basename(data_fname)
-    create_file_date_text(-0., -0., -0., -0., plt_axes, basename, date_time_now)
-    create_analysis_parms_text(0.7, 2.07, plt_axes, analysis_parms)
+    create_file_date_text(0.1, -0., 0.1, -0., plt_axes, basename, date_time_now)
+    create_analysis_parms_text(0.75, 2.0, plt_axes, analysis_parms)
 
        
 #     create_analysis_parms_text(0.7, 5.07, plt_axes, analysis_parms)    
@@ -1756,12 +1781,12 @@ def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_n
     plt.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
 #     plt.title(title)
        
-    plt.text(-0.1, 6.03, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+    plt.text(0.175, 6.12, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
         transform=plt_axes.transAxes, style='italic', fontsize=6, horizontalalignment='right',
         bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
 
     basename = os.path.basename(data_fname)
-    create_file_date_text(-0.1, -0.45, -0.1, -0.55, plt_axes, basename, date_time_now)
+    create_file_date_text(-0.1, -0.6, -0.1, -0.4, plt_axes, basename, date_time_now)
     create_analysis_parms_text(0.7, 6.07, plt_axes, analysis_parms)
 
     plt.savefig(plot_fname, dpi=300)
@@ -1807,7 +1832,7 @@ def create_analysis_parms_text(x, y, plt_axes, analysis_parms):
 
 
    plt.text(x, y, 
-        'Sample Time: ' + "{:.2f}".format(analysis_parms['sample_time_min']) +
+        'Sample Time:\n' + "{:.2f}".format(analysis_parms['sample_time_min']) +
         ' (minutes) ' + "{:.2f}".format(analysis_parms['sample_time_sec']) + " (seconds)" + 
         '\nSample Length: ' + "{:d}".format(analysis_parms['sample_length']),
         style='italic', transform=plt_axes.transAxes, fontsize=6, 
@@ -2076,8 +2101,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
     if (gui_dict['checkBoxMellowConcentration']):
             
         mc_df = pd.DataFrame(muse_EEG_data, columns=['Mellow', 'Concentration'])    
-        print("generate_plots() -  muse_EEG_data.keys(): ", muse_EEG_data.keys())
-#         print("generate_plots() -  mc_df.keys(): ", mc_df.keys())
+#         print("generate_plots() -  muse_EEG_data.keys(): ", muse_EEG_data.keys())
 
 
         if 'Mellow' in muse_EEG_data.keys(): 
@@ -2139,7 +2163,6 @@ def main(date_time_now):
 #     print("main() - data_dir: ", data_dir)
 
 
-
     app = QApplication(sys.argv)
     gui = The_GUI()
     gui.show()
@@ -2152,7 +2175,9 @@ def main(date_time_now):
 
 #     sleep(3)
     
-#     print("main() - gui_dict: ", gui_dict)
+    print("main() - GUI_status: ", GUI_status)
+    print("main() - gui_dict: ", gui_dict)
+
 
 #     print("main() - MM_CVS_fname: ", MM_CVS_fname)
 #     print("main() - MM_CVS_fname: ", MM_CVS_fname)
