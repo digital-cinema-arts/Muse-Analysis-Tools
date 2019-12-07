@@ -36,7 +36,7 @@ import matplotlib
 # matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 # from matplotlib import cm
-import matplotlib.dates as md
+# import matplotlib.dates as md
 import matplotlib.ticker as ticker
 
 from PyQt5.QtWidgets import *
@@ -179,7 +179,10 @@ class The_GUI(QDialog):
 
                
         self.setWindowTitle("Meditation Session Details")
+        
 #         self.changeStyle('macintosh')
+#         self.setStyleSheet("QGroupBox { background-color: \
+#                 rgb(255, 255, 255); border: 2px solid rgb(100, 50, 200); }")
 
         QApplication.setStyle(QStyleFactory.create('macintosh'))
 
@@ -248,8 +251,8 @@ class The_GUI(QDialog):
         mood = self.moodComboBox.currentText()
         session_notes = self.notesTextEdit.toPlainText()
 
-        
         global gui_dict      
+
 #         gui_dict.update({'firstName': first_name,'lastName': last_name})
 
         gui_dict.update({'firstName': first_name,'lastName': last_name,
@@ -268,14 +271,25 @@ class The_GUI(QDialog):
                 "checkBoxHFDF5": HDF5,
                 "Mood": mood})
 
+        print("plot_button_clicked(): gui_dict ", gui_dict)
+
+        if gui_dict['verbosityComboBox'] == 'Quiet':
+            Verbosity = 0
+        if gui_dict['verbosityComboBox'] == 'Informative':
+            Verbosity = 1
+        if gui_dict['verbosityComboBox'] == 'Verbose':
+            Verbosity = 2
+        if gui_dict['verbosityComboBox'] == 'Debug':
+            Verbosity = 3
+
+#         if gui_dict['verbosityComboBox'] > 1:
         if Verbosity > 1:
             print("plot_button_clicked(): gui_dict ", gui_dict)
 
-#         self.accept()
-        self.close()
-
-#         alert.show()
-#         alert.exec_()
+        
+        self.accept()
+        
+#         self.close()
 
          
          
@@ -311,7 +325,11 @@ class The_GUI(QDialog):
 
         self.checkBoxFilter = QCheckBox("Filter Data")
         self.checkBoxFilter.setChecked(False)
-        self.checkBoxFilter.setEnabled(False)
+        self.checkBoxFilter.setEnabled(True)
+
+        self.checkBoxResample = QCheckBox("Resample Data")
+        self.checkBoxResample.setChecked(False)
+        self.checkBoxResample.setEnabled(True)
 
         self.checkBoxIntegrate = QCheckBox("Integrate Data")
         self.checkBoxIntegrate.setChecked(False)
@@ -326,22 +344,28 @@ class The_GUI(QDialog):
         self.checkBoxHFDF5.setEnabled(False)
  
         self.labelSampleRate = QtWidgets.QLabel(self)
-        self.labelSampleRate.setText('Sample Rate')
+        self.labelSampleRate.setText('Select Sample Rate')
 #         labelSampleRate.move(100, 200)
 
         self.sample_rate_selComboBox = QComboBox()
-        self.sample_rate_selComboBox.addItems(['250 HZ', '0.5 HZ', '1.0 HZ', '2.0 HZ', '60 Sec'])
-        sample_rate_selLabel = QLabel("Mood")
-        sample_rate_selLabel.setBuddy(self.sample_rate_selComboBox)
+        self.sample_rate_selComboBox.addItems(['250 HZ', '0.5 HZ', '1.0 HZ'])
+        
+#         self.sample_rate_selComboBox.addItems(['250 HZ', '0.5 HZ', '1.0 HZ', '2.0 HZ', '60 Sec'])
+#         sample_rate_selLabel = QLabel("Sample Rate Label")
+#         sample_rate_selLabel.setBuddy(self.sample_rate_selComboBox)
 
-        self.labelVerbose = QtWidgets.QLabel(self)
-        self.labelVerbose.setText('Verbosity')
+#         self.labelVerbose = QtWidgets.QLabel(self)
+#         self.labelVerbose.setText('Verbosity')
 #         labelVerbose.move(100, 350)
 
-        self.verbosityComboBox = QComboBox()
-        self.verbosityComboBox.addItems(['Quiet', 'Informative', 'Verbose', 'Debug'])
-        self.verbosityLabel = QLabel("Verbosity")
-        self.verbosityLabel.setBuddy(self.verbosityComboBox)
+
+#         self.radioButton1 = QRadioButton("Quiet")
+#         self.radioButton2 = QRadioButton("Informative")
+#         self.radioButton3 = QRadioButton("Verbose")
+#         self.radioButton4 = QRadioButton("Debug")
+#         self.radioButton1.setChecked(True)
+        
+#         verbosityLabel.setBuddy(self.radioButton1)
 
 
         layout.addWidget(self.checkBoxInteractive)
@@ -351,13 +375,20 @@ class The_GUI(QDialog):
         layout.addWidget(self.checkBoxAccelGyro)
         layout.addWidget(self.checkBox3D)
         layout.addWidget(self.checkBoxFilter)
+        layout.addWidget(self.checkBoxResample)
+
         layout.addWidget(self.checkBoxIntegrate)
         layout.addWidget(self.checkBoxDB)
         layout.addWidget(self.checkBoxHFDF5)        
         layout.addWidget(self.labelSampleRate)
         layout.addWidget(self.sample_rate_selComboBox)
-        layout.addWidget(self.labelVerbose)
-        layout.addWidget(self.verbosityComboBox)
+
+#         layout.addWidget(self.verbosityLabel)
+#         layout.addWidget(self.radioButton1)
+#         layout.addWidget(self.radioButton2)
+#         layout.addWidget(self.radioButton2)
+#         layout.addWidget(self.radioButton3)
+
 
         layout.addStretch(1)
         self.topLeftGroupBox.setLayout(layout)    
@@ -383,22 +414,35 @@ class The_GUI(QDialog):
 
         self.moodComboBox = QComboBox()
         self.moodComboBox.addItems(['Calm', 'Awake', 'Excited', 'Stressed', 'Sleepy'])
+        
         moodLabel = QLabel("Mood")
-        moodLabel.setBuddy(self.moodComboBox)
+#         moodLabel.setBuddy(self.moodComboBox)
+
+#         self.moodLabel = QtWidgets.QLabel(self)
+#         self.moodLabel.setText('Mood')
+
 
 #         labelB = QtWidgets.QLabel(windowExample)
 #         labelB.setPixmap(QtGui.QPixmap('python.jpg'))
 #         labelB.move(100, 40)
 
 
+        self.notesTextEdit = QTextEdit()
+        self.notesTextEdit.setPlainText("Add any details about your meditation session.  "
+                              "For example, mood, place, music,\n" 
+                              "have recently eaten, etc.\n")
+
+
+
         layout.addWidget(self.lineFirstNameEdit)
         layout.addWidget(self.lineLastNameEdit)
-        layout.addWidget(self.moodComboBox)
         layout.addWidget(self.dateTimeEdit)
+#         layout.addWidget(self.moodLabel)
+        layout.addWidget(moodLabel)
         layout.addWidget(self.moodComboBox)
+        layout.addWidget(self.notesTextEdit)
 
-
-    
+   
 #         layout.addWidget(self.lineFirstNameEdit, 1, 0, 1, 2)
 #         layout.addWidget(self.lineLastNameEdit, 2, 0, 1, 2)
 
@@ -410,8 +454,10 @@ class The_GUI(QDialog):
 #         layout.addWidget(scrollBar, 4, 0)
 #         layout.addWidget(dial, 3, 1, 2, 1)
   
-        layout.setRowStretch(5, 1)
+#         layout.setRowStretch(5, 1)
         
+    
+    
     
         self.topRightGroupBox.setLayout(layout)
 
@@ -419,7 +465,8 @@ class The_GUI(QDialog):
 
     def createBottomLeftTabWidget(self):
         self.bottomRightTabWidget = QTabWidget()
-        self.bottomRightTabWidget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Ignored)
+
+#         self.bottomRightTabWidget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Ignored)
 
         tab1 = QWidget()
         tableWidget = QTableWidget(10, 10)
@@ -431,17 +478,19 @@ class The_GUI(QDialog):
 
         tab2 = QWidget()
 
-        self.notesTextEdit = QTextEdit()
-        self.notesTextEdit.setPlainText("Add any details about your meditation session.  "
-                              "For example, mood, place, music,\n" 
-                              "have recently eaten, etc.\n")
+  #       self.notesTextEdit = QTextEdit()
+#         self.notesTextEdit.setPlainText("Add any details about your meditation session.  "
+#                               "For example, mood, place, music,\n" 
+#                               "have recently eaten, etc.\n")
 
         tab2hbox = QHBoxLayout()
         tab2hbox.setContentsMargins(5, 5, 5, 5)
-        tab2hbox.addWidget(self.notesTextEdit)
+#         tab2hbox.addWidget(self.notesTextEdit)
         tab2.setLayout(tab2hbox)
 
         self.bottomRightTabWidget.addTab(tab2, "Session Notes")
+
+
 
 
     def createBottomRightGroupBox(self):
@@ -456,14 +505,24 @@ class The_GUI(QDialog):
 
         self.bottomLeftGroupBox = QGroupBox("Create Plots")
 
-        l1 = QLabel(self)
-        l1.setText("Choose File:")
-        l1.setAlignment(Qt.AlignCenter)
+
+        self.verbosityComboBox = QComboBox()
+        self.verbosityComboBox.addItems(['Quiet', 'Informative', 'Verbose', 'Debug'])
+        self.verbosityLabel = QtWidgets.QLabel(self)
+        self.verbosityLabel.setText('Set Verbosity')
+#         self.verbosityLabel.setBuddy(self.verbosityComboBox)
+
+
+        labelChooseFile = QLabel(self)
+        labelChooseFile.setText("Choose File:")
+        labelChooseFile.setAlignment(Qt.AlignCenter)
 
         layout = QVBoxLayout()
-        layout.addWidget(l1)
+        layout.addWidget(labelChooseFile)
         layout.addWidget(filePushButton)
         layout.addWidget(plotPushButton)
+        layout.addWidget(self.verbosityLabel)
+        layout.addWidget(self.verbosityComboBox)
 
         layout.addStretch(1)
         self.bottomLeftGroupBox.setLayout(layout)
@@ -620,10 +679,19 @@ def read_eeg_data(fname, date_time_now):
 
     muse_EEG_data = pd.read_csv(fname, verbose=Verbosity)
 
+    num_cols = len(muse_EEG_data.columns)
+    print("read_eeg_data(): num_cols: ", num_cols)
+    print("read_eeg_data(): muse_EEG_data.columns: ", muse_EEG_data.columns)
+
 
     time_df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp'])    
     if Verbosity > 1:
         print("read_eeg_data(): Session Date: ", time_df['TimeStamp'][0])
+
+    print("read_eeg_data() - muse_EEG_data.describe(): ", muse_EEG_data.describe())   
+    
+    pause_and_prompt(1, "Data successfuly read")
+
 
     raw_df = pd.DataFrame(muse_EEG_data, 
             columns=['RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
@@ -638,6 +706,20 @@ def read_eeg_data(fname, date_time_now):
     gamma_df = pd.DataFrame(muse_EEG_data, 
             columns=['Gamma_TP9', 'Gamma_AF7', 'Gamma_AF8', 'Gamma_TP10'])
     
+
+    elements_df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp', 'Elements'])
+    print("read_eeg_data() - Elements.describe(): ", elements_df.describe())   
+    print("read_eeg_data() - elements_df.count(): ", elements_df.count())
+
+#     sys.exit()
+
+     
+    elements_df['Elements'] = elements_df.Elements.astype(str)
+
+#     for index, row in elements_df.iterrows():
+#         if row['Elements'] != 'nan':
+#             print(row['TimeStamp'])
+#             print(row['Elements'])
 
 
     for temp_df in (raw_df, delta_df, theta_df, alpha_df, beta_df, gamma_df):
@@ -665,9 +747,9 @@ def read_eeg_data(fname, date_time_now):
                         "sample_length":sample_length, "sample_time_sec":sample_time_sec, 
                         "sample_time_min":sample_time_min}
             }
- 
-            
-    session_dict = manage_session_data(init=True, session_date=str(time_df['TimeStamp'][0]), date_time=date_time_now)
+             
+    session_dict = manage_session_data(init=True, 
+                    session_date=str(time_df['TimeStamp'][0]), date_time=date_time_now)
     session_dict.update(EEG_Dict)
     session_dict.update(parms_dict)
 
@@ -819,6 +901,9 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
  
 #     print('plot_sensor_data() x_series: ', x_series)
 
+    print('plot_sensor_data() - DEBUG - A out to create figure/subplots')
+
+
     fig, axs = plt.subplots(nrows=5, num=fig_num, figsize=FIGURE_SIZE, 
                     dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=False, 
                         gridspec_kw={'hspace': 0.25}, tight_layout=False)
@@ -837,7 +922,8 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
     plt.rcParams.update(params)
 
 #     plt.title("EEG Data")
-                
+            
+
     plt_axes = plt.gca()
 
 
@@ -865,12 +951,17 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
     plot_color_scheme = ABCS_Colors
     
     
+    print('plot_sensor_data() DEBUG - About to plot axes')
     
         
-    axs[0].plot(x_series, tp9, alpha=0.8, ms=pt_size, color=plot_color_scheme['RawTP9'], label='TP9')
-    axs[0].plot(x_series, af7, alpha=0.8, ms=pt_size, color=plot_color_scheme['RawAF7'], label='AF7')
-    axs[0].plot(x_series, af8, alpha=0.8, ms=pt_size, color=plot_color_scheme['RawAF8'], label='AF8')
-    axs[0].plot(x_series, tp10, alpha=0.8, ms=pt_size, color=plot_color_scheme['RawTP10'], label='TP10')
+    axs[0].plot(x_series, tp9, alpha=0.8, ms=pt_size, 
+                color=plot_color_scheme['RawTP9'], label='TP9')
+    axs[0].plot(x_series, af7, alpha=0.8, ms=pt_size, 
+                color=plot_color_scheme['RawAF7'], label='AF7')
+    axs[0].plot(x_series, af8, alpha=0.8, ms=pt_size, 
+                color=plot_color_scheme['RawAF8'], label='AF8')
+    axs[0].plot(x_series, tp10, alpha=0.8, ms=pt_size, 
+                color=plot_color_scheme['RawTP10'], label='TP10')
   
     axs[0].xaxis.set_major_locator(ticker.MultipleLocator(SAMPLING_RATE))
     axs[0].xaxis.set_minor_locator(ticker.MultipleLocator(SAMPLING_RATE/10))
@@ -2170,15 +2261,17 @@ def main(date_time_now):
     GUI_status = app.exec_() 
 #     print("main() - GUI_status: ", GUI_status)
 
-    app.closeAllWindows()
-    app.exit()
+#     app.closeAllWindows()
+#     app.exit()
 
 #     sleep(3)
     
     print("main() - GUI_status: ", GUI_status)
     print("main() - gui_dict: ", gui_dict)
 
-
+    del app
+    del gui
+    
 #     print("main() - MM_CVS_fname: ", MM_CVS_fname)
 #     print("main() - MM_CVS_fname: ", MM_CVS_fname)
 
@@ -2244,8 +2337,21 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
     parser.add_argument("-v", "--verbose", help="Increase output verbosity", type=int)
     parser.add_argument("-d", "--display_plots", help="Display Plots", action="store_true")
     parser.add_argument("-b", "--batch", help="Batch Mode", action="store_true")
-
-                        
+    parser.add_argument("-p", "--power", help="Plot Power Bands", action="store_true")
+    parser.add_argument("-e", "--eeg", help="Plot EEG Data", action="store_true")
+    parser.add_argument("-sr", "--sample_rate", 
+            help="Sample Rate: 250 HZ, 0.5 HZ, 1.0 HZ, 2.0 HZ, 60 Sec", action="store_true")
+    parser.add_argument("--plot_3D", help="3D Display Plots", action="store_true")
+    parser.add_argument("-i", "--integrate", help="Integrate EEG Data", action="store_true")
+    parser.add_argument("-s", "--step_size", help="Integration Step Size", type=int)
+    parser.add_argument("-ps", "--power_spectrum", help="Analyze Spectrum", action="store_true")
+    parser.add_argument("-f", "--filter_data", help="Filter EEG Data", action="store_true")
+    parser.add_argument("-lc", "--lowcut", help="Filter Low Cuttoff Frequency",  type=float)
+    parser.add_argument("-hc", "--highcut", help="Filter High Cuttoff Frequency", type=float)
+    parser.add_argument("-o", "--filter_order", help="Filter Order", type=int)
+    parser.add_argument("-l", "--logging_level", 
+                    help="Logging verbosity: 1 = info, 2 = warning, 2 = debug", type=int)    
+                                        
     args = parser.parse_args()
 
     if args.verbose:
@@ -2280,6 +2386,6 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
     main(date_time_now)
 
 
-#     sys.exit(0)
+    sys.exit(0)
 
 
