@@ -57,7 +57,11 @@ Options:
 
 $ analyze_mind_monitor_data.py -h 
  
-usage: analyze_mind_monitor_data.py [-h] [-c CSV_FILE] [-v VERBOSE] [-d]
+usage: analyze_mind_monitor_data.py [-h] [-c CSV_FILE] [-v VERBOSE] [-d] [-b]
+                                    [-p] [-e] [-sr] [--plot_3D] [-i]
+                                    [-s STEP_SIZE] [-ps] [-f] [-lc LOWCUT]
+                                    [-hc HIGHCUT] [-o FILTER_ORDER]
+                                    [-l LOGGING_LEVEL]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -66,6 +70,26 @@ optional arguments:
   -v VERBOSE, --verbose VERBOSE
                         Increase output verbosity
   -d, --display_plots   Display Plots
+  -b, --batch           Batch Mode
+  -p, --power           Plot Power Bands
+  -e, --eeg             Plot EEG Data
+  -sr, --sample_rate    Sample Rate: 250 HZ, 0.5 HZ, 1.0 HZ, 2.0 HZ, 60 Sec
+  --plot_3D             3D Display Plots
+  -i, --integrate       Integrate EEG Data
+  -s STEP_SIZE, --step_size STEP_SIZE
+                        Integration Step Size
+  -ps, --power_spectrum
+                        Analyze Spectrum
+  -f, --filter_data     Filter EEG Data
+  -lc LOWCUT, --lowcut LOWCUT
+                        Filter Low Cuttoff Frequency
+  -hc HIGHCUT, --highcut HIGHCUT
+                        Filter High Cuttoff Frequency
+  -o FILTER_ORDER, --filter_order FILTER_ORDER
+                        Filter Order
+  -l LOGGING_LEVEL, --logging_level LOGGING_LEVEL
+                        Logging verbosity: 1 = info, 2 = warning, 2 = debug
+Tethys:muse_monitor_recordings dperi$ 
   ~~~~
 
 
