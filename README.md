@@ -89,7 +89,7 @@ optional arguments:
                         Filter Order
   -l LOGGING_LEVEL, --logging_level LOGGING_LEVEL
                         Logging verbosity: 1 = info, 2 = warning, 2 = debug
-Tethys:muse_monitor_recordings dperi$ 
+
   ~~~~
 
 
