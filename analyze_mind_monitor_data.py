@@ -218,8 +218,8 @@ class The_GUI(QDialog):
          
     def plot_button_clicked(self):
 
-        alert = QMessageBox()
-        alert.setText('Plotting!')
+#         alert = QMessageBox()
+#         alert.setText('Plotting!')
 #     
 #         alert.setIcon(QMessageBox.Warning)
 #         alert.setText("Plotting Data!")
@@ -282,10 +282,8 @@ class The_GUI(QDialog):
         if gui_dict['verbosityComboBox'] == 'Debug':
             Verbosity = 3
 
-#         if gui_dict['verbosityComboBox'] > 1:
         if Verbosity > 1:
             print("plot_button_clicked(): gui_dict ", gui_dict)
-
         
         self.accept()
         
@@ -656,6 +654,36 @@ def read_eeg_data(fname, date_time_now):
     global EEG_Dict
 
 
+# Muse Direct CSV file format
+ 
+   
+# timestamps,
+# eeg_1,eeg_2,eeg_3,eeg_4,eeg_5,eeg_6,
+# acc_1,acc_2,acc_3,gyro_1,gyro_2,gyro_3,
+# batt_1,batt_2,batt_3,
+# drlref_1,drlref_2,
+# delta_absolute_1,delta_absolute_2,delta_absolute_3,delta_absolute_4,
+# theta_absolute_1,theta_absolute_2,theta_absolute_3,theta_absolute_4,
+# alpha_absolute_1,alpha_absolute_2,alpha_absolute_3,alpha_absolute_4,
+# beta_absolute_1,beta_absolute_2,beta_absolute_3,beta_absolute_4,
+# gamma_absolute_1,gamma_absolute_2,gamma_absolute_3,gamma_absolute_4,
+# delta_relative_1,delta_relative_2,delta_relative_3,delta_relative_4,
+# theta_relative_1,theta_relative_2,theta_relative_3,theta_relative_4,
+# alpha_relative_1,alpha_relative_2,alpha_relative_3,alpha_relative_4,
+# beta_relative_1,beta_relative_2,beta_relative_3,beta_relative_4,
+# gamma_relative_1,gamma_relative_2,gamma_relative_3,gamma_relative_4,
+# delta_session_score_1,delta_session_score_2,delta_session_score_3,delta_session_score_4,
+# theta_session_score_1,theta_session_score_2,theta_session_score_3,theta_session_score_4,
+# alpha_session_score_1,alpha_session_score_2,alpha_session_score_3,alpha_session_score_4,
+# beta_session_score_1,beta_session_score_2,beta_session_score_3,beta_session_score_4,
+# gamma_session_score_1,gamma_session_score_2,gamma_session_score_3,gamma_session_score_4,
+# blink,jaw_clench,
+# hsi_precision_1,hsi_precision_2,hsi_precision_3,hsi_precision_4,
+# note,recorder_info,config,device,
+# ppg_1,ppg_2,ppg_3
+
+
+
 # Mind Monitor CSV format:
 # TimeStamp,
 # Delta_TP9,Delta_AF7,Delta_AF8,Delta_TP10,
@@ -673,7 +701,7 @@ def read_eeg_data(fname, date_time_now):
 # Elements
 
 
-#     dateparse = lambda x: pd.datetime.strptime(x, '%Y-%m-%d %H:%M:%S')
+# dateparse = lambda x: pd.datetime.strptime(x, '%Y-%m-%d %H:%M:%S')
 # df = pd.read_csv(infile, parse_dates=['datetime'], date_parser=dateparse)
 
 
@@ -736,6 +764,8 @@ def read_eeg_data(fname, date_time_now):
 #         print("EEG_Dict: ", EEG_Dict)
 #         print("data_str.to_dict()", data_str.to_dict())
     
+
+
 
     sample_length = len(raw_df['RAW_AF7'])
     sample_time_sec = (sample_length/SAMPLING_RATE)
@@ -1019,7 +1049,8 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
     plt.close()
     print("Finished writing sensor data plot ")
     print(plot_fname)
-    print
+    print("\n")
+    
 
 
 
@@ -1066,7 +1097,7 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
     delta_min = np.min(np.nan_to_num(delta))
 
 
-    if Verbosity > 1:  
+    if Verbosity > 2:  
         print("gamma_mean: ", gamma_mean)
         print("gamma_std: ", gamma_std)
         print("gamma_max: ", gamma_max)
@@ -1264,7 +1295,7 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
     delta_min = np.min(np.nan_to_num(delta))
 
 
-    if Verbosity > 1:  
+    if Verbosity > 2:  
 
         print("gamma_mean: ", gamma_mean)
         print("gamma_std: ", gamma_std)
@@ -2261,16 +2292,17 @@ def main(date_time_now):
     GUI_status = app.exec_() 
 #     print("main() - GUI_status: ", GUI_status)
 
-#     app.closeAllWindows()
-#     app.exit()
+    app.closeAllWindows()
+    app.close()
+    app.exit()
 
 #     sleep(3)
     
     print("main() - GUI_status: ", GUI_status)
     print("main() - gui_dict: ", gui_dict)
 
-    del app
-    del gui
+#     del app
+#     del gui
     
 #     print("main() - MM_CVS_fname: ", MM_CVS_fname)
 #     print("main() - MM_CVS_fname: ", MM_CVS_fname)
