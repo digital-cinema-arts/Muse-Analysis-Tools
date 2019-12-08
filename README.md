@@ -48,6 +48,13 @@ Notes:
 1) Output images and session data are created within the same directory that the CSV files live.  This will change in the future to allow the user to select the output directory.
 
 
+--------------------------------------------------------------------
+
+The ".ABCS_parms.rc" file.
+
+```
+{"First Name": "Debra", "Last Name": "Peri", "Data Dir": "/Volumes/Archive/muse_recordings/muse_monitor_recordings"}
+```
 
 --------------------------------------------------------------------
 
