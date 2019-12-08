@@ -33,6 +33,8 @@ from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
 import matplotlib
+matplotlib.use('Qt5Agg')
+
 # matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 # from matplotlib import cm
@@ -2292,8 +2294,9 @@ def main(date_time_now):
     GUI_status = app.exec_() 
 #     print("main() - GUI_status: ", GUI_status)
 
+    gui.close()
+
     app.closeAllWindows()
-    app.close()
     app.exit()
 
 #     sleep(3)
