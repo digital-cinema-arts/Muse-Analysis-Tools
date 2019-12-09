@@ -357,11 +357,11 @@ class The_GUI(QDialog):
 
         self.checkBoxFilter = QCheckBox("Filter Data")
         self.checkBoxFilter.setChecked(False)
-        self.checkBoxFilter.setEnabled(True)
+        self.checkBoxFilter.setEnabled(False)
 
         self.checkBoxResample = QCheckBox("Resample Data")
         self.checkBoxResample.setChecked(False)
-        self.checkBoxResample.setEnabled(True)
+        self.checkBoxResample.setEnabled(False)
 
         self.checkBoxMuseDirect = QCheckBox("Include Muse Direct Plots")
         self.checkBoxMuseDirect.setChecked(False)
@@ -566,11 +566,11 @@ class The_GUI(QDialog):
 
     def openFileNameDialog(self):
         options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
+#         options |= QFileDialog.DontUseNativeDialog
+        
         fileName, _ = QFileDialog.getOpenFileName(self,
-        "Select Mind Monitor CSV File", "","MM CSV files (*.csv)", options=options)
-#         "Select Mind Monitor CSV File", "","All Files (*);;MM CSV files (*.csv)", options=options)
-#         "QFileDialog.getOpenFileName()", "","All Files (*);;Python Files (*.py)", options=options)
+                        "Select Mind Monitor CSV File", "","MM CSV files (*.csv)", options=options)
+
         if fileName:
             print(fileName)
             
