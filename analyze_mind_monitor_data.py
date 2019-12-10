@@ -74,6 +74,7 @@ last_name = ""
 data_dir = ""
 
 # Constants
+VERSION_NUM = 0.1
 FIGURE_SIZE = (8, 6)
 PLOT_DPI = 100
 
@@ -104,7 +105,7 @@ MM_Colors = {
 
 # ABCS Colors
 ABCS_Colors = {
-'RawTP9': '#E27A59',
+'RawTP9': '#8459E2',
 'RawAF7': '#12A714',
 'RawAF8': '#3E40E0',
 'RawTP10':'#E2D659',
@@ -387,7 +388,7 @@ class The_GUI(QDialog):
         self.labelSampleRate.setText('Select Sample Rate')
         self.sample_rate_selComboBox = QComboBox()
         self.sample_rate_selComboBox.addItems(['250 HZ', '0.5 HZ', '1.0 HZ'])
-        self.sample_rate_selComboBox.setEnabled(False)
+        self.sample_rate_selComboBox.setEnabled(True)
  
         self.plotColorsComboBox = QComboBox()
         self.plotColorsComboBox.addItems(['ABCS Colors', 'Mind Monitor Colors'])
@@ -519,16 +520,15 @@ class The_GUI(QDialog):
 
     def createBottomRightGroupBox(self):
 
-        filePushButton = QPushButton("Select CSV File")
-        filePushButton.clicked.connect(self.file_button_clicked)
+        self.filePushButton = QPushButton("Select CSV File")
+        self.filePushButton.clicked.connect(self.file_button_clicked)
 #         filePushButton.setDefault(False)
 
-        plotPushButton = QPushButton("Create Plots")
-#         defaultPushButton.setDefault(True)
-        plotPushButton.clicked.connect(self.plot_button_clicked)
+        self.plotPushButton = QPushButton("Create Plots")
+        self.plotPushButton.setDefault(True)
+        self.plotPushButton.clicked.connect(self.plot_button_clicked)
 
         self.bottomLeftGroupBox = QGroupBox("Create Plots")
-
 
         self.verbosityComboBox = QComboBox()
         self.verbosityComboBox.addItems(['Quiet', 'Informative', 'Verbose', 'Debug'])
@@ -537,14 +537,14 @@ class The_GUI(QDialog):
 #         self.verbosityLabel.setBuddy(self.verbosityComboBox)
 
 
-        labelChooseFile = QLabel(self)
-        labelChooseFile.setText("Choose File:")
-        labelChooseFile.setAlignment(Qt.AlignCenter)
+        self.labelChooseFile = QLabel(self)
+        self.labelChooseFile.setText("Choose File:")
+        self.labelChooseFile.setAlignment(Qt.AlignCenter)
 
         layout = QVBoxLayout()
-        layout.addWidget(labelChooseFile)
-        layout.addWidget(filePushButton)
-        layout.addWidget(plotPushButton)
+        layout.addWidget(self.labelChooseFile)
+        layout.addWidget(self.filePushButton)
+        layout.addWidget(self.plotPushButton)
         layout.addWidget(self.verbosityLabel)
         layout.addWidget(self.verbosityComboBox)
 
@@ -566,7 +566,7 @@ class The_GUI(QDialog):
 
     def openFileNameDialog(self):
         options = QFileDialog.Options()
-#         options |= QFileDialog.DontUseNativeDialog
+        options |= QFileDialog.DontUseNativeDialog
         
         fileName, _ = QFileDialog.getOpenFileName(self,
                         "Select Mind Monitor CSV File", "","MM CSV files (*.csv)", options=options)
@@ -622,6 +622,8 @@ def manage_session_data(init=False, new_data={}, session_date='', date_time=''):
         # Fill in default values for now.  
         # (NOTE: Need to create DB interface)
         session_dict = {
+            'ABCS Info':{'Version':VERSION_NUM},
+            'Muse Info':{'Headband Version':'2016'},
             'Session_Data':{
             'session_date': session_date,
             'date': date_time,
@@ -832,8 +834,11 @@ def read_eeg_data(fname, date_time_now):
              
     session_dict = manage_session_data(init=True, 
                     session_date=str(time_df['TimeStamp'][0]), date_time=date_time_now)
-    session_dict.update(EEG_Dict)
-    session_dict.update(parms_dict)
+    session_dict.update({'EEG Data':EEG_Dict})
+    session_dict.update({'Parameters':parms_dict})
+
+#         session_dict.update({'GUI_Data':gui_dict})
+
 
     session_json = json.dumps(session_dict, sort_keys=True)
 #     print(session_json)
@@ -1014,7 +1019,7 @@ def plot_coherence(x, y, a, b, title, data_fname, plot_fname, date_time_now, ana
 #     fig = plt.figure(num=fig_num, figsize=(FIGURE_SIZE), dpi=PLOT_DPI, 
 #                              sharex=True, sharey=True, facecolor='w', edgecolor='k')
 
-    fig, axs = plt.subplots(nrows=1, num=fig_num, figsize=FIGURE_SIZE,
+    fig, axs = plt.subplots(nrows=1, num=fig_num, figsize=(6, 6),
         dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=True,
         gridspec_kw={'hspace': 0.25}, tight_layout=False)
         
@@ -1295,27 +1300,6 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
         transform=plt_axes.transAxes, fontsize=5, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 2})
 
-
-
-#     plt.text(0.01, 3.75, 
-#         'Mean: ' + "{:.3f}".format(beta_mean) + 
-#         ' Std: ' + "{:.3f}".format(beta_std) +
-#         '\nMin: ' + "{:.3f}".format(beta_min) +
-#         ' Max: ' + "{:.3f}".format(beta_max), style='italic', 
-#         transform=plt_axes.transAxes, fontsize=5, 
-#         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 2})
-
-
-
-
-
-
-
-
-
-
-
-
     
 #     plt.axis('tight')
 
@@ -1330,6 +1314,171 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
     print(plot_fname)
     print("\n")
     
+
+
+
+
+
+
+
+'''
+
+Plot the sensor data as a single plot
+
+'''
+
+def plot_sensor_data_single(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, date_time_now, 
+                        title, data_stats, analysis_parms, fig_num):
+
+    global session_dict
+    
+    print('plot_sensor_data_single() called')
+#     print('plot_sensor_data_single() data_stats: ', data_stats)
+
+    # Run the stats of the incoming data which is specific to each call to this function
+    tp9_mean = np.mean(np.nan_to_num(tp9))
+    tp9_std = np.std(np.nan_to_num(tp9))
+    tp9_max = np.max(np.nan_to_num(tp9))
+    tp9_min = np.min(np.nan_to_num(tp9))
+
+    af7_mean = np.mean(np.nan_to_num(af7))
+    af7_std = np.std(np.nan_to_num(af7))
+    af7_max = np.max(np.nan_to_num(af7))
+    af7_min = np.min(np.nan_to_num(af7))
+
+    af8_mean = np.mean(np.nan_to_num(af8))
+    af8_std = np.std(np.nan_to_num(af8))
+    af8_max = np.max(np.nan_to_num(af8))
+    af8_min = np.min(np.nan_to_num(af8))
+
+    tp10_mean = np.mean(np.nan_to_num(tp10))
+    tp10_std = np.std(np.nan_to_num(tp10))
+    tp10_max = np.max(np.nan_to_num(tp10))
+    tp10_min = np.min(np.nan_to_num(tp10))
+
+    if Verbosity > 2:  
+
+        print("tp9_mean: ", tp9_mean)
+        print("tp9_std: ", tp9_std)
+        print("tp9_max: ", tp9_max)
+        print("tp9_min: ", tp9_min)
+    
+        print("af7_mean: ", af7_mean)
+        print("af7_std: ", af7_std)
+        print("af7_max: ", af7_max)
+        print("af7_min: ", af7_min)
+
+        print("af8_mean: ", af8_mean)
+        print("af8_std: ", af8_std)
+        print("af8_max: ", af8_max)
+        print("af8_min: ", af8_min)
+
+        print("tp10_mean: ", tp10_mean)
+        print("tp10_std: ", tp10_std)
+        print("tp10_max: ", tp10_max)
+        print("tp10_min: ", tp10_min)
+
+   
+    t_len = len(timestamps)
+    
+    period = (1.0/Sampling_Rate)
+    x_series = np.arange(0, t_len * period, period)
+ 
+    fig, axs = plt.subplots(nrows=1, num=fig_num, figsize=FIGURE_SIZE, 
+                    dpi=PLOT_DPI, facecolor='w', edgecolor='k',
+                        gridspec_kw={'hspace': 0.25}, tight_layout=False)
+       
+    plt.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
+
+    plt.rcParams.update(PLOT_PARAMS)            
+    plt_axes = plt.gca()
+
+    data_min = np.min((data_stats[0], data_stats[2], data_stats[4], data_stats[6]))
+    data_max = np.max((data_stats[1], data_stats[3], data_stats[5], data_stats[7]))
+  
+    if Verbosity > 1:  
+        print('plot_sensor_data_single() data_stats: ', data_stats)
+        print('plot_sensor_data_single() data_min: ', data_min)
+        print('plot_sensor_data_single() data_max: ', data_max)
+
+    clip_padding = 100. 
+    y_limits = [data_min - clip_padding, data_max + clip_padding]
+
+    pt_size = 2
+
+    if (gui_dict['plotColorsComboBox'] == 'ABCS Colors'):
+        plot_color_scheme = ABCS_Colors
+    else:
+        plot_color_scheme = MM_Colors
+    
+            
+    axs.plot(x_series, tp9, alpha=0.8, ms=pt_size, marker='+',
+                color=plot_color_scheme['RawTP9'], label='TP9')                            
+    axs.plot(x_series, af7, alpha=0.8, ms=pt_size, marker='+',
+                color=plot_color_scheme['RawAF7'], label='AF7')
+    axs.plot(x_series, af8, alpha=0.8, ms=pt_size, marker='+',
+                color=plot_color_scheme['RawAF8'], label='AF8')
+    axs.plot(x_series, tp10, alpha=0.8, ms=pt_size, marker='+',
+                color=plot_color_scheme['RawTP10'], label='TP10')
+  
+    axs.xaxis.set_major_locator(ticker.AutoLocator())  
+    axs.xaxis.set_minor_locator(ticker.AutoMinorLocator())
+    axs.set_ylim(y_limits)
+                
+    axs.set(title=title, ylabel="Amp uV", xlabel="Time (Seconds)") 
+
+      
+#     axs.text(0.95, 0.025, '(All Sensor Data Combined)',
+#         verticalalignment='bottom', horizontalalignment='right',
+#         transform=axs[0].transAxes, color='green', fontsize=5) 
+#        
+#     axs.text(0.2, 1.1, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+#             transform=axs[0].transAxes, style='italic', fontsize=6, horizontalalignment='right',
+#             bbox={'facecolor':'blue', 'alpha':0.1, 'pad':4})
+
+#     create_analysis_parms_text(0.75, 1.1, axs, analysis_parms)    
+            
+#     axs[0].annotate('Notable Data Point', xy=([data_stats[0], data_stats[1]]), 
+#                             xytext=([data_stats[2], data_stats[3]]),
+#             arrowprops=dict(facecolor='black', shrink=0.01))
+                   
+    axs.grid(True)
+    axs.legend(loc='upper right')
+
+    basename = os.path.basename(data_fname)
+    create_file_date_text(-0.1, -0.7, -0.1, -0.4, axs, basename, date_time_now)
+
+
+#     axs[0].text(0.01, 0.01, 
+
+#     plt.text(0.01, 4.55, 
+#         'Mean: ' + "{:.3f}".format(tp9_mean) + 
+#         ' Std: ' + "{:.3f}".format(tp9_std) + 
+#         '\nMin: ' + "{:.3f}".format(tp9_min) +
+#         ' Max: ' + "{:.3f}".format(tp9_max), style='italic', 
+#         transform=plt_axes.transAxes, fontsize=5, 
+#         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 2})
+# 
+
+    plt.savefig(plot_fname, dpi=300)
+   
+    if (args.display_plots or gui_dict['checkBoxInteractive']):
+#     if args.display_plots:
+        plt.show()
+  
+    plt.close()
+    print("Finished writing sensor data single plot ")
+    print(plot_fname)
+    print("\n")
+    
+
+
+
+
+
+
+
+
 
 
 
@@ -2354,13 +2503,23 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
     
     if (gui_dict['checkBoxEEG']):
  
+        plot_sensor_data_single(df['TimeStamp'], df['RAW_TP9'], df['RAW_AF7'], 
+            df['RAW_AF8'], df['RAW_TP10'], data_fname, 
+            out_dirname + '/plots/22-ABCS_eeg_raw_single_' + date_time_now + '.png',
+            date_time_now,  "Raw EEG", data_stats, analysis_parms, 22)
+
         plot_sensor_data(df['TimeStamp'], df['RAW_TP9'], df['RAW_AF7'], 
             df['RAW_AF8'], df['RAW_TP10'], data_fname, 
             out_dirname + '/plots/20-ABCS_eeg_raw_' + date_time_now + '.png',
             date_time_now,  "Raw EEG", data_stats, analysis_parms, 20)
-
     
         smooth_sz = 25
+        plot_sensor_data_single(df['TimeStamp'], smooth_data(df['RAW_TP9'], smooth_sz), 
+            smooth_data(df['RAW_AF7'], smooth_sz), 
+            smooth_data(df['RAW_AF8'], smooth_sz), 
+            smooth_data(df['RAW_TP10'], smooth_sz), data_fname, 
+            out_dirname + '/plots/25-ABCS_eeg_smoothed_single_' + date_time_now + '.png',
+            date_time_now, "Smoothed EEG", data_stats, analysis_parms, 25)
 
         plot_sensor_data(df['TimeStamp'], smooth_data(df['RAW_TP9'], smooth_sz), 
             smooth_data(df['RAW_AF7'], smooth_sz), 
@@ -2741,8 +2900,19 @@ def main(date_time_now):
     if (gui_dict['checkBoxAutoReject']): 
         muse_EEG_data = auto_reject_EEG_data(muse_EEG_data)
     
-    
-    generate_plots(muse_EEG_data, MM_CVS_fname, date_time_now)
+  
+#     try:
+        
+        generate_plots(muse_EEG_data, MM_CVS_fname, date_time_now)
+ 
+   #  except (KeyboardInterrupt, SystemExit):
+#         raise
+#     except:
+#         # report error and proceed
+
+          
+#     generate_plots(muse_EEG_data, MM_CVS_fname, date_time_now)
+
 
 #     session_dict = manage_session_data(init=False)
 #     print(session_dict)
@@ -2817,8 +2987,31 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
 #         sys.exit(1)
 # 
 
+#     try:
+#         main()
+#     except KeyboardInterrupt:
+#         print('Interrupted')
+#         try:
+#             sys.exit(0)
+#         except SystemExit:
+#             os._exit(0)
+            
 
-    main(date_time_now)
+    try:
+        main(date_time_now)
+
+    except KeyboardInterrupt:
+            print('Interrupted')
+
+            try:
+                sys.exit(0)
+            except SystemExit:
+
+                print('Finished')
+                os._exit(0)
+            
+
+#     main(date_time_now)
 
 
     sys.exit(0)
