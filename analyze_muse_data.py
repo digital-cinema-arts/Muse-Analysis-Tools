@@ -2,7 +2,7 @@
 
 ''' 
 
-This code will analyze Mind Monitor CSV files and plot the results.
+This code will analyze Muse EEG headband CSV files and plot the results.
 
 
 '''
