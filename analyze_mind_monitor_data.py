@@ -52,6 +52,8 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
         QVBoxLayout, QWidget)
 
+import mysql.connector
+import sqlite3
 
 # Globals
 # Integrate_Step_Size = 4
@@ -668,9 +670,12 @@ def manage_session_data(init=False, new_data={}, session_date='', date_time=''):
                 }
             }
 
-        session_dict.update(gui_dict)
 
-#     print("manage_session_data() - session_dict: ", session_dict)
+        print("manage_session_data() - session_dict: ", session_dict)
+
+        session_dict.update({'GUI_Data':gui_dict})
+
+    print("manage_session_data() - session_dict: ", session_dict)
 
     return(session_dict)
  
