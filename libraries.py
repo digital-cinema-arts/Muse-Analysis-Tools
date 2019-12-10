@@ -2,9 +2,12 @@
 Temp file of all the libraries needed by the application.
 
 By running this test and getting no errors you'll know if there's libraries to install:
+
 > python libraries.py
 
+
 If you need to install any missing libraries you can, for example,  you can do so by using pip:
+
 > pip3 install scipy
 
 
