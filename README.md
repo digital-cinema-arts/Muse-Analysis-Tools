@@ -41,6 +41,9 @@ Usage:
 3) Select the options and CSV file you want to process.
 4) Make plots!
 
+*Important note on sampling rate:  Select "Continous" from the Mind Monitor recording interval option.
+
+
 
 --------------------------------------------------------------------
 
