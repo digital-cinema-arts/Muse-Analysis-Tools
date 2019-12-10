@@ -2898,26 +2898,13 @@ def main(date_time_now):
     
     
     if (gui_dict['checkBoxAutoReject']): 
+        if Verbosity > 2:
+            print("main() - Calling auto_reject_EEG_data()")
         muse_EEG_data = auto_reject_EEG_data(muse_EEG_data)
-    
-  
-#     try:
+
         
-        generate_plots(muse_EEG_data, MM_CVS_fname, date_time_now)
+    generate_plots(muse_EEG_data, MM_CVS_fname, date_time_now)
  
-   #  except (KeyboardInterrupt, SystemExit):
-#         raise
-#     except:
-#         # report error and proceed
-
-          
-#     generate_plots(muse_EEG_data, MM_CVS_fname, date_time_now)
-
-
-#     session_dict = manage_session_data(init=False)
-#     print(session_dict)
-      
-
 
 
 
