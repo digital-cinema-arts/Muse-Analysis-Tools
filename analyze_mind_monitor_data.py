@@ -384,8 +384,8 @@ class The_GUI(QDialog):
         self.checkBoxHFDF5.setChecked(False)
         self.checkBoxHFDF5.setEnabled(False)
  
-        self.labelSampleRate = QtWidgets.QLabel(self)
-        self.labelSampleRate.setText('Select Sample Rate')
+#         self.labelSampleRate = QtWidgets.QLabel(self)
+#         self.labelSampleRate.setText('Select Sample Rate')
         self.sample_rate_selComboBox = QComboBox()
         self.sample_rate_selComboBox.addItems(['250 HZ', '0.5 HZ', '1.0 HZ'])
         self.sample_rate_selComboBox.setEnabled(True)
@@ -410,8 +410,8 @@ class The_GUI(QDialog):
         layout.addWidget(self.checkBoxAutoReject)
         layout.addWidget(self.checkBoxDB)
         layout.addWidget(self.checkBoxHFDF5)        
-        layout.addWidget(self.labelSampleRate)
-        layout.addWidget(self.sample_rate_selComboBox)
+#         layout.addWidget(self.labelSampleRate)
+#         layout.addWidget(self.sample_rate_selComboBox)
         layout.addWidget(self.plotColorsLabel)
         layout.addWidget(self.plotColorsComboBox)
 
@@ -1019,7 +1019,7 @@ def plot_coherence(x, y, a, b, title, data_fname, plot_fname, date_time_now, ana
 #     fig = plt.figure(num=fig_num, figsize=(FIGURE_SIZE), dpi=PLOT_DPI, 
 #                              sharex=True, sharey=True, facecolor='w', edgecolor='k')
 
-    fig, axs = plt.subplots(nrows=1, num=fig_num, figsize=(6, 6),
+    fig, axs = plt.subplots(nrows=1, num=fig_num, figsize=FIGURE_SIZE,
         dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=True,
         gridspec_kw={'hspace': 0.25}, tight_layout=False)
         
