@@ -669,10 +669,7 @@ def manage_session_data(init=False, new_data={}, session_date='', date_time=''):
             }
 
 
-#         print("manage_session_data() - session_dict: ", session_dict)
-
         session_dict.update({'GUI_Data':gui_dict})
-
 #     print("manage_session_data() - session_dict: ", session_dict)
 
     return(session_dict)
@@ -691,7 +688,7 @@ def connct_to_DB():
     import sqlite3
 
 
-   return True
+    return True
    
    
    
