@@ -14,22 +14,18 @@ from time import time, sleep
 import datetime as dt
 
 import numpy as np
-from scipy import fftpack
+from scipy import fftpack, interpolate
 import scipy.signal as signal
 import math
 import bitstring
 import pandas as pd
 import os
-# from sys import platform
 from time import time, sleep, strftime, gmtime
 import sys
 import csv
 import argparse
 import math
-# import logging
-# from binascii import hexlify
-# import timeit
-# import io
+from tqdm import tqdm
 from progress.bar import Bar, IncrementalBar
 import json
 from pathlib import Path
@@ -39,20 +35,18 @@ from scipy.signal import butter, lfilter
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
-# from mpl_toolkits.mplot3d import Axes3D
-# import matplotlib.patches as mpatches
 import matplotlib
+matplotlib.use('Qt5Agg')
+
 # matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 # from matplotlib import cm
-import matplotlib.dates as md
+# import matplotlib.dates as md
 import matplotlib.ticker as ticker
 
-    # from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QPushButton, QVBoxLayout
 from PyQt5.QtWidgets import *
-# from PyQt5.QtCore import Qt
+import PyQt5.QtWidgets as QtWidgets
 from PyQt5.QtGui import QPalette, QIcon, QPixmap
-# from PyQt5.QtWidgets import QApplication, QPushButton
 
 from PyQt5.QtCore import QDateTime, Qt, QTimer
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
@@ -60,5 +54,6 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
         QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
         QVBoxLayout, QWidget)
+
 
 
