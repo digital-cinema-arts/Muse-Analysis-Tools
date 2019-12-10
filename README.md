@@ -44,6 +44,9 @@ Usage:
 *Important note on sampling rate:  Select "Continous" from the Mind Monitor recording interval option.
 
 
+![picture alt](https://github.com/digital-cinema-arts/Muse-Analysis-Tools/blob/master/MM-recording-interval.png "Mind Monitor recording interval option")
+
+
 
 --------------------------------------------------------------------
 
