@@ -558,9 +558,9 @@ class The_GUI(QDialog):
         layout = QVBoxLayout()
         layout.addWidget(self.labelChooseFile)
         layout.addWidget(self.filePushButton)
-        layout.addWidget(self.plotPushButton)
         layout.addWidget(self.verbosityLabel)
         layout.addWidget(self.verbosityComboBox)
+        layout.addWidget(self.plotPushButton)
 
         layout.addStretch(1)
         self.bottomLeftGroupBox.setLayout(layout)
@@ -2206,8 +2206,7 @@ def plot_mellow_concentration(mellow, concentration,
                 lowcut, highcut, fs, point_sz, title, 
                 data_fname, plot_fname, date_time_now, analysis_parms, fig_num):
 
-
-    plot_alpha = 0.8
+    plot_alpha = 0.9
 
     print('plot_mellow_concentration() called')
 
@@ -2245,8 +2244,6 @@ def plot_mellow_concentration(mellow, concentration,
 
     fig.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
 
-#     fig.subplots_adjust(top=0.85)
-
     plt_axes = plt.gca()
 #     plt.axis('auto')
 
@@ -2257,7 +2254,6 @@ def plot_mellow_concentration(mellow, concentration,
 #     print("ymin: ", ymin)
 #     print("ymax: ", ymax)
 
-
     plt_axes.set_ylim(0, 100)
 
     t_len = len(mellow)
@@ -2265,8 +2261,6 @@ def plot_mellow_concentration(mellow, concentration,
     x_series = np.arange(0, t_len * period, period)
 
     axs[0].set(title=title) 
-#     axs[0].xaxis.set_major_locator(ticker.MultipleLocator(Sampling_Rate))
-#     axs[0].xaxis.set_minor_locator(ticker.MultipleLocator(Sampling_Rate/10))
     axs[0].xaxis.set_major_locator(ticker.AutoLocator())  
     axs[0].xaxis.set_minor_locator(ticker.AutoMinorLocator())
 
@@ -2278,23 +2272,25 @@ def plot_mellow_concentration(mellow, concentration,
     l1 = axs[1].plot(x_series, concentration,  color='g', alpha=plot_alpha, label='Concentration')
     axs[1].legend(loc='upper right', prop={'size': 6})
     axs[1].grid(True)
-
     axs[1].set(xlabel="Time (Seconds)") 
 
+    axs[0].set(ylabel="Mellow") 
+    axs[1].set(ylabel="Concentration") 
 
-    plt.text(0.01, 4.75, 
+
+    plt.text(1.01, 1.95, 
         'Mean: ' + "{:.3f}".format(mellow_mean) + 
-        ' Std: ' + "{:.3f}".format(mellow_std) + 
+        '\nStd: ' + "{:.3f}".format(mellow_std) + 
         '\nMin: ' + "{:.3f}".format(mellow_min) +
-        ' Max: ' + "{:.3f}".format(mellow_max), style='italic', 
+        '\nMax: ' + "{:.3f}".format(mellow_max), style='italic', 
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
 
-    plt.text(0.01, 3.75, 
+    plt.text(1.01, 0.75, 
         'Mean: ' + "{:.3f}".format(concentration_mean) + 
-        ' Std: ' + "{:.3f}".format(concentration_std) +
+        '\nStd: ' + "{:.3f}".format(concentration_std) +
         '\nMin: ' + "{:.3f}".format(concentration_min) +
-        ' Max: ' + "{:.3f}".format(concentration_max), style='italic', 
+        '\nMax: ' + "{:.3f}".format(concentration_max), style='italic', 
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
  
@@ -2306,13 +2302,13 @@ def plot_mellow_concentration(mellow, concentration,
 #     create_file_date_text(-0.1, -0.6, -0.1, -035., plt_axes, basename, date_time_now)
 #     create_analysis_parms_text(0.75, 2.7, plt_axes, analysis_parms)
 
-    plt.text(0.175, 1.0, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+    plt.text(0.175, 2.3, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
             transform=plt_axes.transAxes, style='italic', horizontalalignment='right',
             bbox={'facecolor':'blue', 'alpha':0.1, 'pad':1})
 
-    create_analysis_parms_text(0.8, 1.08, plt_axes, analysis_parms)    
+    create_analysis_parms_text(0.8, 2.3, plt_axes, analysis_parms)    
     basename = os.path.basename(data_fname)
-    create_file_date_text(-0.1, -0.625, -0.1, -0.35, plt_axes, basename, date_time_now)
+    create_file_date_text(0., -0.225, 0., -0.15, plt_axes, basename, date_time_now)
 
 
 
