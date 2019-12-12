@@ -10,7 +10,7 @@ This script wil generate a number of charts from Muse headband EEG CSV data file
 Install instructions:
 
 1) Download the archive file, unzip in a temp directory
-2) Copy the Python script (analyze_mind_monitor_data.py) to a directory that's in your $PATH, for example:  cp analyze_mind_monitor_data.py ~/bin/.  (This makes it easier to execute the script from any locaiton in your filesystem)
+2) Copy the Python script (analyze_muse_data.py) to a directory that's in your $PATH, for example:  cp analyze_muse_data.py ~/bin/.  (This makes it easier to execute the script from any locaiton in your filesystem)
 3) This application requires Python version 3 installed on your computer. To check for which version of python you have installed simply bring up a terminal/console and type in "python", the version number is in the prompt when starting. 
 
 NOTE: At the moment the setup.py & Python distribution isn't ready yet for this application.  You will have to install the python libraries manually.  For example:
@@ -61,7 +61,7 @@ Options:
 
 ~~~~
 
-$ analyze_mind_monitor_data.py -h 
+$ analyze_muse_data.py -h 
  
 usage: analyze_mind_monitor_data.py [-h] [-c CSV_FILE] [-v VERBOSE] [-d] [-b]
                                     [-p] [-e] [-sr] [--plot_3D] [-i]
@@ -79,7 +79,6 @@ optional arguments:
   -b, --batch           Batch Mode
   -p, --power           Plot Power Bands
   -e, --eeg             Plot EEG Data
-  -sr, --sample_rate    Sample Rate: 250 HZ, 0.5 HZ, 1.0 HZ, 2.0 HZ, 60 Sec
   --plot_3D             3D Display Plots
   -i, --integrate       Integrate EEG Data
   -s STEP_SIZE, --step_size STEP_SIZE
