@@ -474,11 +474,13 @@ class The_GUI(QDialog):
         self.verbosityComboBox.addItems(['Quiet', 'Informative', 'Verbose', 'Debug'])
         self.verbosityLabel = QtWidgets.QLabel(self)
         self.verbosityLabel.setText('Set Verbosity')
+        self.verbosityLabel.setAlignment(Qt.AlignCenter)
+
 #         self.verbosityLabel.setBuddy(self.verbosityComboBox)
 
 
         self.labelChooseFile = QLabel(self)
-        self.labelChooseFile.setText("Choose File:")
+        self.labelChooseFile.setText("Choose File")
         self.labelChooseFile.setAlignment(Qt.AlignCenter)
 
         layout = QVBoxLayout()
@@ -512,7 +514,8 @@ class The_GUI(QDialog):
                         "Select Mind Monitor CSV File", "","MM CSV files (*.csv)", options=options)
 
         if fileName:
-            print(fileName)
+            if Verbosity > 1:
+                print(fileName)
             
         global gui_dict    
         global MM_CVS_fname 
@@ -528,7 +531,8 @@ class The_GUI(QDialog):
         fileName, _ = QFileDialog.getSaveFileName(self,
         "Select Output file","","All Files (*);;PNG Files (*.png)", options=options)
         if fileName:
-            print(fileName)
+            if Verbosity > 1:
+                print(fileName)
             
             
             
@@ -955,7 +959,7 @@ def plot_coherence(x, y, a, b, title, data_fname, plot_fname, date_time_now, ana
     plt.title(title)
     plt.legend(loc='upper left')
 
-    plt.text(0.175, 1.03, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+    plt.text(0.175, 1.025, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
             transform=plt_axes.transAxes, style='italic', horizontalalignment='right',
             bbox={'facecolor':'blue', 'alpha':0.1, 'pad':1})
 
@@ -964,12 +968,11 @@ def plot_coherence(x, y, a, b, title, data_fname, plot_fname, date_time_now, ana
     plt_axes.yaxis.set_major_locator(ticker.AutoLocator())  
     plt_axes.yaxis.set_minor_locator(ticker.AutoMinorLocator())
 
-
-    create_analysis_parms_text(0.76, 1.01, plt_axes, analysis_parms)    
+    create_analysis_parms_text(0.76, 1.025, plt_axes, analysis_parms)    
     basename = os.path.basename(data_fname)
     create_file_date_text(-0.1, -0.12, -0.1, -0.06, plt_axes, basename, date_time_now)
          
-        
+     
     plt.savefig(plot_fname, dpi=300)
 
     if (args.display_plots or gui_dict['checkBoxInteractive']):
@@ -1110,7 +1113,7 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
 #     axs[0].axis('auto')
 #     axs[0].grid(True)
       
-    axs[0].text(0.95, 0.025, '(All Sensor Data Combined)',
+    axs[0].text(0.975, 0.025, '(All Sensor Data Combined)',
         verticalalignment='bottom', horizontalalignment='right',
         transform=axs[0].transAxes, color='green') 
        
@@ -1147,14 +1150,14 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
     basename = os.path.basename(data_fname)
     create_file_date_text(-0.1, -0.7, -0.1, -0.4, axs[4], basename, date_time_now)
 
-    create_analysis_parms_text(0.83, 6.05, plt_axes, analysis_parms)    
+    create_analysis_parms_text(0.83, 6.1, plt_axes, analysis_parms)    
 
-    plt.text(0.175, 6.08, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+    plt.text(0.175, 6.1, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
             transform=plt_axes.transAxes, style='italic', horizontalalignment='right',
             bbox={'facecolor':'blue', 'alpha':0.1, 'pad':1})
 
 
-    plt.text(1.01, 4.0, 
+    plt.text(1.01, 4.25, 
         'Mean: ' + "{:.3f}".format(tp9_mean) + 
         '\nStd: ' + "{:.3f}".format(tp9_std) + 
         '\nMin: ' + "{:.3f}".format(tp9_min) +
@@ -1162,7 +1165,7 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
 
-    plt.text(1.01, 2.7, 
+    plt.text(1.01, 3.0, 
         'Mean: ' + "{:.3f}".format(af7_mean) + 
         '\nStd: ' + "{:.3f}".format(af7_std) + 
         '\nMin: ' + "{:.3f}".format(af7_min) +
@@ -1170,7 +1173,7 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
         transform=plt_axes.transAxes,
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
 
-    plt.text(1.01, 1.5, 
+    plt.text(1.01, 1.75, 
         'Mean: ' + "{:.3f}".format(af8_mean) + 
         '\nStd: ' + "{:.3f}".format(af8_std) + 
         '\nMin: ' + "{:.3f}".format(af8_min) +
@@ -1178,7 +1181,7 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
 
-    plt.text(1.01, 0.375, 
+    plt.text(1.01, 0.50, 
         'Mean: ' + "{:.3f}".format(tp10_mean) + 
         '\nStd: ' + "{:.3f}".format(tp10_std) + 
         '\nMin: ' + "{:.3f}".format(tp10_min) +
@@ -1336,7 +1339,7 @@ def plot_sensor_data_single(timestamps, tp9, af7, af8, tp10, data_fname, plot_fn
 
 #     axs[0].text(0.01, 0.01, 
 
-    plt.text(1.01, 0.5, 
+    plt.text(1.01, 0.25, 
         'TP9' +
         '\nMean: ' + "{:.3f}".format(tp9_mean) + 
         '\nStd: ' + "{:.3f}".format(tp9_std) + 
@@ -1390,7 +1393,7 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
 
 # TODO:  Make multiple windows
 
-    plot_alpha = 0.8
+    plot_alpha = 0.9
 
     if Verbosity > 0:
         print('plot_all_power_bands() called')
@@ -1503,7 +1506,7 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
         
-    plt.text(1.01, 0.75, 
+    plt.text(1.01, 0.5, 
         'Mean: ' + "{:.3f}".format(data_stats['delta']['mean']) + 
         '\nStd: ' + "{:.3f}".format(data_stats['delta']['mean']) + 
         '\nMin: ' + "{:.3f}".format(data_stats['delta']['mean']) +
@@ -1511,11 +1514,11 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
 
-    plt.text(0.175, 6.075, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+    plt.text(0.175, 6.1, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
             transform=plt_axes.transAxes, style='italic', horizontalalignment='right',
             bbox={'facecolor':'blue', 'alpha':0.1, 'pad': 1})
 
-    create_analysis_parms_text(0.8, 6.075, plt_axes, analysis_parms)    
+    create_analysis_parms_text(0.8, 6.1, plt_axes, analysis_parms)    
     basename = os.path.basename(data_fname)
     create_file_date_text(-0.1, -0.65, -0.1, -0.4, plt_axes, basename, date_time_now)
 
@@ -1760,11 +1763,11 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
 
 
-    plt.text(0.175, 6.08, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+    plt.text(0.175, 6.1, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
             transform=plt_axes.transAxes, style='italic', horizontalalignment='right',
             bbox={'facecolor':'blue', 'alpha':0.1, 'pad':1})
 
-    create_analysis_parms_text(0.8, 6.08, plt_axes, analysis_parms)    
+    create_analysis_parms_text(0.8, 6.1, plt_axes, analysis_parms)    
     basename = os.path.basename(data_fname)
     create_file_date_text(-0.1, -0.625, -0.1, -0.35, plt_axes, basename, date_time_now)
 
@@ -1939,7 +1942,7 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
             transform=plt_axes.transAxes, style='italic', horizontalalignment='right',
             bbox={'facecolor':'blue', 'alpha':0.1, 'pad':1})
 
-    create_analysis_parms_text(0.75, 6.07, plt_axes, analysis_parms)
+    create_analysis_parms_text(0.8, 6.1, plt_axes, analysis_parms)
     basename = os.path.basename(data_fname)
     create_file_date_text(-0.1, -0.6, -0.1, -0.35, plt_axes, basename, date_time_now)
 
@@ -2147,13 +2150,13 @@ def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_n
 
     axs[5].set(xlabel="Time (Seconds)") 
        
-    plt.text(0.175, 7.3, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+    plt.text(0.175, 7.35, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
         transform=plt_axes.transAxes, style='italic', horizontalalignment='right',
         bbox={'facecolor':'blue', 'alpha':0.1, 'pad':1})
 
     basename = os.path.basename(data_fname)
     create_file_date_text(-0.1, -0.7, -0.1, -0.41, plt_axes, basename, date_time_now)
-    create_analysis_parms_text(0.8, 7.3, plt_axes, analysis_parms)
+    create_analysis_parms_text(0.8, 7.35, plt_axes, analysis_parms)
 
     plt.savefig(plot_fname, dpi=300)
 
