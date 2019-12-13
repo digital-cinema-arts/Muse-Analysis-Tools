@@ -4,7 +4,7 @@
 
 #### NOTE: This project is still in active development! There may be bugs, there may be missing features, but will be released officially very soon.  Thank you for your patience.
 
-This script wil generate a number of charts from Muse headband EEG CSV data files created by the Mind Monitor app.  Future versions of these tools will support Muse DIrect and Muse Lab files.
+This script will generate a number of charts from Muse headband EEG CSV data files created by the Mind Monitor app.  Future versions of these tools will support Muse Direct and Muse Lab files.
 
 
 Install instructions:
@@ -12,7 +12,7 @@ Install instructions:
 1) Download the archive file, unzip in a temp directory
 2) Copy the Python script (analyze_muse_data.py) to a directory that's in your $PATH, for example:  
 ```cp analyze_muse_data.py ~/bin/```
-<br>(This makes it easier to execute the script from any locaiton in your filesystem)
+<br>(This makes it easier to execute the script from any location in your filesystem)
 3) This application requires Python version 3 installed on your computer. To check for which version of python you have installed simply bring up a terminal/console and type in "python", the version number is in the prompt when starting. 
 
 NOTE: At the moment the setup.py & Python distribution isn't ready yet for this application.  You will have to install the python libraries manually.  For example:
@@ -118,7 +118,7 @@ Donations
 
 https://paypal.me/vinyasakramayoga?locale.x=en_US
 
-If you would like to support this work and help to contribute to disabled folks and to help youth gain access to yoga (in the Olympia, WA area) please send your kind donations to this paypal account.  We appreciate any and all help for this important work.
+If you would like to support this project, to help to contribute to disabled folks and to help youth gain access to yoga (in the Olympia, WA area) please send your kind donations to this paypal account.  We appreciate any and all help for this important work.
 
 You can read more about our outreach program here:
 
