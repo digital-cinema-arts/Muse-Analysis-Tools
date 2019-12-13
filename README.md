@@ -16,7 +16,7 @@ Install instructions:
 3) This application requires Python version 3 installed on your computer. To check for which version of python you have installed enter this command: 
 
 ```
-Tethys:analyze_eeg dperi$ python --version
+Tethys: dperi$ python --version
 Python 3.7.4
 
 ```
