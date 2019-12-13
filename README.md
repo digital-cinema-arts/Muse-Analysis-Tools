@@ -12,7 +12,7 @@ Install instructions:
 1) Download the archive file, unzip in a temp directory
 2) Copy the Python script (analyze_muse_data.py) to a directory that's in your $PATH, for example:  
 ```cp analyze_muse_data.py ~/bin/```
-(This makes it easier to execute the script from any locaiton in your filesystem)
+<br>(This makes it easier to execute the script from any locaiton in your filesystem)
 3) This application requires Python version 3 installed on your computer. To check for which version of python you have installed simply bring up a terminal/console and type in "python", the version number is in the prompt when starting. 
 
 NOTE: At the moment the setup.py & Python distribution isn't ready yet for this application.  You will have to install the python libraries manually.  For example:
