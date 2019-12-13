@@ -13,7 +13,13 @@ Install instructions:
 2) Copy the Python script (analyze_muse_data.py) to a directory that's in your $PATH, for example:  
 ```cp analyze_muse_data.py ~/bin/```
 <br>(This makes it easier to execute the script from any location in your filesystem)
-3) This application requires Python version 3 installed on your computer. To check for which version of python you have installed simply bring up a terminal/console and type in "python", the version number is in the prompt when starting. 
+3) This application requires Python version 3 installed on your computer. To check for which version of python you have installed enter this command: 
+
+```
+Tethys:analyze_eeg dperi$ python --version
+Python 3.7.4
+
+```
 
 NOTE: At the moment the setup.py & Python distribution isn't ready yet for this application.  You will have to install the python libraries manually.  For example:
 
