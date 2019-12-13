@@ -16,9 +16,8 @@ Install instructions:
 3) This application requires Python version 3 installed on your computer. To check for which version of python you have installed enter this command: 
 
 ```
-Tethys: dperi$ python --version
+$ python --version
 Python 3.7.4
-
 ```
 
 NOTE: At the moment the setup.py & Python distribution isn't ready yet for this application.  You will have to install the python libraries manually.  For example:
