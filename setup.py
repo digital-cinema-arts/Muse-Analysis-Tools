@@ -22,7 +22,6 @@ setup(
                 'json', 'pathlib', 'pandas.plotting', 'matplotlib', 
                 'PyQt5', 'resources_rc'],
 
-
 #      package_dir={
 #                 "gui": "myApp/gui",
 #                 "logic": "myApp/logic",
