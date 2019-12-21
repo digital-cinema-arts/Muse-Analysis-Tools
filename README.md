@@ -54,11 +54,10 @@ Options:
 
 $ analyze_muse_data.py -h 
  
-usage: analyze_mind_monitor_data.py [-h] [-c CSV_FILE] [-v VERBOSE] [-d] [-b]
-                                    [-p] [-e] [-sr] [--plot_3D] [-i]
-                                    [-s STEP_SIZE] [-ps] [-f] [-lc LOWCUT]
-                                    [-hc HIGHCUT] [-o FILTER_ORDER]
-                                    [-l LOGGING_LEVEL]
+usage: analyze_muse_data.py [-h] [-c CSV_FILE] [-v VERBOSE] [-d] [-b] [-p]
+                            [-e] [--plot_3D] [-i] [-s STEP_SIZE] [-ps] [-f]
+                            [-lc LOWCUT] [-hc HIGHCUT] [-o FILTER_ORDER]
+                            [-l LOGGING_LEVEL]
 
 optional arguments:
   -h, --help            show this help message and exit
