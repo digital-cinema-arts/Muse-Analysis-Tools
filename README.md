@@ -11,11 +11,11 @@ Install instructions:
 
 1) Download the archive file, unzip in a temp directory
 2) Unzip the file:   
-<BR>```unzip Muse-Analysis-Tools-master.zip```
+```unzip Muse-Analysis-Tools-master.zip```
 3) Change diretory into the Muse-Analysis-Tools-master directory:   
-<BR>```cd Muse-Analysis-Tools-master```
+```cd Muse-Analysis-Tools-master```
 4) Run the setup.py to install the application:   
-<BR>```python3 setup.py install```
+```python3 setup.py install```
 <BR>
  
 #### NOTE: This application requires Python version 3 installed on your computer. To check for which version of python you have installed enter this command: 
