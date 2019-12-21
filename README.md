@@ -10,11 +10,11 @@ This script will generate a number of charts from Muse headband EEG CSV data fil
 Install instructions:
 
 1) Download the archive file, unzip in a temp directory
-2) Unzip the file:  
+2) Unzip the file:   
 <BR>```unzip Muse-Analysis-Tools-master.zip```
-3) Change diretory into the Muse-Analysis-Tools-master directory:
+3) Change diretory into the Muse-Analysis-Tools-master directory:   
 <BR>```cd Muse-Analysis-Tools-master```
-4) Run the setup.py to install the application:
+4) Run the setup.py to install the application:   
 <BR>```python3 setup.py install```
 <BR>
  
