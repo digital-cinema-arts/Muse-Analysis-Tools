@@ -29,7 +29,7 @@ Python 3.7.4
 Usage:
 1) Change directory to where the Mind Monitor CSV files are located.  
 2) Startup the application:  
-```analyze_muse_data.py
+```$ analyze_muse_data.py```
 3) Select the options and CSV file you want to process.
 4) Make plots!
 
