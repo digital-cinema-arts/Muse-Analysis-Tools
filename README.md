@@ -18,6 +18,7 @@ Install instructions:
 4) Run the setup.py to install the application:   
 ```$ python3 setup.py install```
 <BR>
+ 
 #### NOTE: This application requires Python version 3 installed on your computer. To check for which version of python you have installed enter this command:   
 
 ```
