@@ -9,19 +9,18 @@ This script will generate a number of charts from Muse headband EEG CSV data fil
 
 Install instructions:
 
-1) Download the archive file, unzip in a temp directory
+1) Download the archive file, save in a temp directory
 2) Unzip the file:   
-```unzip Muse-Analysis-Tools-master.zip```
+```Tethys:tmp $ unzip Muse-Analysis-Tools-master.zip```
 3) Change diretory into the Muse-Analysis-Tools-master directory:   
-```cd Muse-Analysis-Tools-master```
+```Tethys:tmp $ cd Muse-Analysis-Tools-master```
 4) Run the setup.py to install the application:   
-```python3 setup.py install```
+```Tethys:tmp $ python3 setup.py install```
 <BR>
- 
-#### NOTE: This application requires Python version 3 installed on your computer. To check for which version of python you have installed enter this command: 
+#### NOTE: This application requires Python version 3 installed on your computer. To check for which version of python you have installed enter this command:   
 
 ```
-$ python --version
+Tethys: $  python --version
 Python 3.7.4
 ```
 
@@ -29,7 +28,8 @@ Python 3.7.4
 
 Usage:
 1) Change directory to where the Mind Monitor CSV files are located.  
-2) Startup the application: analyze_muse_data.py
+2) Startup the application:  
+```analyze_muse_data.py
 3) Select the options and CSV file you want to process.
 4) Make plots!
 
@@ -53,7 +53,7 @@ Options:
 
 ~~~~
 
-$ analyze_muse_data.py -h 
+Tethys: $  analyze_muse_data.py -h 
  
 usage: analyze_muse_data.py [-h] [-c CSV_FILE] [-v VERBOSE] [-d] [-b] [-p]
                             [-e] [--plot_3D] [-i] [-s STEP_SIZE] [-ps] [-f]
