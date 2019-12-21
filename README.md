@@ -2,7 +2,8 @@
  
 ## Algorithmic Biofeedback Control System - Chart Tools
 
-#### NOTE: This project is still in active development! There may be bugs, there may be missing features, but will be released officially very soon.  Thank you for your patience.
+#### NOTE: This project is still in active development! There may be bugs, there may be missing features, but will be released officially very soon.  Thank you for your patience.  
+
 
 This script will generate a number of charts from Muse headband EEG CSV data files created by the Mind Monitor app.  Future versions of these tools will support Muse Direct and Muse Lab files.
 
