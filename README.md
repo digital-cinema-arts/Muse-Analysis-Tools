@@ -11,11 +11,11 @@ Install instructions:
 
 1) Download the archive file, save in a temp directory
 2) Unzip the file:   
-```Tethys:tmp $ unzip Muse-Analysis-Tools-master.zip```
+```Tethys: $ unzip Muse-Analysis-Tools-master.zip```
 3) Change diretory into the Muse-Analysis-Tools-master directory:   
-```Tethys:tmp $ cd Muse-Analysis-Tools-master```
+```Tethys: $ cd Muse-Analysis-Tools-master```
 4) Run the setup.py to install the application:   
-```Tethys:tmp $ python3 setup.py install```
+```Tethys: $ python3 setup.py install```
 <BR>
 #### NOTE: This application requires Python version 3 installed on your computer. To check for which version of python you have installed enter this command:   
 
