@@ -10,35 +10,19 @@ This script will generate a number of charts from Muse headband EEG CSV data fil
 Install instructions:
 
 1) Download the archive file, unzip in a temp directory
-2) Copy the Python script (analyze_muse_data.py) to a directory that's in your $PATH, for example:  
-```cp analyze_muse_data.py ~/bin/```
-<br>(This makes it easier to execute the script from any location in your filesystem)
-3) This application requires Python version 3 installed on your computer. To check for which version of python you have installed enter this command: 
+2) Unzip the file:  
+```unzip Muse-Analysis-Tools-master.zip```
+3) Change diretory into the Muse-Analysis-Tools-master directory
+```cd Muse-Analysis-Tools-master```
+4) Run the setup.py to install the application:
+```python3 setup.py install```
+
+#### NOTE: This application requires Python version 3 installed on your computer. To check for which version of python you have installed enter this command: 
 
 ```
 $ python --version
 Python 3.7.4
 ```
-
-NOTE: At the moment the setup.py & Python distribution isn't ready yet for this application.  You will have to install the python libraries manually.  For example:
-
-~~~~
-$ pip3 install scipy
-
-$ pip3 show scipy
-
-Name: scipy
-Version: 1.3.1
-Summary: SciPy: Scientific Library for Python
-Home-page: https://www.scipy.org
-Author: None
-Author-email: None
-License: BSD
-Location: /usr/local/lib/python3.7/site-packages
-Requires: numpy
-Required-by: scikit-learn
-~~~~
-
 
 --------------------------------------------------------------------
 
