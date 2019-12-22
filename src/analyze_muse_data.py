@@ -52,7 +52,6 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
         QVBoxLayout, QWidget)
 
-import resources_rc
 
 
 # Globals
@@ -162,6 +161,7 @@ class The_GUI(QDialog):
         super(The_GUI, self).__init__(parent)
 
         self.originalPalette = QApplication.palette()
+        self.splitter = QSplitter(Qt.Horizontal)
 
 #         print("keys: ", QStyleFactory.keys())
         
@@ -312,6 +312,7 @@ class The_GUI(QDialog):
 
     def createTopLeftGroupBox(self):
         self.topLeftGroupBox = QGroupBox("Select Options")
+        self.topLeftGroupBox.setStyleSheet("background-color: #F0F0F8;")
 
         layout = QVBoxLayout()
 
@@ -390,7 +391,9 @@ class The_GUI(QDialog):
         layout.addWidget(self.checkBoxResample)
         layout.addWidget(self.checkBoxAutoReject)
         layout.addWidget(self.checkBoxDB)
-        layout.addWidget(self.checkBoxHFDF5)        
+        layout.addWidget(self.checkBoxHFDF5)
+        layout.addWidget(self.splitter)        
+ 
         layout.addWidget(self.plotColorsLabel)
         layout.addWidget(self.plotColorsComboBox)
 
@@ -403,6 +406,7 @@ class The_GUI(QDialog):
 
     def createTopRightGroupBox(self):
         self.topRightGroupBox = QGroupBox("Meditation Session Details")
+        self.topRightGroupBox.setStyleSheet("background-color: #F0F0F8;")
 
         layout = QGridLayout()
 
@@ -432,6 +436,8 @@ class The_GUI(QDialog):
         layout.addWidget(self.lineFirstNameEdit)
         layout.addWidget(self.lineLastNameEdit)
         layout.addWidget(self.dateTimeEdit)
+        layout.addWidget(self.splitter)        
+
 #         layout.addWidget(self.moodLabel)
         layout.addWidget(moodLabel)
         layout.addWidget(self.moodComboBox)
@@ -446,6 +452,8 @@ class The_GUI(QDialog):
 
     def createBottomRightGroupBox(self):
         self.bottomRightGroupBox = QGroupBox("Breathe")
+#         self.bottomRightGroupBox.setStyleSheet("background-color: #c2bc9b;")
+
 
         layout = QVBoxLayout()
 
@@ -464,15 +472,17 @@ class The_GUI(QDialog):
 
     def createBottomLeftGroupBox(self):
         self.bottomLeftGroupBox = QGroupBox("Create Plots")
+        self.bottomLeftGroupBox.setStyleSheet("background-color: #F0F0F8;")
 
         self.filePushButton = QPushButton("Select CSV File")
         self.filePushButton.clicked.connect(self.file_button_clicked)
+        self.filePushButton.setStyleSheet("background-color: #b69bc2;")
 #         filePushButton.setDefault(False)
 
         self.plotPushButton = QPushButton("Create Plots")
         self.plotPushButton.setDefault(True)
+        self.plotPushButton.setStyleSheet("background-color: #9bb4c2;")
         self.plotPushButton.clicked.connect(self.plot_button_clicked)
-
 
         self.verbosityComboBox = QComboBox()
         self.verbosityComboBox.addItems(['Quiet', 'Informative', 'Verbose', 'Debug'])
@@ -483,15 +493,19 @@ class The_GUI(QDialog):
 #         self.verbosityLabel.setBuddy(self.verbosityComboBox)
 
 
+
         self.labelChooseFile = QLabel(self)
         self.labelChooseFile.setText("Choose File")
         self.labelChooseFile.setAlignment(Qt.AlignCenter)
 
         layout = QVBoxLayout()
+        layout.addWidget(self.splitter)
         layout.addWidget(self.labelChooseFile)
         layout.addWidget(self.filePushButton)
+        layout.addWidget(self.splitter)
         layout.addWidget(self.verbosityLabel)
         layout.addWidget(self.verbosityComboBox)
+        layout.addWidget(self.splitter)        
         layout.addWidget(self.plotPushButton)
 
         layout.addStretch(1)
@@ -2878,7 +2892,7 @@ def main(date_time_now):
 if __name__ == '__main__':
 
     import pkg_resources
-    import sys
+    import sys, site
 
 if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
 #     liblo_path = pkg_resources.resource_filename('liblo', 'liblo.so')
@@ -2891,6 +2905,17 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
     
     date_time_now = strftime('%Y-%m-%d-%H.%M.%S', gmtime())
 
+#     print(site.main())
+
+#     print("site.getsitepackages()")
+#     print(site.getsitepackages())
+#     print("sys.path")
+#     print(sys.path)
+# 
+#     import resources_rc
+
+
+    
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--csv_file", help="CSV file to read)")
     parser.add_argument("-v", "--verbose", help="Increase output verbosity", type=int)
