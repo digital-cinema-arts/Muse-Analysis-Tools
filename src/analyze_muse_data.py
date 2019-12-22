@@ -45,12 +45,14 @@ from PyQt5.QtWidgets import *
 import PyQt5.QtWidgets as QtWidgets
 from PyQt5.QtGui import QPalette, QIcon, QPixmap
 
-from PyQt5.QtCore import QDateTime, Qt, QTimer
+from PyQt5.QtCore import QDateTime, Qt, QTimer, QUrl
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
         QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
         QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
         QVBoxLayout, QWidget)
+
+import resources_rc
 
 
 # Globals
@@ -165,7 +167,11 @@ class The_GUI(QDialog):
         
         self.createTopLeftGroupBox()
         self.createTopRightGroupBox()
-        self.createBottomLeftTabWidget()
+#         self.createBottomLeftTabWidget()
+#         self.createBottomLeftTabWidget()
+
+        self.createBottomLeftGroupBox()
+
         self.createBottomRightGroupBox()
 #         self.createProgressBar()
 
@@ -178,7 +184,7 @@ class The_GUI(QDialog):
         mainLayout.addLayout(topLayout, 0, 0, 1, 2)
         mainLayout.addWidget(self.topLeftGroupBox, 1, 0)
         mainLayout.addWidget(self.topRightGroupBox, 1, 1)
-        mainLayout.addWidget(self.bottomRightTabWidget, 2, 1)
+        mainLayout.addWidget(self.bottomRightGroupBox, 2, 1)
         mainLayout.addWidget(self.bottomLeftGroupBox, 2, 0)
 #         mainLayout.addWidget(self.progressBar, 3, 0, 1, 2)
         mainLayout.setRowStretch(1, 1)
@@ -394,6 +400,7 @@ class The_GUI(QDialog):
         self.topLeftGroupBox.setLayout(layout)    
 
 
+
     def createTopRightGroupBox(self):
         self.topRightGroupBox = QGroupBox("Meditation Session Details")
 
@@ -436,29 +443,27 @@ class The_GUI(QDialog):
 
 
 
-    def createBottomLeftTabWidget(self):
-        self.bottomRightTabWidget = QTabWidget()
-
-        tab1 = QWidget()
-        tableWidget = QTableWidget(10, 10)
-
-        tab1hbox = QHBoxLayout()
-        tab1hbox.setContentsMargins(5, 5, 5, 5)
-        tab1hbox.addWidget(tableWidget)
-        tab1.setLayout(tab1hbox)
-
-        tab2 = QWidget()
-
-        tab2hbox = QHBoxLayout()
-        tab2hbox.setContentsMargins(5, 5, 5, 5)
-        tab2.setLayout(tab2hbox)
-
-#         self.bottomRightTabWidget.addTab(tab2, "Session Notes")
-
-
-
 
     def createBottomRightGroupBox(self):
+        self.bottomRightGroupBox = QGroupBox("Breathe")
+
+        layout = QVBoxLayout()
+
+#         self.im = QPixmap("./sanctuary1.jpg")
+        self.im = QPixmap(":/images/sanctuary1.jpg")
+  
+        self.im = self.im.scaled(256, 256, Qt.KeepAspectRatio, Qt.FastTransformation)
+        self.label = QtWidgets.QLabel()
+        self.label.setPixmap(self.im)
+        layout.addWidget(self.label)
+
+        layout.addStretch(1)
+        self.bottomRightGroupBox.setLayout(layout)    
+
+
+
+    def createBottomLeftGroupBox(self):
+        self.bottomLeftGroupBox = QGroupBox("Create Plots")
 
         self.filePushButton = QPushButton("Select CSV File")
         self.filePushButton.clicked.connect(self.file_button_clicked)
@@ -468,7 +473,6 @@ class The_GUI(QDialog):
         self.plotPushButton.setDefault(True)
         self.plotPushButton.clicked.connect(self.plot_button_clicked)
 
-        self.bottomLeftGroupBox = QGroupBox("Create Plots")
 
         self.verbosityComboBox = QComboBox()
         self.verbosityComboBox.addItems(['Quiet', 'Informative', 'Verbose', 'Debug'])
@@ -508,10 +512,31 @@ class The_GUI(QDialog):
 
     def openFileNameDialog(self):
         options = QFileDialog.Options()
+
+# TODO Figure out proper use of QFileDialog.DontUseNativeDialog
         options |= QFileDialog.DontUseNativeDialog
+
+#         if sys.platform in ['linux', 'linux2', 'win32']:
+#            options |= QFileDialog.DontUseNativeDialog
+
         
-        fileName, _ = QFileDialog.getOpenFileName(self,
-                        "Select Mind Monitor CSV File", "","MM CSV files (*.csv)", options=options)
+#         place = os.getcwd()
+        place = os.sep.join((os.path.expanduser('~'), 'Desktop'))
+
+        dialog = QFileDialog(self)
+        dialog.setFileMode(QFileDialog.AnyFile)
+#         dialog.setSidebarUrls([QUrl.fromLocalFile(data_dir)])
+#         dialog.setSidebarUrls([QUrl.fromLocalFile(place)])       
+#         dialog.setDirectory(data_dir) 
+
+#         fileName, _ = dialog.getOpenFileUrl(self,
+#                         "Select EEG CSV File", options=options)
+
+        fileName, _ = dialog.getOpenFileName(self,
+                        "Select EEG CSV File", 
+                        data_dir,
+                        "CSV files (*.csv)", 
+                        options=options)
 
         if fileName:
             if Verbosity > 1:
@@ -622,9 +647,118 @@ Connect to database
 
 ''' 
 
-def connct_to_DB():
-    import mysql.connector
+def connct_to_DB(date_time_now):
+#     import mysql.connector
     import sqlite3
+
+
+
+    db_fname = 'EEG_data.db'
+    import sqlite3
+    conn = sqlite3.connect(db_fname.db)
+
+    c = conn.cursor()
+
+    # Create table
+    c.execute('''CREATE TABLE eeg_data
+                 (date text, trans text, symbol text, qty real, price real)''')
+
+    # Insert a row of data
+    c.execute("INSERT INTO stocks VALUES ('2006-01-05','BUY','RHAT',100,35.14)")
+
+#     Create table
+#     c.execute('''CREATE TABLE eeg_data
+#                  (date text, trans text, symbol text, qty real, price real)''')
+# 
+#     Insert a row of data
+#     c.execute("INSERT INTO stocks VALUES ('2006-01-05','BUY','RHAT',100,35.14)")
+
+    # Save (commit) the changes
+    conn.commit()
+
+    # We can also close the connection if we are done with it.
+    # Just be sure any changes have been committed or they will be lost.
+    conn.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ #    global session_dict
+#     global EEG_Dict
+# 
+#     if init:
+# 
+#         if Verbosity > 1:
+#             print("manage_session_data(): Initialize Session Data")
+# 
+#         # Fill in default values for now.  
+#         # (NOTE: Need to create DB interface)
+#         session_dict = {
+#             'ABCS Info':{'Version':VERSION_NUM},
+#             'Muse Info':{'Headband Version':'2016'},
+#             'Session_Data':{
+#             'session_date': session_date,
+#             'date': date_time,
+#             'data_file_fname': 'data file name',
+#             'mood': 'calm',
+#             'location': 'home',
+#             'activity': "sitting",
+#             'misc': 'This field is for misc. data to be stored in the database'
+#             },
+#             'Participants':{ 
+#                 'Meditators':{
+#                     0:{
+#                         'name': 'Debra',
+#                         'age': 63,
+#                         'gender': 'female'
+#                         },          
+#                     1:{
+#                         'name': 'Savahn',
+#                         'age': 38,
+#                         'gender': 'female'
+#                         }     
+#                     },
+#                 'Coordinators':{
+#                     0:{
+#                         'name': 'Patti',
+#                         'age': 32,
+#                         'gender': 'female'
+#                         }
+#                     },
+#                 'Helpers':{
+#                     0:{
+#                         'name': 'Oni',
+#                         'age': 23,
+#                         'gender': 'male'
+#                         }
+#                     },
+#                 'Participants':{
+#                     0:{
+#                         'name': 'Shiloh',
+#                         'age': 28,
+#                         'gender': 'male'
+#                         }
+#                     }
+#                 }
+#             }
+
+
+
 
 
     return True
