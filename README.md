@@ -2,7 +2,8 @@
  
 ## Algorithmic Biofeedback Control System - Chart Tools
 
-#### NOTE: This project is still in active development! There may be bugs, there may be missing features, but will be released officially very soon.  Thank you for your patience.
+#### NOTE: This project is still in active development! There may be bugs, there may be missing features, but will be released officially very soon.  Thank you for your patience.  
+
 
 This script will generate a number of charts from Muse headband EEG CSV data files created by the Mind Monitor app.  Future versions of these tools will support Muse Direct and Muse Lab files.
 
@@ -17,6 +18,7 @@ Install instructions:
 4) Run the setup.py to install the application:   
 ```$ python3 setup.py install```
 <BR>
+ 
 #### NOTE: This application requires Python version 3 installed on your computer. To check for which version of python you have installed enter this command:   
 
 ```
