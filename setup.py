@@ -8,7 +8,7 @@ setup(
     version="0.1.8",
 
     author="debra_peri",
-#    author="Debra Grace Peri",#    author_email="dperi@xion.org",
+#    author="Debra Grace Peri",
     author_email="debragraceperi@gmail.com",
 
     description="This package contains code for graphing Muse EEG data",
