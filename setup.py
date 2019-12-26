@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="Muse-Analysis-Tools",
-    version="0.1.7",
+    version="0.1.8",
 
     author="debra_peri",
 #    author="Debra Grace Peri",
@@ -24,11 +24,11 @@ setup(
 
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
+#        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-         "Development Status :: 5 - Production/Stable",
-         "Topic :: Utilities",
-#        "License :: GNU Affero General Public License v3.0",
+        "Development Status :: 5 - Production/Stable",
+        "Topic :: Utilities",
+        "License :: GNU Affero General Public License v3.0",
     ],
     python_requires='>=3.6',
 
