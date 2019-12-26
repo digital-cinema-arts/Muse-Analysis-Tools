@@ -19,7 +19,7 @@ Install instructions:
 ```$ python3 setup.py install```
 <BR>
  
-#### NOTE: This application requires Python version 3 installed on your computer. To check for which version of python you have installed enter this command:   
+#### NOTE: This application requires Python version 3 installed on your computer. To check which version of python you have installed enter this command:   
 
 ```
 $ python --version
