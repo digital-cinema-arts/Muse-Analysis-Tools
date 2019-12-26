@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="Muse-Analysis-Tools",
-    version="0.1.6",
+    version="0.1.5",
 
     author="debra_peri",
 #    author="Debra Grace Peri",
@@ -26,11 +26,9 @@ setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-         "Development Status :: 5 - Production/Stable",
-         "Topic :: Utilities",
-#        "License :: GNU Affero General Public License v3.0",
     ],
     python_requires='>=3.6',
+
 
     include_package_data=True, 
 
@@ -43,7 +41,17 @@ setup(
          'resources': ['analyze_muse/resources/resources_rc.py']
          },
         
-     data_files=[
+#    requires=['time', 'datetime', 'numpy', 'scipy', 'pandas', 'math',
+#                'bitstring', 'os', 'sys', 'csv', 'argparse', 'tqdm', 
+#                'json', 'pathlib', 'pandas.plotting', 'matplotlib', 
+#                'PyQt5', 'resources_rc'],
+
+#      package_dir={
+#                 "gui": "myApp/gui",
+#                 "logic": "myApp/logic",
+#                 },
+
+      data_files=[
 #          ('resources', ['resources/resources_rc.py']),
           ('resources', ['analyze_muse/resources/resources_rc.py']),
           ('icons', ['analyze_muse/resources/ABCS.ico'])
@@ -55,5 +63,13 @@ setup(
 #        "Source Code": "https://github.com/digital-cinema-arts/Muse-Analysis-Tools",
 #    },
 
+#      classifiers=[
+#         "Development Status :: 5 - Production/Stable",
+#         "Topic :: Utilities",
+#        "License :: GNU Affero General Public License v3.0",
+#    ],
+ 
+
 )
+
 

@@ -52,6 +52,9 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
         QVBoxLayout, QWidget)
 
+import analyze_muse.resources.resources_rc
+# from resources import resources_rc
+
 
 
 # Globals
@@ -666,7 +669,6 @@ def connct_to_DB(date_time_now):
     import sqlite3
 
 
-
     db_fname = 'EEG_data.db'
     import sqlite3
     conn = sqlite3.connect(db_fname.db)
@@ -697,22 +699,7 @@ def connct_to_DB(date_time_now):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- #    global session_dict
+#     global session_dict
 #     global EEG_Dict
 # 
 #     if init:
@@ -770,9 +757,6 @@ def connct_to_DB(date_time_now):
 #                     }
 #                 }
 #             }
-
-
-
 
 
     return True
@@ -904,7 +888,6 @@ def read_eeg_data(fname, date_time_now):
 #         print("EEG_Dict: ", EEG_Dict)
 #         print("data_str.to_dict()", data_str.to_dict())
     
-
 
 
     sample_length = len(raw_df['RAW_AF7'])
@@ -2900,6 +2883,7 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
 #     print("DSO path:", dso_path)    
 #     print("LIBLO path:", liblo_path)    
 
+
     if Verbosity > 1:
         print("Platform: ", sys.platform)
     
@@ -2912,7 +2896,6 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
 #     print("sys.path")
 #     print(sys.path)
 # 
-#     import resources_rc
 
 
     
