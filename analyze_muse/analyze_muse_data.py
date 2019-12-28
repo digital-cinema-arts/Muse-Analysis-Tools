@@ -87,9 +87,9 @@ PLOT_PARAMS = {
     'axes.labelsize' : 7,
     'lines.linewidth' : 1,
     'lines.markersize' : 2,
-    'xtick.labelsize' : 5,
-    'ytick.labelsize' : 5,
-    'legend.fontsize': 5,
+    'xtick.labelsize' : 7,
+    'ytick.labelsize' : 7,
+    'legend.fontsize': 6,
     'legend.handlelength': 2}
 # plt.rcParams.update(PLOT_PARAMS)
 
@@ -124,7 +124,7 @@ MM_Colors = {
 # ABCS Colors
 ABCS_Colors = {
 'RawTP9': '#8459E2',
-'RawAF7': '#12A714',
+'RawAF7': '#F0A714',
 'RawAF8': '#3E40E0',
 'RawTP10':'#E2D659',
 'Delta': '#A20000',
@@ -349,7 +349,7 @@ class The_GUI(QDialog):
 
         self.checkBoxFilter = QCheckBox("Filter Data")
         self.checkBoxFilter.setChecked(False)
-        self.checkBoxFilter.setEnabled(False)
+        self.checkBoxFilter.setEnabled(True)
 
         self.checkBoxResample = QCheckBox("Resample Data")
         self.checkBoxResample.setChecked(False)
@@ -387,11 +387,11 @@ class The_GUI(QDialog):
         layout.addWidget(self.checkBoxPowerBands)
         layout.addWidget(self.checkBoxMellowConcentration)
         layout.addWidget(self.checkBoxAccelGyro)
-        layout.addWidget(self.checkBox3D)
+#         layout.addWidget(self.checkBox3D)
         layout.addWidget(self.checkBoxStatistical)
         layout.addWidget(self.checkBoxMuseDirect)
         layout.addWidget(self.checkBoxFilter)
-        layout.addWidget(self.checkBoxResample)
+#         layout.addWidget(self.checkBoxResample)
         layout.addWidget(self.checkBoxAutoReject)
         layout.addWidget(self.checkBoxDB)
         layout.addWidget(self.checkBoxHFDF5)
@@ -677,19 +677,11 @@ def connct_to_DB(date_time_now):
 
     # Create table
     c.execute('''CREATE TABLE eeg_data
-                 (date text, trans text, symbol text, qty real, price real)''')
+                 (date text, type text, data-type text, average real, std real)''')
 
     # Insert a row of data
-    c.execute("INSERT INTO stocks VALUES ('2006-01-05','BUY','RHAT',100,35.14)")
+    c.execute("INSERT INTO eeg_data VALUES (date_time_now,'session','meta-data', 100, 0.05)")
 
-#     Create table
-#     c.execute('''CREATE TABLE eeg_data
-#                  (date text, trans text, symbol text, qty real, price real)''')
-# 
-#     Insert a row of data
-#     c.execute("INSERT INTO stocks VALUES ('2006-01-05','BUY','RHAT',100,35.14)")
-
-    # Save (commit) the changes
     conn.commit()
 
     # We can also close the connection if we are done with it.
@@ -860,7 +852,7 @@ def read_eeg_data(fname, date_time_now):
     elements_df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp', 'Elements'])
 
     if Verbosity > 1:
-        print("read_eeg_data() - Elements.describe(): ", elements_df.describe())   
+#         print("read_eeg_data() - Elements.describe(): ", elements_df.describe())   
         print("read_eeg_data() - elements_df.count(): ", elements_df.count())
 
 #     sys.exit()
@@ -998,6 +990,8 @@ def scale(x, out_range=(-1, 1), axis=None):
     y = (x - (domain[1] + domain[0]) / 2) / (domain[1] - domain[0])
     return y * (out_range[1] - out_range[0]) + (out_range[1] + out_range[0]) / 2
 
+
+
 '''
 
 Tail-rolling average transform 
@@ -1008,6 +1002,58 @@ def smooth_data(data_in, win):
     smoothed_data = rolling.mean()
 
     return smoothed_data
+
+
+
+
+def filter_all_data(muse_EEG_data):
+
+    if Verbosity > 0:
+        print('filter_all_data() called')
+
+
+    smooth_sz = 1
+    
+    muse_EEG_data['RAW_TP9'] = filter_data(muse_EEG_data['RAW_TP9'], smooth_sz)
+    muse_EEG_data['RAW_AF7'] = filter_data(muse_EEG_data['RAW_AF7'], smooth_sz)
+    muse_EEG_data['RAW_AF8'] = filter_data(muse_EEG_data['RAW_AF8'], smooth_sz)
+    muse_EEG_data['RAW_TP10'] = filter_data(muse_EEG_data['RAW_TP10'], smooth_sz)
+    
+    muse_EEG_data['Delta_TP9'] = filter_data(muse_EEG_data['Delta_TP9'], smooth_sz)
+    muse_EEG_data['Delta_AF7'] = filter_data(muse_EEG_data['Delta_AF7'], smooth_sz)
+    muse_EEG_data['Delta_AF8'] = filter_data(muse_EEG_data['Delta_AF8'], smooth_sz)
+    muse_EEG_data['Delta_TP10'] = filter_data(muse_EEG_data['Delta_TP10'], smooth_sz)
+
+    muse_EEG_data['Theta_TP9'] = filter_data(muse_EEG_data['Theta_TP9'], smooth_sz)
+    muse_EEG_data['Theta_AF7'] = filter_data(muse_EEG_data['Theta_AF7'], smooth_sz)
+    muse_EEG_data['Theta_AF8'] = filter_data(muse_EEG_data['Theta_AF8'], smooth_sz)
+    muse_EEG_data['Theta_TP10'] = filter_data(muse_EEG_data['Theta_TP10'], smooth_sz)
+
+    muse_EEG_data['Alpha_TP9'] = filter_data(muse_EEG_data['Alpha_TP9'], smooth_sz)
+    muse_EEG_data['Alpha_AF7'] = filter_data(muse_EEG_data['Alpha_AF7'], smooth_sz)
+    muse_EEG_data['Alpha_AF8'] = filter_data(muse_EEG_data['Alpha_AF8'], smooth_sz)
+    muse_EEG_data['Alpha_TP10'] = filter_data(muse_EEG_data['Alpha_TP10'], smooth_sz)
+
+    muse_EEG_data['Beta_TP9'] = filter_data(muse_EEG_data['Beta_TP9'], smooth_sz)
+    muse_EEG_data['Beta_AF7'] = filter_data(muse_EEG_data['Beta_AF7'], smooth_sz)
+    muse_EEG_data['Beta_AF8'] = filter_data(muse_EEG_data['Beta_AF8'], smooth_sz)
+    muse_EEG_data['Beta_TP10'] = filter_data(muse_EEG_data['Beta_TP10'], smooth_sz)
+
+    muse_EEG_data['Gamma_TP9'] = filter_data(muse_EEG_data['Gamma_TP9'], smooth_sz)
+    muse_EEG_data['Gamma_AF7'] = filter_data(muse_EEG_data['Gamma_AF7'], smooth_sz)
+    muse_EEG_data['Gamma_AF8'] = filter_data(muse_EEG_data['Gamma_AF8'], smooth_sz)
+    muse_EEG_data['Gamma_TP10'] = filter_data(muse_EEG_data['Gamma_TP10'], smooth_sz)
+
+
+# columns=['RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
+# columns=['Delta_TP9', 'Delta_AF7', 'Delta_AF8', 'Delta_TP10'])    
+# columns=['Theta_TP9', 'Theta_AF7', 'Theta_AF8', 'Theta_TP10'])    
+# columns=['Alpha_TP9', 'Alpha_AF7', 'Alpha_AF8', 'Alpha_TP10'])    
+# columns=['Beta_TP9', 'Beta_AF7', 'Beta_AF8', 'Beta_TP10'])    
+# columns=['Gamma_TP9', 'Gamma_AF7', 'Gamma_AF8', 'Gamma_TP10'])
+
+
+    return(muse_EEG_data)
 
 
 
@@ -1116,6 +1162,171 @@ def plot_coherence(x, y, a, b, title, data_fname, plot_fname, date_time_now, ana
     if Verbosity > 0:
         print("Finished writing EEG EF7 & EF8 Integrated Data - Coherence plot")
         print(plot_fname)
+
+
+
+
+
+
+
+
+
+
+
+'''
+
+Plot the coherence data 
+
+'''
+
+def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, date_time_now, 
+                        title, data_stats, analysis_parms, fig_num):
+
+# TODO Implement difference coherence plot
+
+    global session_dict
+    
+    if Verbosity > 0:
+        print('plot_coherence_data() called')
+
+    af_diff = af7 - af8
+    tp_diff = tp9 - tp10
+    
+# TODO Make this a function
+    # Run the stats of the incoming data which is specific to each call to this function
+    tp_mean = np.mean(np.nan_to_num(tp_diff))
+    tp_std = np.std(np.nan_to_num(tp_diff))
+    tp_max = np.max(np.nan_to_num(tp_diff))
+    tp_min = np.min(np.nan_to_num(tp_diff))
+
+    af_mean = np.mean(np.nan_to_num(af_diff))
+    af_std = np.std(np.nan_to_num(af_diff))
+    af_max = np.max(np.nan_to_num(af_diff))
+    af_min = np.min(np.nan_to_num(af_diff))
+
+    if Verbosity > 2:  
+
+        print("tp_mean: ", tp_mean)
+        print("tp_std: ", tp_std)
+        print("tp_max: ", tp_max)
+        print("tp_min: ", tp_min)
+    
+        print("af_mean: ", af_mean)
+        print("af_std: ", af_std)
+        print("af_max: ", af_max)
+        print("af_min: ", af_min)
+
+  
+    t_len = len(timestamps)
+    
+    period = (1.0/Sampling_Rate)
+    x_series = np.arange(0, t_len * period, period)
+ 
+    fig, axs = plt.subplots(nrows=2, num=fig_num, figsize=FIGURE_SIZE, 
+                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=False, 
+                        gridspec_kw={'hspace': 0.25}, tight_layout=False)
+       
+    plt.suptitle('Algorithmic Biofeedback Control System' + '\n' + title, fontsize=12, fontweight='bold')
+    plt.rcParams.update(PLOT_PARAMS)
+#     plt.title(title)
+    plt_axes = plt.gca()
+
+#     plt_axes.set_ylim([data_stats[0], data_stats[1]])
+
+    data_min = np.min((data_stats[0], data_stats[2], data_stats[4], data_stats[6]))
+    data_max = np.max((data_stats[1], data_stats[3], data_stats[5], data_stats[7]))
+  
+    if Verbosity > 1:  
+        print('plot_coherence_data() data_stats: ', data_stats)
+        print('plot_coherence_data() data_min: ', data_min)
+        print('plot_coherence_data() data_max: ', data_max)
+
+
+    clip_padding = 10. 
+    y_limits = [data_min - clip_padding, data_max + clip_padding]
+
+# TODO Use global plot point size instead
+    pt_size = 2
+
+# TODO Make this switch global
+    if (gui_dict['plotColorsComboBox'] == 'ABCS Colors'):
+        plot_color_scheme = ABCS_Colors
+    else:
+        plot_color_scheme = MM_Colors
+    
+
+    axs[0].plot(x_series, af_diff, alpha=0.8, ms=pt_size, 
+                color=plot_color_scheme['RawAF8'], label='AF Diff')
+    axs[0].set(title='AF7 - AF8', ylabel="Amp uV") 
+     
+#     axs[1].set_ylim(y_limits)
+    axs[0].set_ylim((data_stats[0] - clip_padding), (data_stats[1] + clip_padding))
+     
+
+    axs[1].plot(x_series, tp_diff, alpha=0.8, ms=pt_size, 
+                color=plot_color_scheme['RawTP9'], label='TP Diff')
+                              
+    axs[1].xaxis.set_major_locator(ticker.AutoLocator())  
+    axs[1].xaxis.set_minor_locator(ticker.AutoMinorLocator())
+    axs[1].set_ylim(y_limits)
+    axs[1].set(title='TP9 - TP10', ylabel="Amp uV") 
+
+#     axs[0].axis('auto')
+#     axs[0].grid(True)
+
+    for tmp_ax in axs:
+            tmp_ax.grid(True)
+            tmp_ax.legend(loc='upper right')
+            tmp_ax.axis('auto')
+
+
+    basename = os.path.basename(data_fname)
+    create_file_date_text(-0.05, -0.15, -0.05, -0.25, axs[1], basename, date_time_now)
+
+    create_analysis_parms_text(0.83, 2.275, plt_axes, analysis_parms)    
+
+    plt.text(0.175, 2.275, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+            transform=plt_axes.transAxes, style='italic', horizontalalignment='right',
+            bbox={'facecolor':'blue', 'alpha':0.1, 'pad':1})
+
+
+    plt.text(1.01, 1.75, 
+        'Mean: ' + "{:.3f}".format(af_mean) + 
+        '\nStd: ' + "{:.3f}".format(af_std) + 
+        '\nMin: ' + "{:.3f}".format(af_min) +
+        '\nMax: ' + "{:.3f}".format(af_max), style='italic', 
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+
+    plt.text(1.01, 0.50, 
+        'Mean: ' + "{:.3f}".format(tp_mean) + 
+        '\nStd: ' + "{:.3f}".format(tp_std) + 
+        '\nMin: ' + "{:.3f}".format(tp_min) +
+        '\nMax: ' + "{:.3f}".format(tp_max), style='italic', 
+        transform=plt_axes.transAxes,
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+
+ 
+    plt.savefig(plot_fname, dpi=300)
+   
+    if (args.display_plots or gui_dict['checkBoxInteractive']):
+        plt.show()
+  
+    plt.close()
+
+    if Verbosity > 0:
+        print("Finished writing coherence sensor data plot ")
+        print(plot_fname)
+    
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2457,6 +2668,11 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
 
     ensure_dir(out_dirname + "/plots/")
 
+
+    if (gui_dict['checkBoxFilter'] or args.filter_data):
+        muse_EEG_data = filter_all_data(muse_EEG_data)
+
+
     df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp', 'RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
 #     df = np.clip(df, -100.0, 100.0)
 
@@ -2584,6 +2800,13 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
              out_dirname + '/plots/10-ABCS_eeg_raw_coherence_data_' + date_time_now + '.png', 
              date_time_now, analysis_parms, 10)
 
+        plot_coherence_data(df['TimeStamp'], df['RAW_TP9'], df['RAW_AF7'], 
+            df['RAW_AF8'], df['RAW_TP10'], data_fname, 
+            out_dirname + '/plots/12-ABCS_eeg_coherence_' + date_time_now + '.png',
+            date_time_now,  "EEG Coherence", data_stats, analysis_parms, 12)
+    
+
+
     if False:
 #         if args.plot_3D:
 
@@ -2601,7 +2824,8 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
 
 
 
-    if (gui_dict['checkBoxPowerBands']):
+
+    if (gui_dict['checkBoxPowerBands'] or args.power):
 
         delta_df = pd.DataFrame(muse_EEG_data, 
             columns=['Delta_TP9', 'Delta_AF7', 'Delta_AF8', 'Delta_TP10'])    
@@ -2905,16 +3129,16 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
     parser.add_argument("-b", "--batch", help="Batch Mode", action="store_true")
     parser.add_argument("-p", "--power", help="Plot Power Bands", action="store_true")
     parser.add_argument("-e", "--eeg", help="Plot EEG Data", action="store_true")
-    parser.add_argument("--plot_3D", help="3D Display Plots", action="store_true")
-    parser.add_argument("-i", "--integrate", help="Integrate EEG Data", action="store_true")
-    parser.add_argument("-s", "--step_size", help="Integration Step Size", type=int)
-    parser.add_argument("-ps", "--power_spectrum", help="Analyze Spectrum", action="store_true")
+#     parser.add_argument("--plot_3D", help="3D Display Plots", action="store_true")
+#     parser.add_argument("-i", "--integrate", help="Integrate EEG Data", action="store_true")
+#     parser.add_argument("-s", "--step_size", help="Integration Step Size", type=int)
+#     parser.add_argument("-ps", "--power_spectrum", help="Analyze Spectrum", action="store_true")
     parser.add_argument("-f", "--filter_data", help="Filter EEG Data", action="store_true")
     parser.add_argument("-lc", "--lowcut", help="Filter Low Cuttoff Frequency",  type=float)
     parser.add_argument("-hc", "--highcut", help="Filter High Cuttoff Frequency", type=float)
     parser.add_argument("-o", "--filter_order", help="Filter Order", type=int)
-    parser.add_argument("-l", "--logging_level", 
-                            help="Logging verbosity: 1 = info, 2 = warning, 3 = debug", type=int)    
+#     parser.add_argument("-l", "--logging_level", 
+#                             help="Logging verbosity: 1 = info, 2 = warning, 3 = debug", type=int)    
                                         
     args = parser.parse_args()
 
@@ -2929,11 +3153,35 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
         print(args.display_plots)
 
 
-    if args.display_plots:
+    if args.batch:
         if Verbosity > 0:
             print("batch:")
         print(args.batch)
         BatchMode = True
+
+
+    if args.filter_data:
+        if Verbosity > 0:
+            print("filter_data:")
+            print(args.filter_data)
+
+    if args.lowcut:
+        if Verbosity > 0:
+            print("lowcut:")
+            print(args.lowcut)
+        Filter_Lowcut = args.lowcut
+
+    if args.highcut:
+        if Verbosity > 0:
+            print("highcut:")
+            print(args.highcut)
+        Filter_Highcut = args.highcut
+
+    if args.filter_order:
+        if Verbosity > 0:
+            print("filter_order:")
+            print(args.filter_order)
+        Filter_Order = args.filter_order
 
                    
 #     if args.csv_file:
