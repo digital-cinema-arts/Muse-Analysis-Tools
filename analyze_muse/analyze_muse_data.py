@@ -62,7 +62,7 @@ import analyze_muse.resources.resources_rc
 muse_EEG_data = []
 EEG_Dict ={}
 eeg_stats = []
-MM_CVS_fname = ""
+CVS_fname = ""
 out_dirname = ""
 Sampling_Rate = 250.0
 Filter_Lowcut  = 1.0
@@ -560,10 +560,10 @@ class The_GUI(QDialog):
                 print(fileName)
             
         global gui_dict    
-        global MM_CVS_fname 
-        MM_CVS_fname = fileName
+        global CVS_fname 
+        CVS_fname = fileName
     
-        gui_dict = {'fileName': MM_CVS_fname}
+        gui_dict = {'fileName': CVS_fname}
   
   
     
@@ -1015,9 +1015,9 @@ def filter_data(data_in, win):
     N  = 3    # Filter order
     Wn = 0.5 # Cutoff frequency
     B, A = signal.butter(N, Wn, output='ba')
-    smoothed_data = signal.filtfilt(B,A, data_in)
+    filtered_data = signal.filtfilt(B,A, data_in)
 
-    return smoothed_data
+    return filtered_data
 
 
 
@@ -2529,7 +2529,6 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
             out_dirname + '/plots/21-ABCS_eeg_smoothed_' + date_time_now + '.png',
             date_time_now, "Smoothed EEG", data_stats, analysis_parms, 21)
 
-
 #     x1 = np.arange(0, len(df['TimeStamp']))    
 #     y1 = np.cos(x1)
 #     f1 = interpolate.interp1d(x1, df['RAW_TP9'], kind='cubic')
@@ -2845,12 +2844,12 @@ def main(date_time_now):
     app.closeAllWindows()
     app.exit()
 
-    head_tail = os.path.split(MM_CVS_fname) 
+    head_tail = os.path.split(CVS_fname) 
   
-    if len(MM_CVS_fname) != 0:
+    if len(CVS_fname) != 0:
         out_dirname = head_tail[0] + "/output/" + head_tail[1][:len( head_tail[1]) - 4] 
         if Verbosity > 1:
-            print("main() - Processing file: ", MM_CVS_fname)
+            print("main() - Processing file: ", CVS_fname)
             print("main() - Output directory: ", out_dirname)
         
     else:
@@ -2858,7 +2857,7 @@ def main(date_time_now):
         sys.exit(1)
     
     # Read the EEG data from disk
-    (muse_EEG_data, EEG_Dict) = read_eeg_data(MM_CVS_fname, date_time_now)
+    (muse_EEG_data, EEG_Dict) = read_eeg_data(CVS_fname, date_time_now)
 
     if (gui_dict['checkBoxAutoReject']): 
         if Verbosity > 2:
@@ -2867,7 +2866,7 @@ def main(date_time_now):
 
         
     # Make plots!
-    generate_plots(muse_EEG_data, MM_CVS_fname, date_time_now)
+    generate_plots(muse_EEG_data, CVS_fname, date_time_now)
  
 
 

@@ -42,7 +42,6 @@ setup(
          },
         
      data_files=[
-#          ('resources', ['resources/resources_rc.py']),
           ('resources', ['analyze_muse/resources/resources_rc.py']),
           ('icons', ['analyze_muse/resources/ABCS.ico'])
       ],
@@ -52,6 +51,7 @@ setup(
 #        "Documentation": "https://github.com/digital-cinema-arts/Muse-Analysis-Tools/wiki",
 #        "Source Code": "https://github.com/digital-cinema-arts/Muse-Analysis-Tools",
 #    },
+
 
 )
 
