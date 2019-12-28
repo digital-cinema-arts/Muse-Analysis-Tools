@@ -5,7 +5,7 @@
 This script will generate a number of charts from Muse headband EEG CSV data files created by the Mind Monitor app.  Future versions of these tools will support Muse Direct and Muse Lab files.
 
 --------------------------------------------------------------------
-#### Install instructions:
+### Install instructions:
 #### Download and Install
 1) Download the archive file, save in a temp directory
 2) Unzip the file:   
