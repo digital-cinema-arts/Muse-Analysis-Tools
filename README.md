@@ -63,9 +63,8 @@ Options:
 $ analyze_muse_data.py -h 
  
 usage: analyze_muse_data.py [-h] [-c CSV_FILE] [-v VERBOSE] [-d] [-b] [-p]
-                            [-e] [--plot_3D] [-i] [-s STEP_SIZE] [-ps] [-f]
-                            [-lc LOWCUT] [-hc HIGHCUT] [-o FILTER_ORDER]
-                            [-l LOGGING_LEVEL]
+                            [-e] [-f] [-lc LOWCUT] [-hc HIGHCUT]
+                            [-o FILTER_ORDER]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -77,12 +76,6 @@ optional arguments:
   -b, --batch           Batch Mode
   -p, --power           Plot Power Bands
   -e, --eeg             Plot EEG Data
-  --plot_3D             3D Display Plots
-  -i, --integrate       Integrate EEG Data
-  -s STEP_SIZE, --step_size STEP_SIZE
-                        Integration Step Size
-  -ps, --power_spectrum
-                        Analyze Spectrum
   -f, --filter_data     Filter EEG Data
   -lc LOWCUT, --lowcut LOWCUT
                         Filter Low Cuttoff Frequency
@@ -90,8 +83,6 @@ optional arguments:
                         Filter High Cuttoff Frequency
   -o FILTER_ORDER, --filter_order FILTER_ORDER
                         Filter Order
-  -l LOGGING_LEVEL, --logging_level LOGGING_LEVEL
-                        Logging verbosity: 1 = info, 2 = warning, 2 = debug
 
   ~~~~
 
