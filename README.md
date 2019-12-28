@@ -8,7 +8,9 @@
 This script will generate a number of charts from Muse headband EEG CSV data files created by the Mind Monitor app.  Future versions of these tools will support Muse Direct and Muse Lab files.
 
 
-Install instructions:
+#### Install instructions:
+
+#### Download and Install
 
 1) Download the archive file, save in a temp directory
 2) Unzip the file:   
@@ -19,6 +21,16 @@ Install instructions:
 ```$ python3 setup.py install```
 <BR>
  
+#### Clone using Git and Install
+
+1) Clone the project using git in a temp directory.
+```$ git clone https://github.com/digital-cinema-arts/Muse-Analysis-Tools.git```
+2) Change diretory into the Muse-Analysis-Tools-master directory:   
+```$ cd Muse-Analysis-Tools-master```
+3) Run the setup.py to install the application:   
+```$ python3 setup.py install```
+<BR>
+
 #### NOTE: This application requires Python version 3 installed on your computer. To check which version of python you have installed enter this command:   
 
 ```
@@ -28,7 +40,7 @@ Python 3.7.4
 
 --------------------------------------------------------------------
 
-Usage:
+#### Usage:
 1) Change directory to where the Mind Monitor CSV files are located.  
 2) Startup the application:  
 ```$ analyze_muse_data.py```
@@ -37,7 +49,7 @@ Usage:
 
 --------------------------------------------------------------------
 
-Notes:
+#### Notes:
 1) Output images and session data are created within the same directory that the CSV files live.  This will change in the future to allow the user to select the output directory.
 
 --------------------------------------------------------------------
@@ -56,7 +68,7 @@ The ".ABCS_parms.rc" file.
 
 --------------------------------------------------------------------
 
-Options: 
+#### Options: 
 
 ~~~~
 
@@ -86,24 +98,21 @@ optional arguments:
 
   ~~~~
 
-
 ---------------------------------------------------------------------
-
 
 ![picture alt](https://github.com/digital-cinema-arts/Muse-Analysis-Tools/blob/master/images/GUI.png "The GUI")
 
 https://github.com/digital-cinema-arts/Muse-Analysis-Tools/wiki/Example-Plots
 
-
 ---------------------------------------------------------------------
 
-*Important note on sampling rate:  Select "Continous" from the Mind Monitor recording interval option.
-
+#### Important note on sampling rate:  Select "Continous" from the Mind Monitor recording interval option.
 
 ![picture alt](https://github.com/digital-cinema-arts/Muse-Analysis-Tools/blob/master/images/MM-recording-interval.png "Mind Monitor recording interval option")
 
 ---------------------------------------------------------------------
-Donations
+
+#### Donations
 
 https://paypal.me/vinyasakramayoga?locale.x=en_US
 
@@ -112,9 +121,6 @@ If you would like to support this project, to help to contribute to disabled fol
 You can read more about our outreach program here:
 
 https://xion.org/VinyasaKramaYogaOlympia/index.php/rainbow-goddess/
-
-
-
 
 
 :droplet:
