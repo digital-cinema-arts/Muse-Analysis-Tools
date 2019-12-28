@@ -40,6 +40,11 @@ Usage:
 Notes:
 1) Output images and session data are created within the same directory that the CSV files live.  This will change in the future to allow the user to select the output directory.
 
+--------------------------------------------------------------------
+
+For more information about the graphs inteface (from matplotlib) please refert this link:
+https://matplotlib.org/3.1.1/users/navigation_toolbar.html
+
 
 --------------------------------------------------------------------
 
