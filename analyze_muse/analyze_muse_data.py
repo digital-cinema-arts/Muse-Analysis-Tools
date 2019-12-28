@@ -621,7 +621,7 @@ def manage_session_data(init=False, new_data={}, session_date='', date_time=''):
                         },          
                     1:{
                         'name': 'Savahn',
-                        'age': 38,
+                        'age': 39,
                         'gender': 'female'
                         }     
                     },
@@ -1614,34 +1614,34 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
 
     plt.text(1.01, 4.25, 
         'Mean: ' + "{:.3f}".format(data_stats['beta']['mean']) + 
-        '\nStd: ' + "{:.3f}".format(data_stats['beta']['mean']) +
-        '\nMin: ' + "{:.3f}".format(data_stats['beta']['mean']) +
-        '\nMax: ' + "{:.3f}".format(data_stats['beta']['mean']), style='italic', 
+        '\nStd: ' + "{:.3f}".format(data_stats['beta']['std']) +
+        '\nMin: ' + "{:.3f}".format(data_stats['beta']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['beta']['max']), style='italic', 
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
         
     plt.text(1.01, 3.0, 
         'Mean: ' + "{:.3f}".format(data_stats['alpha']['mean']) + 
-        '\nStd: ' + "{:.3f}".format(data_stats['alpha']['mean']) +
-        '\nMin: ' + "{:.3f}".format(data_stats['alpha']['mean']) +
-        '\nMax: ' + "{:.3f}".format(data_stats['alpha']['mean']), style='italic', 
+        '\nStd: ' + "{:.3f}".format(data_stats['alpha']['std']) +
+        '\nMin: ' + "{:.3f}".format(data_stats['alpha']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['alpha']['max']), style='italic', 
         
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
         
     plt.text(1.01, 1.75, 
         'Mean: ' + "{:.3f}".format(data_stats['theta']['mean']) + 
-        '\nStd: ' + "{:.3f}".format(data_stats['theta']['mean']) +
-        '\nMin: ' + "{:.3f}".format(data_stats['theta']['mean']) +
-        '\nMax: ' + "{:.3f}".format(data_stats['theta']['mean']), style='italic', 
+        '\nStd: ' + "{:.3f}".format(data_stats['theta']['std']) +
+        '\nMin: ' + "{:.3f}".format(data_stats['theta']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['theta']['max']), style='italic', 
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
         
     plt.text(1.01, 0.5, 
         'Mean: ' + "{:.3f}".format(data_stats['delta']['mean']) + 
-        '\nStd: ' + "{:.3f}".format(data_stats['delta']['mean']) + 
-        '\nMin: ' + "{:.3f}".format(data_stats['delta']['mean']) +
-        '\nMax: ' + "{:.3f}".format(data_stats['delta']['mean']), style='italic', 
+        '\nStd: ' + "{:.3f}".format(data_stats['delta']['std']) + 
+        '\nMin: ' + "{:.3f}".format(data_stats['delta']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['delta']['max']), style='italic', 
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
 
@@ -1862,34 +1862,34 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
 
     plt.text(1.01, 4.25, 
         'Mean: ' + "{:.3f}".format(data_stats['beta']['mean']) + 
-        '\nStd: ' + "{:.3f}".format(data_stats['beta']['mean']) +
-        '\nMin: ' + "{:.3f}".format(data_stats['beta']['mean']) +
-        '\nMax: ' + "{:.3f}".format(data_stats['beta']['mean']), style='italic', 
+        '\nStd: ' + "{:.3f}".format(data_stats['beta']['mstdean']) +
+        '\nMin: ' + "{:.3f}".format(data_stats['beta']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['beta']['max']), style='italic', 
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
         
     plt.text(1.01, 3.0, 
         'Mean: ' + "{:.3f}".format(data_stats['alpha']['mean']) + 
-        '\nStd: ' + "{:.3f}".format(data_stats['alpha']['mean']) +
-        '\nMin: ' + "{:.3f}".format(data_stats['alpha']['mean']) +
-        '\nMax: ' + "{:.3f}".format(data_stats['alpha']['mean']), style='italic', 
+        '\nStd: ' + "{:.3f}".format(data_stats['alpha']['std']) +
+        '\nMin: ' + "{:.3f}".format(data_stats['alpha']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['alpha']['max']), style='italic', 
         
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
         
     plt.text(1.01, 1.75, 
         'Mean: ' + "{:.3f}".format(data_stats['theta']['mean']) + 
-        '\nStd: ' + "{:.3f}".format(data_stats['theta']['mean']) +
-        '\nMin: ' + "{:.3f}".format(data_stats['theta']['mean']) +
-        '\nMax: ' + "{:.3f}".format(data_stats['theta']['mean']), style='italic', 
+        '\nStd: ' + "{:.3f}".format(data_stats['theta']['std']) +
+        '\nMin: ' + "{:.3f}".format(data_stats['theta']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['theta']['max']), style='italic', 
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
         
     plt.text(1.01, 0.5, 
         'Mean: ' + "{:.3f}".format(data_stats['delta']['mean']) + 
-        '\nStd: ' + "{:.3f}".format(data_stats['delta']['mean']) + 
-        '\nMin: ' + "{:.3f}".format(data_stats['delta']['mean']) +
-        '\nMax: ' + "{:.3f}".format(data_stats['delta']['mean']), style='italic', 
+        '\nStd: ' + "{:.3f}".format(data_stats['delta']['std']) + 
+        '\nMin: ' + "{:.3f}".format(data_stats['delta']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['delta']['max']), style='italic', 
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
 
@@ -2035,34 +2035,34 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
 
     plt.text(1.01, 4.25, 
         'Mean: ' + "{:.3f}".format(data_stats['beta']['mean']) + 
-        '\nStd: ' + "{:.3f}".format(data_stats['beta']['mean']) +
-        '\nMin: ' + "{:.3f}".format(data_stats['beta']['mean']) +
-        '\nMax: ' + "{:.3f}".format(data_stats['beta']['mean']), style='italic', 
+        '\nStd: ' + "{:.3f}".format(data_stats['beta']['std']) +
+        '\nMin: ' + "{:.3f}".format(data_stats['beta']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['beta']['max']), style='italic', 
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
         
     plt.text(1.01, 3.0, 
         'Mean: ' + "{:.3f}".format(data_stats['alpha']['mean']) + 
-        '\nStd: ' + "{:.3f}".format(data_stats['alpha']['mean']) +
-        '\nMin: ' + "{:.3f}".format(data_stats['alpha']['mean']) +
-        '\nMax: ' + "{:.3f}".format(data_stats['alpha']['mean']), style='italic', 
+        '\nStd: ' + "{:.3f}".format(data_stats['alpha']['std']) +
+        '\nMin: ' + "{:.3f}".format(data_stats['alpha']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['alpha']['max']), style='italic', 
         
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
         
     plt.text(1.01, 1.75, 
         'Mean: ' + "{:.3f}".format(data_stats['theta']['mean']) + 
-        '\nStd: ' + "{:.3f}".format(data_stats['theta']['mean']) +
-        '\nMin: ' + "{:.3f}".format(data_stats['theta']['mean']) +
-        '\nMax: ' + "{:.3f}".format(data_stats['theta']['mean']), style='italic', 
+        '\nStd: ' + "{:.3f}".format(data_stats['theta']['std']) +
+        '\nMin: ' + "{:.3f}".format(data_stats['theta']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['theta']['max']), style='italic', 
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
         
     plt.text(1.01, 0.5, 
         'Mean: ' + "{:.3f}".format(data_stats['delta']['mean']) + 
-        '\nStd: ' + "{:.3f}".format(data_stats['delta']['mean']) + 
-        '\nMin: ' + "{:.3f}".format(data_stats['delta']['mean']) +
-        '\nMax: ' + "{:.3f}".format(data_stats['delta']['mean']), style='italic', 
+        '\nStd: ' + "{:.3f}".format(data_stats['delta']['std']) + 
+        '\nMin: ' + "{:.3f}".format(data_stats['delta']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['delta']['max']), style='italic', 
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
 
@@ -2915,7 +2915,7 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
     parser.add_argument("-hc", "--highcut", help="Filter High Cuttoff Frequency", type=float)
     parser.add_argument("-o", "--filter_order", help="Filter Order", type=int)
     parser.add_argument("-l", "--logging_level", 
-                            help="Logging verbosity: 1 = info, 2 = warning, 2 = debug", type=int)    
+                            help="Logging verbosity: 1 = info, 2 = warning, 3 = debug", type=int)    
                                         
     args = parser.parse_args()
 
