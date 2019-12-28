@@ -1862,7 +1862,7 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
 
     plt.text(1.01, 4.25, 
         'Mean: ' + "{:.3f}".format(data_stats['beta']['mean']) + 
-        '\nStd: ' + "{:.3f}".format(data_stats['beta']['mstdean']) +
+        '\nStd: ' + "{:.3f}".format(data_stats['beta']['std']) +
         '\nMin: ' + "{:.3f}".format(data_stats['beta']['min']) +
         '\nMax: ' + "{:.3f}".format(data_stats['beta']['max']), style='italic', 
         transform=plt_axes.transAxes, 
