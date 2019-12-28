@@ -124,7 +124,7 @@ MM_Colors = {
 # ABCS Colors
 ABCS_Colors = {
 'RawTP9': '#8459E2',
-'RawAF7': '#F0A714',
+'RawAF7': '#19A724',
 'RawAF8': '#3E40E0',
 'RawTP10':'#E2D659',
 'Delta': '#A20000',
@@ -920,6 +920,8 @@ def read_eeg_data(fname, date_time_now):
 
 
 
+
+
 '''
 
 Auto reject that exceeds min/max limits.  
@@ -1018,39 +1020,66 @@ def filter_all_data(muse_EEG_data):
     muse_EEG_data['RAW_AF7'] = filter_data(muse_EEG_data['RAW_AF7'], smooth_sz)
     muse_EEG_data['RAW_AF8'] = filter_data(muse_EEG_data['RAW_AF8'], smooth_sz)
     muse_EEG_data['RAW_TP10'] = filter_data(muse_EEG_data['RAW_TP10'], smooth_sz)
+
+    if Verbosity > 2:
+        print('filter_all_data() finished filtering raw data')
+
     
     muse_EEG_data['Delta_TP9'] = filter_data(muse_EEG_data['Delta_TP9'], smooth_sz)
     muse_EEG_data['Delta_AF7'] = filter_data(muse_EEG_data['Delta_AF7'], smooth_sz)
     muse_EEG_data['Delta_AF8'] = filter_data(muse_EEG_data['Delta_AF8'], smooth_sz)
     muse_EEG_data['Delta_TP10'] = filter_data(muse_EEG_data['Delta_TP10'], smooth_sz)
 
+
+    if Verbosity > 2:
+        print('filter_all_data() finished filtering delta data')
+
+
     muse_EEG_data['Theta_TP9'] = filter_data(muse_EEG_data['Theta_TP9'], smooth_sz)
     muse_EEG_data['Theta_AF7'] = filter_data(muse_EEG_data['Theta_AF7'], smooth_sz)
     muse_EEG_data['Theta_AF8'] = filter_data(muse_EEG_data['Theta_AF8'], smooth_sz)
     muse_EEG_data['Theta_TP10'] = filter_data(muse_EEG_data['Theta_TP10'], smooth_sz)
+
+    if Verbosity > 2:
+        print('filter_all_data() finished filtering theta data')
+
 
     muse_EEG_data['Alpha_TP9'] = filter_data(muse_EEG_data['Alpha_TP9'], smooth_sz)
     muse_EEG_data['Alpha_AF7'] = filter_data(muse_EEG_data['Alpha_AF7'], smooth_sz)
     muse_EEG_data['Alpha_AF8'] = filter_data(muse_EEG_data['Alpha_AF8'], smooth_sz)
     muse_EEG_data['Alpha_TP10'] = filter_data(muse_EEG_data['Alpha_TP10'], smooth_sz)
 
+    if Verbosity > 2:
+        print('filter_all_data() finished filtering alpha data')
+
+
     muse_EEG_data['Beta_TP9'] = filter_data(muse_EEG_data['Beta_TP9'], smooth_sz)
     muse_EEG_data['Beta_AF7'] = filter_data(muse_EEG_data['Beta_AF7'], smooth_sz)
     muse_EEG_data['Beta_AF8'] = filter_data(muse_EEG_data['Beta_AF8'], smooth_sz)
     muse_EEG_data['Beta_TP10'] = filter_data(muse_EEG_data['Beta_TP10'], smooth_sz)
+
+    if Verbosity > 2:
+        print('filter_all_data() finished filtering beta data')
+
 
     muse_EEG_data['Gamma_TP9'] = filter_data(muse_EEG_data['Gamma_TP9'], smooth_sz)
     muse_EEG_data['Gamma_AF7'] = filter_data(muse_EEG_data['Gamma_AF7'], smooth_sz)
     muse_EEG_data['Gamma_AF8'] = filter_data(muse_EEG_data['Gamma_AF8'], smooth_sz)
     muse_EEG_data['Gamma_TP10'] = filter_data(muse_EEG_data['Gamma_TP10'], smooth_sz)
 
+    if Verbosity > 2:
+        print('filter_all_data() finished filtering gamma data')
 
-# columns=['RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
-# columns=['Delta_TP9', 'Delta_AF7', 'Delta_AF8', 'Delta_TP10'])    
-# columns=['Theta_TP9', 'Theta_AF7', 'Theta_AF8', 'Theta_TP10'])    
-# columns=['Alpha_TP9', 'Alpha_AF7', 'Alpha_AF8', 'Alpha_TP10'])    
-# columns=['Beta_TP9', 'Beta_AF7', 'Beta_AF8', 'Beta_TP10'])    
-# columns=['Gamma_TP9', 'Gamma_AF7', 'Gamma_AF8', 'Gamma_TP10'])
+
+    muse_EEG_data['Accelerometer_X'] = filter_data(muse_EEG_data['Accelerometer_X'], smooth_sz)
+    muse_EEG_data['Accelerometer_Y'] = filter_data(muse_EEG_data['Accelerometer_Y'], smooth_sz)
+    muse_EEG_data['Accelerometer_Z'] = filter_data(muse_EEG_data['Accelerometer_Z'], smooth_sz)
+    muse_EEG_data['Gyro_X'] = filter_data(muse_EEG_data['Gyro_X'], smooth_sz)
+    muse_EEG_data['Gyro_Y'] = filter_data(muse_EEG_data['Gyro_Y'], smooth_sz)
+    muse_EEG_data['Gyro_Z'] = filter_data(muse_EEG_data['Gyro_Z'], smooth_sz)
+
+    if Verbosity > 2:
+        print('filter_all_data() finished filtering accel & gyro data')
 
 
     return(muse_EEG_data)
@@ -1123,8 +1152,8 @@ def plot_coherence(x, y, a, b, title, data_fname, plot_fname, date_time_now, ana
 #     plt_axes.set_xlim([0, len(x)])
 #     plt_axes.set_ylim([-1000, 1000])
     
-    plt.scatter(x, y, s=1, color='r', alpha=0.7, label='AF7/AF8')
-    plt.scatter(a, b, s=1, color='g', alpha=0.7, label='TP9/TP10')
+    plt.scatter(x, y, s=1, color='r', alpha=0.5, label='AF7/AF8')
+    plt.scatter(a, b, s=1, color='g', alpha=0.5, label='TP9/TP10')
 
     
     plt.xlabel('Amp uV')
@@ -1465,7 +1494,7 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
 #             arrowprops=dict(facecolor='black', shrink=0.01))
             
 
-    axs[1].plot(x_series, tp9, alpha=0.5, ms=pt_size, color=plot_color_scheme['RawTP9'], label='TP9')
+    axs[1].plot(x_series, tp9, alpha=1.0, ms=pt_size, color=plot_color_scheme['RawTP9'], label='TP9')
     axs[1].set(title='TP9', ylabel="Amp uV") 
      
 #     axs[1].set_ylim(y_limits)
@@ -1735,7 +1764,7 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
 
 # TODO:  Make multiple windows
 
-    plot_alpha = 0.9
+    plot_alpha = 0.95
 
     if Verbosity > 0:
         print('plot_all_power_bands() called')
@@ -3106,7 +3135,6 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
 #     print("DSO path:", dso_path)    
 #     print("LIBLO path:", liblo_path)    
 
-
     if Verbosity > 1:
         print("Platform: ", sys.platform)
     
@@ -3118,8 +3146,6 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
 #     print(site.getsitepackages())
 #     print("sys.path")
 #     print(sys.path)
-# 
-
 
     
     parser = argparse.ArgumentParser()
