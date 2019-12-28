@@ -98,7 +98,7 @@ https://github.com/digital-cinema-arts/Muse-Analysis-Tools/wiki/Example-Plots
 
 ---------------------------------------------------------------------
 
-#### Important note on sampling rate:  Select "Continous" from the Mind Monitor recording interval option.
+#### Important note on sampling rate:  Select "Constant" from the Mind Monitor recording interval option.
 
 ![picture alt](https://github.com/digital-cinema-arts/Muse-Analysis-Tools/blob/master/images/MM-recording-interval.png "Mind Monitor recording interval option")
 
