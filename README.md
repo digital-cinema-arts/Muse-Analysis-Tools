@@ -2,16 +2,11 @@
  
 ## Algorithmic Biofeedback Control System - Chart Tools
 
-#### NOTE: This project is still in active development! There may be bugs, there may be missing features, but will be released officially very soon.  Thank you for your patience.  
-
-
 This script will generate a number of charts from Muse headband EEG CSV data files created by the Mind Monitor app.  Future versions of these tools will support Muse Direct and Muse Lab files.
 
-
+--------------------------------------------------------------------
 #### Install instructions:
-
 #### Download and Install
-
 1) Download the archive file, save in a temp directory
 2) Unzip the file:   
 ```$ unzip Muse-Analysis-Tools-master.zip```
@@ -19,20 +14,18 @@ This script will generate a number of charts from Muse headband EEG CSV data fil
 ```$ cd Muse-Analysis-Tools-master```
 4) Run the setup.py to install the application:   
 ```$ python3 setup.py install```
-<BR>
  
 #### Clone using Git and Install
-
-1) Clone the project using git in a temp directory.
+1) Clone the project using git in a temp directory.  
 ```$ git clone https://github.com/digital-cinema-arts/Muse-Analysis-Tools.git```
 2) Change diretory into the Muse-Analysis-Tools-master directory:   
-```$ cd Muse-Analysis-Tools-master```
+```$ cd Muse-Analysis-Tools-master``` 
 3) Run the setup.py to install the application:   
 ```$ python3 setup.py install```
-<BR>
 
-#### NOTE: This application requires Python version 3 installed on your computer. To check which version of python you have installed enter this command:   
+--------------------------------------------------------------------
 
+#### NOTE: This application requires Python version 3. To check which version of python you have installed enter this command:   
 ```
 $ python --version
 Python 3.7.4
@@ -56,7 +49,6 @@ Python 3.7.4
 
 For more information about the graphs inteface (from matplotlib) please refert this link:
 https://matplotlib.org/3.1.1/users/navigation_toolbar.html
-
 
 --------------------------------------------------------------------
 
