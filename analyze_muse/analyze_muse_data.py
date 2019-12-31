@@ -264,7 +264,7 @@ class The_GUI(QDialog):
         mellow_concentrate = self.checkBoxMellowConcentration.isChecked()
         accel_gyro = self.checkBoxAccelGyro.isChecked()
         plot_3D = self.checkBox3D.isChecked()
-        filter = self.checkBoxFilter.isChecked()      
+        filter_data = self.checkBoxFilter.isChecked()      
         statistical_plots = self.checkBoxStatistical.isChecked()
         muse_direct = self.checkBoxMuseDirect.isChecked()
         verbosity = self.verbosityComboBox.currentText()
@@ -285,7 +285,7 @@ class The_GUI(QDialog):
                 "checkBoxMellowConcentration": mellow_concentrate,
                 "checkBoxAccelGyro": accel_gyro,
                 "checkBox3D": plot_3D,
-                "checkBoxFilter": filter,                
+                "checkBoxFilter": filter_data,                
                 "checkBoxStatistical": statistical_plots,
                 "checkBoxMuseDirect": muse_direct,
                 "verbosityComboBox": verbosity,
@@ -315,8 +315,13 @@ class The_GUI(QDialog):
 
     def createTopLeftGroupBox(self):
         self.topLeftGroupBox = QGroupBox("Select Options")
-        self.topLeftGroupBox.setStyleSheet("background-color: #F0F0F8;")
-
+        self.topLeftGroupBox.setStyleSheet("color: black; background-color: #F0F0F8;")
+ 
+# setStyleSheet("color: black;"
+#                         "background-color: yellow;"
+#                         "selection-color: yellow;"
+#                         "selection-background-color: black;");
+ 
         layout = QVBoxLayout()
 
         self.checkBoxInteractive = QCheckBox("Display Interactive Plots")
@@ -409,7 +414,7 @@ class The_GUI(QDialog):
 
     def createTopRightGroupBox(self):
         self.topRightGroupBox = QGroupBox("Meditation Session Details")
-        self.topRightGroupBox.setStyleSheet("background-color: #F0F0F8;")
+        self.topRightGroupBox.setStyleSheet("color: black; background-color: #F0F0F8;")
 
         layout = QGridLayout()
 
@@ -475,16 +480,16 @@ class The_GUI(QDialog):
 
     def createBottomLeftGroupBox(self):
         self.bottomLeftGroupBox = QGroupBox("Create Plots")
-        self.bottomLeftGroupBox.setStyleSheet("background-color: #F0F0F8;")
+        self.bottomLeftGroupBox.setStyleSheet("color: black; background-color: #F0F0F8;")
 
         self.filePushButton = QPushButton("Select CSV File")
         self.filePushButton.clicked.connect(self.file_button_clicked)
-        self.filePushButton.setStyleSheet("background-color: #b69bc2;")
+        self.filePushButton.setStyleSheet("color: black; background-color: #b69bc2;")
 #         filePushButton.setDefault(False)
 
         self.plotPushButton = QPushButton("Create Plots")
         self.plotPushButton.setDefault(True)
-        self.plotPushButton.setStyleSheet("background-color: #9bb4c2;")
+        self.plotPushButton.setStyleSheet("color: black; background-color: #9bb4c2;")
         self.plotPushButton.clicked.connect(self.plot_button_clicked)
 
         self.verbosityComboBox = QComboBox()
