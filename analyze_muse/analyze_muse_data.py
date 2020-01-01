@@ -72,6 +72,7 @@ Filter_Order = 3
 Filter_Type = 0
 NOTCH_B, NOTCH_A = butter(4, np.array([55, 65]) / (256 / 2), btype='bandstop')
 Verbosity = 0
+Save_DB = False
 session_dict = {}
 gui_dict = {}
 plot_color_scheme = {}
@@ -376,7 +377,7 @@ class The_GUI(QDialog):
 
         self.checkBoxDB = QCheckBox("Send Results to Database")
         self.checkBoxDB.setChecked(False)
-        self.checkBoxDB.setEnabled(False)
+        self.checkBoxDB.setEnabled(True)
 
         self.checkBoxHFDF5 = QCheckBox("Write HDF5 File")
         self.checkBoxHFDF5.setChecked(False)
@@ -396,7 +397,7 @@ class The_GUI(QDialog):
         layout.addWidget(self.checkBoxAccelGyro)
 #         layout.addWidget(self.checkBox3D)
         layout.addWidget(self.checkBoxStatistical)
-        layout.addWidget(self.checkBoxMuseDirect)
+#         layout.addWidget(self.checkBoxMuseDirect)
         layout.addWidget(self.checkBoxFilter)
 #         layout.addWidget(self.checkBoxResample)
         layout.addWidget(self.checkBoxAutoReject)
@@ -671,29 +672,68 @@ Connect to database
 
 ''' 
 
-def connct_to_DB(date_time_now):
+def connect_to_DB(date_time_now):
 #     import mysql.connector
     import sqlite3
+
+    if Verbosity > 0:
+        print("connect_to_DB(): Sending data to database ...")
 
 
     db_fname = 'EEG_data.db'
     import sqlite3
-    conn = sqlite3.connect(db_fname.db)
+#     conn = sqlite3.connect(db_fname)
 
+
+    # If the database does not exist, create it
+    if os.path.exists(db_fname):
+
+        if Verbosity > 0:
+            print("connect_to_DB(): Database exists ...")
+
+    else:
+    
+        if Verbosity > 0:
+            print("connect_to_DB(): Creating new database ...")
+        conn = sqlite3.connect(db_fname)
+        c = conn.cursor()
+
+        c.execute('''CREATE TABLE eeg_data
+                     (date text, type text, data_type text, average real, std real)''')
+
+
+    conn = sqlite3.connect(db_fname)
     c = conn.cursor()
 
-    # Create table
-    c.execute('''CREATE TABLE eeg_data
-                 (date text, type text, data-type text, average real, std real)''')
+#     sql_insert = "INSERT INTO eeg_data VALUES ( '" + date_time_now + "','" + \
+#                         json.dumps(EEG_Dict) + "','meta-data', 100, 0.05)"
 
-    # Insert a row of data
-    c.execute("INSERT INTO eeg_data VALUES (date_time_now,'session','meta-data', 100, 0.05)")
+    sql_insert = "INSERT INTO eeg_data VALUES ( '" + date_time_now + "','" + \
+                        json.dumps(session_dict) + "','meta-data', 100, 0.05)"
 
+
+    if Verbosity > 1:
+        print("connect_to_DB() - sql_insert: ", sql_insert)
+    
+    c.execute(sql_insert)
     conn.commit()
+        
 
-    # We can also close the connection if we are done with it.
-    # Just be sure any changes have been committed or they will be lost.
+#     c.execute('SELECT * FROM eeg_data WHERE average=100')
+#     print(c.fetchone())
+
+#     print("connect_to_DB() ***********")
+
+#     for row in c.execute('SELECT * FROM eeg_data WHERE average=100'):
+#         print("connect_to_DB() ***********")
+#         print("data row: ", row)
+        
+#     print("connect_to_DB() ***********")
+
+
     conn.close()
+    if Verbosity > 1:
+        print("connect_to_DB(): Closed DB")
 
 
 
@@ -1223,8 +1263,9 @@ def butter_lowpass(cutoff, fs, order=5):
     nyq = 0.5 * fs
     normal_cutoff = cutoff / nyq
 
-    print("butter_lowpass() nyq: ", nyq, " cutoff ", cutoff,  
-            "normal_cutoff:", normal_cutoff, " fs ", fs, " order ", order)
+    if Verbosity > 0:
+        print("butter_lowpass() nyq: ", nyq, " cutoff ", cutoff,  
+                "normal_cutoff:", normal_cutoff, " fs ", fs, " order ", order)
 
     b, a = butter(order, normal_cutoff, btype='low', analog=False)
     return b, a
@@ -1242,9 +1283,14 @@ def butter_bandpass(lowcut, highcut, fs, order=5):
     nyq = 0.5 * fs
     low = lowcut / nyq
     high = highcut / nyq
-#     print("butter_bandpass: ", low, high, nyq)
+
+    if Verbosity > 0:
+        print("butter_bandpass() nyq: ", nyq, " lowcut ", lowcut,  " highcut ", highcut,  
+                "low:", low, "high:", high, " fs ", fs, " order ", order)
+
     b, a = butter(order, [low, high], btype='band')
     return b, a
+
 
 def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
 #     print("butter_bandpass_filter: ", lowcut, highcut, fs, order)
@@ -3120,6 +3166,9 @@ def main(date_time_now):
         h5_fname = out_dirname + '/hdf5_data/' + os.path.basename(CVS_fname) + '_' + date_time_now + '.hdf5'
         write_h5_data(muse_EEG_data, h5_fname)
 
+    # Save session data to DB
+    if (gui_dict['checkBoxDB'] or args.data_base):
+        connect_to_DB(date_time_now)
 
 
     # Make plots!
@@ -3147,7 +3196,6 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
     
     date_time_now = strftime('%Y-%m-%d-%H.%M.%S', gmtime())
 
-    
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--csv_file", help="CSV file to read)")
     parser.add_argument("-v", "--verbose", help="Increase output verbosity", type=int)
@@ -3166,6 +3214,8 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
     parser.add_argument("-lc", "--lowcut", help="Filter Low Cuttoff Frequency",  type=float)
     parser.add_argument("-hc", "--highcut", help="Filter High Cuttoff Frequency", type=float)
     parser.add_argument("-o", "--filter_order", help="Filter Order", type=int)
+    parser.add_argument("-db", "--data_base", 
+                            help="Send session data and statistics to database",  action="store_true")
 #     parser.add_argument("-l", "--logging_level", 
 #                             help="Logging verbosity: 1 = info, 2 = warning, 3 = debug", type=int)    
                                         
@@ -3219,17 +3269,22 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
         Filter_Order = args.filter_order
 
                    
-#     if args.csv_file:
-#         fname = args.csv_file
-#         out_dirname = "./output/" + fname[:len(fname) - 4]
-#         print("Processing file: ", fname)
-#         print("Output directory: ", out_dirname)
-#         
-#         
-#     else:
-#         print("Filename not specified")
-#         sys.exit(1)
-# 
+    if args.csv_file:
+        CVS_fname = args.csv_file
+        if not os.path.exists(CVS_fname):
+            print("Filename not specified")
+            sys.exit(1)
+
+        if Verbosity > 0:
+            print("Processing file: ", CVS_fname)
+    
+
+    if args.data_base:
+        if Verbosity > 0:
+            print("data_base:")
+            print(args.data_base)
+        Save_DB = args.data_base
+
 
 
     try:
