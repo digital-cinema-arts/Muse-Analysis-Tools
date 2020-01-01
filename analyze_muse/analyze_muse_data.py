@@ -679,11 +679,7 @@ def connect_to_DB(date_time_now):
     if Verbosity > 0:
         print("connect_to_DB(): Sending data to database ...")
 
-
     db_fname = 'EEG_data.db'
-    import sqlite3
-#     conn = sqlite3.connect(db_fname)
-
 
     # If the database does not exist, create it
     if os.path.exists(db_fname):
@@ -708,8 +704,11 @@ def connect_to_DB(date_time_now):
 #     sql_insert = "INSERT INTO eeg_data VALUES ( '" + date_time_now + "','" + \
 #                         json.dumps(EEG_Dict) + "','meta-data', 100, 0.05)"
 
+#     sql_insert = "INSERT INTO eeg_data VALUES ( '" + date_time_now + "','" + \
+#                         json.dumps(session_dict) + "','meta-data', 100, 0.05)"
+
     sql_insert = "INSERT INTO eeg_data VALUES ( '" + date_time_now + "','" + \
-                        json.dumps(session_dict) + "','meta-data', 100, 0.05)"
+                        json.dumps(session_dict) + "','" + json.dumps(gui_dict) + "', 100, 0.05)"
 
 
     if Verbosity > 1:
@@ -3148,7 +3147,7 @@ def main(date_time_now):
 
 
     # If the user wants an HDF5 file written of the data 
-    if (gui_dict['checkBoxHFDF5'] or args.hdf5):
+    if (gui_dict['checkBoxHFDF5'] or args.write_hdf5_file):
         ensure_dir(out_dirname + "/hdf5_data/")
         h5_fname = out_dirname + '/hdf5_data/' + os.path.basename(CVS_fname) + '_' + date_time_now + '.hdf5'
         write_h5_data(muse_EEG_data, h5_fname)
