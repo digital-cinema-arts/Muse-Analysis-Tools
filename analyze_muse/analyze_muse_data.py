@@ -25,6 +25,7 @@ import math
 from tqdm import tqdm
 from progress.bar import Bar, IncrementalBar
 import json
+import h5py, tables
 from pathlib import Path
 from scipy import integrate, signal
 from scipy.signal import butter, lfilter
@@ -378,7 +379,7 @@ class The_GUI(QDialog):
 
         self.checkBoxHFDF5 = QCheckBox("Write HDF5 File")
         self.checkBoxHFDF5.setChecked(False)
-        self.checkBoxHFDF5.setEnabled(False)
+        self.checkBoxHFDF5.setEnabled(True)
   
         self.plotColorsComboBox = QComboBox()
         self.plotColorsComboBox.addItems(['ABCS Colors', 'Mind Monitor Colors'])
@@ -985,6 +986,108 @@ def auto_reject_EEG_data(data):
 
     return new_df
     
+
+
+'''
+ 
+ Write out on HF=DF5 data file of the data that was plotted
+ 
+''' 
+def write_h5_data(muse_EEG_data, data_fname):
+
+    if Verbosity > 0:
+        print("write_h5_data()")
+
+    global session_dict
+    global EEG_Dict
+
+#     f = h5py.File("mytestfile.hdf5", "w")
+
+#     with h5py.File("mytestfile.hdf5", "w") as f:
+#         h5file = tables.open_file("mytestfile.hdf5", driver="H5FD_CORE")
+#         print("tables object - h5file: ", h5file)
+# 
+#         h5file.close()
+
+#     arr = np.random.randn(1000)
+
+    df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp', 'RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
+
+    delta_df = pd.DataFrame(muse_EEG_data, 
+        columns=['Delta_TP9', 'Delta_AF7', 'Delta_AF8', 'Delta_TP10'])    
+    theta_df = pd.DataFrame(muse_EEG_data, 
+        columns=['Theta_TP9', 'Theta_AF7', 'Theta_AF8', 'Theta_TP10'])    
+    alpha_df = pd.DataFrame(muse_EEG_data, 
+        columns=['Alpha_TP9', 'Alpha_AF7', 'Alpha_AF8', 'Alpha_TP10'])    
+    beta_df = pd.DataFrame(muse_EEG_data, 
+        columns=['Beta_TP9', 'Beta_AF7', 'Beta_AF8', 'Beta_TP10'])    
+    gamma_df = pd.DataFrame(muse_EEG_data, 
+        columns=['Gamma_TP9', 'Gamma_AF7', 'Gamma_AF8', 'Gamma_TP10'])    
+
+    motion_df = pd.DataFrame(muse_EEG_data, columns=[
+                    'Accelerometer_X', 'Accelerometer_Y', 'Accelerometer_Z', 
+                    'Gyro_X', 'Gyro_Y', 'Gyro_Z'])    
+
+    basename = os.path.basename(data_fname)
+
+    data_stats = (EEG_Dict['RAW_AF7']['25%'], EEG_Dict['RAW_AF7']['75%'],
+                EEG_Dict['RAW_AF8']['25%'], EEG_Dict['RAW_AF8']['75%'],
+                EEG_Dict['RAW_TP9']['25%'], EEG_Dict['RAW_TP9']['75%'],
+                EEG_Dict['RAW_TP10']['25%'], EEG_Dict['RAW_TP10']['75%'])
+
+
+    if Verbosity > 1:
+        print("write_h5_data() - data_fname: ", data_fname)
+        print("write_h5_data() - basename: ", basename)
+
+    
+    with h5py.File(data_fname, 'w') as f:
+        g_base = f.create_group('abcs_base')
+        g_stats = g_base.create_group('stats')
+        g_raw = g_base.create_group('raw')
+        g_power = g_base.create_group('power')
+        g_motion = g_base.create_group('motion')
+
+        stats = g_stats.create_dataset('stats', compression="gzip", compression_opts=9,
+                    data=(data_stats))
+#         for k, v in EEG_Dict.items():
+#             print("write_h5_data() -  k, v: ",  k, v)
+#             g_stats.create_dataset(k, data=np.array(v))
+#             g_stats.create_dataset(k, data=np.array(23))
+    
+    
+
+        delta = g_power.create_dataset('p_delta', dtype='f8', compression="gzip", compression_opts=9,
+                    data=(delta_df['Delta_TP9'], delta_df['Delta_AF7'],
+                    delta_df['Delta_AF8'], delta_df['Delta_TP10']))
+        theta = g_power.create_dataset('p_theta', dtype='f8', compression="gzip", compression_opts=9,
+                    data=(theta_df['Theta_TP9'], theta_df['Theta_AF7'],
+                    theta_df['Theta_AF8'], theta_df['Theta_TP10']))
+        alpha = g_power.create_dataset('p_alpha', dtype='f8', compression="gzip", compression_opts=9,
+                    data=(alpha_df['Alpha_TP9'], alpha_df['Alpha_AF7'],
+                    alpha_df['Alpha_AF8'], alpha_df['Alpha_TP10']))
+        beta = g_power.create_dataset('p_beta', dtype='f8', compression="gzip", compression_opts=9,
+                    data=(beta_df['Beta_TP9'], beta_df['Beta_AF7'],
+                    beta_df['Beta_AF8'], beta_df['Beta_TP10']))
+        gamma = g_power.create_dataset('p_gamma', dtype='f8', compression="gzip", compression_opts=9,
+                    data=(gamma_df['Gamma_TP9'], gamma_df['Gamma_AF7'],
+                    gamma_df['Gamma_AF8'], gamma_df['Gamma_TP10']))
+       
+        raw = g_raw.create_dataset('raw', dtype='f8', compression="gzip", compression_opts=9,
+                    data=(df['RAW_TP9'], df['RAW_AF7'], df['RAW_AF8'], df['RAW_TP10']))
+       
+        motion = g_motion.create_dataset('accel', dtype='f8', compression="gzip", compression_opts=9,
+                    data=(motion_df['Accelerometer_X'], motion_df['Accelerometer_Y'], motion_df['Accelerometer_Z']))
+
+        motion = g_motion.create_dataset('gyro', dtype='f8', compression="gzip", compression_opts=9,
+                    data=(motion_df['Gyro_X'], motion_df['Gyro_Y'], motion_df['Gyro_Z']))
+
+
+
+    return True
+    
+
+                    
 
 
 '''
@@ -2703,8 +2806,8 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
     ensure_dir(out_dirname + "/plots/")
 
 
-    if (gui_dict['checkBoxFilter'] or args.filter_data):
-        muse_EEG_data = filter_all_data(muse_EEG_data)
+#     if (gui_dict['checkBoxFilter'] or args.filter_data):
+#         muse_EEG_data = filter_all_data(muse_EEG_data)
 
 
     df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp', 'RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
@@ -3117,12 +3220,26 @@ def main(date_time_now):
     # Read the EEG data from disk
     (muse_EEG_data, EEG_Dict) = read_eeg_data(CVS_fname, date_time_now)
 
+    # Perform auto-reject if user has selected it
     if (gui_dict['checkBoxAutoReject']): 
         if Verbosity > 2:
             print("main() - Calling auto_reject_EEG_data()")
         muse_EEG_data = auto_reject_EEG_data(muse_EEG_data)
 
-        
+
+    # Perform filtering if user has selected it
+    if (gui_dict['checkBoxFilter'] or args.filter_data):
+        muse_EEG_data = filter_all_data(muse_EEG_data)
+
+
+    # If the user wants an HDF5 file written of the data 
+    if (gui_dict['checkBoxHFDF5'] or args.hdf5):
+        ensure_dir(out_dirname + "/hdf5_data/")
+        h5_fname = out_dirname + '/hdf5_data/' + os.path.basename(CVS_fname) + '_' + date_time_now + '.hdf5'
+        write_h5_data(muse_EEG_data, h5_fname)
+
+
+
     # Make plots!
     generate_plots(muse_EEG_data, CVS_fname, date_time_now)
  
@@ -3160,6 +3277,7 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
     parser.add_argument("-b", "--batch", help="Batch Mode", action="store_true")
     parser.add_argument("-p", "--power", help="Plot Power Bands", action="store_true")
     parser.add_argument("-e", "--eeg", help="Plot EEG Data", action="store_true")
+    parser.add_argument("--hdf5", help="Write output data into HDF5 file", action="store_true")
 #     parser.add_argument("--plot_3D", help="3D Display Plots", action="store_true")
 #     parser.add_argument("-i", "--integrate", help="Integrate EEG Data", action="store_true")
 #     parser.add_argument("-s", "--step_size", help="Integration Step Size", type=int)
