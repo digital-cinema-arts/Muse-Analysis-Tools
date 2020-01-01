@@ -96,7 +96,7 @@ optional arguments:
 
 ---------------------------------------------------------------------
 
-![picture alt](https://github.com/digital-cinema-arts/Muse-Analysis-Tools/blob/master/images/GUI.png "The GUI")
+![picture alt](https://github.com/digital-cinema-arts/Muse-Analysis-Tools/blob/master/images/GUI.png "The analyze_muse_data GUI")
 
 https://github.com/digital-cinema-arts/Muse-Analysis-Tools/wiki/Example-Plots
 
