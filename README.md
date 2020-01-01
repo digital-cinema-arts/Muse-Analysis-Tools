@@ -67,7 +67,7 @@ The ".ABCS_parms.rc" file.
 $ analyze_muse_data.py -h 
  
 usage: analyze_muse_data.py [-h] [-c CSV_FILE] [-v VERBOSE] [-d] [-b] [-p]
-                            [-e] [--hdf5] [-f] [-ft FILTER_TYPE] [-lc LOWCUT]
+                            [-e] [-hdf5] [-f] [-ft FILTER_TYPE] [-lc LOWCUT]
                             [-hc HIGHCUT] [-o FILTER_ORDER] [-db]
 
 optional arguments:
@@ -80,7 +80,8 @@ optional arguments:
   -b, --batch           Batch Mode
   -p, --power           Plot Power Bands
   -e, --eeg             Plot EEG Data
-  --hdf5                Write output data into HDF5 file
+  -hdf5, --write_hdf5_file
+                        Write output data into HDF5 file
   -f, --filter_data     Filter EEG Data
   -ft FILTER_TYPE, --filter_type FILTER_TYPE
                         Filter Type 0=default 1=low pass, 2=bandpass
