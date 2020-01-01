@@ -1121,7 +1121,6 @@ def filter_all_data(muse_EEG_data):
     if Verbosity > 0:
         print('filter_all_data() called')
 
-
     smooth_sz = 1
     
     muse_EEG_data['RAW_TP9'] = filter_data(muse_EEG_data['RAW_TP9'], smooth_sz)
@@ -1131,17 +1130,14 @@ def filter_all_data(muse_EEG_data):
 
     if Verbosity > 2:
         print('filter_all_data() finished filtering raw data')
-
     
     muse_EEG_data['Delta_TP9'] = filter_data(muse_EEG_data['Delta_TP9'], smooth_sz)
     muse_EEG_data['Delta_AF7'] = filter_data(muse_EEG_data['Delta_AF7'], smooth_sz)
     muse_EEG_data['Delta_AF8'] = filter_data(muse_EEG_data['Delta_AF8'], smooth_sz)
     muse_EEG_data['Delta_TP10'] = filter_data(muse_EEG_data['Delta_TP10'], smooth_sz)
 
-
     if Verbosity > 2:
         print('filter_all_data() finished filtering delta data')
-
 
     muse_EEG_data['Theta_TP9'] = filter_data(muse_EEG_data['Theta_TP9'], smooth_sz)
     muse_EEG_data['Theta_AF7'] = filter_data(muse_EEG_data['Theta_AF7'], smooth_sz)
@@ -1151,7 +1147,6 @@ def filter_all_data(muse_EEG_data):
     if Verbosity > 2:
         print('filter_all_data() finished filtering theta data')
 
-
     muse_EEG_data['Alpha_TP9'] = filter_data(muse_EEG_data['Alpha_TP9'], smooth_sz)
     muse_EEG_data['Alpha_AF7'] = filter_data(muse_EEG_data['Alpha_AF7'], smooth_sz)
     muse_EEG_data['Alpha_AF8'] = filter_data(muse_EEG_data['Alpha_AF8'], smooth_sz)
@@ -1159,7 +1154,6 @@ def filter_all_data(muse_EEG_data):
 
     if Verbosity > 2:
         print('filter_all_data() finished filtering alpha data')
-
 
     muse_EEG_data['Beta_TP9'] = filter_data(muse_EEG_data['Beta_TP9'], smooth_sz)
     muse_EEG_data['Beta_AF7'] = filter_data(muse_EEG_data['Beta_AF7'], smooth_sz)
@@ -1169,7 +1163,6 @@ def filter_all_data(muse_EEG_data):
     if Verbosity > 2:
         print('filter_all_data() finished filtering beta data')
 
-
     muse_EEG_data['Gamma_TP9'] = filter_data(muse_EEG_data['Gamma_TP9'], smooth_sz)
     muse_EEG_data['Gamma_AF7'] = filter_data(muse_EEG_data['Gamma_AF7'], smooth_sz)
     muse_EEG_data['Gamma_AF8'] = filter_data(muse_EEG_data['Gamma_AF8'], smooth_sz)
@@ -1177,7 +1170,6 @@ def filter_all_data(muse_EEG_data):
 
     if Verbosity > 2:
         print('filter_all_data() finished filtering gamma data')
-
 
     muse_EEG_data['Accelerometer_X'] = filter_data(muse_EEG_data['Accelerometer_X'], smooth_sz)
     muse_EEG_data['Accelerometer_Y'] = filter_data(muse_EEG_data['Accelerometer_Y'], smooth_sz)
