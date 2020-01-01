@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="Muse-Analysis-Tools",
-    version="0.2.1",
+    version="0.2.2",
 
 
     author="debra_peri",
