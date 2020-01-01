@@ -82,7 +82,7 @@ optional arguments:
   -e, --eeg             Plot EEG Data
   --hdf5                Write output data into HDF5 file
   -f, --filter_data     Filter EEG Data
-  -ft, --filter_type    Filter Type 0=default 1=low pass, 1=bandpass
+  -ft, --filter_type    Filter Type 0=default 1=low pass, 2=bandpass
   -lc LOWCUT, --lowcut LOWCUT
                         Filter Low Cuttoff Frequency
   -hc HIGHCUT, --highcut HIGHCUT
