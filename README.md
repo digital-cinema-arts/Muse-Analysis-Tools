@@ -108,6 +108,16 @@ https://github.com/digital-cinema-arts/Muse-Analysis-Tools/wiki/Example-Plots
 
 ---------------------------------------------------------------------
 
+#### Session data in JSON format.
+
+![picture alt](https://github.com/digital-cinema-arts/Muse-Analysis-Tools/blob/master/images/session_JSON-1.png "JSON session data")
+
+![picture alt](https://github.com/digital-cinema-arts/Muse-Analysis-Tools/blob/master/images/session_JSON-2.png "JSON session data")
+
+
+
+---------------------------------------------------------------------
+
 #### Donations
 
 https://paypal.me/vinyasakramayoga?locale.x=en_US
