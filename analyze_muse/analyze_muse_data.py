@@ -3162,7 +3162,7 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
 #     parser.add_argument("-ps", "--power_spectrum", help="Analyze Spectrum", action="store_true")
     parser.add_argument("-f", "--filter_data", help="Filter EEG Data", action="store_true")
     parser.add_argument("-ft", "--filter_type", 
-                        help="Filter Type 0=default 1=low pass, 2=bandpass", action="store_true")
+                        help="Filter Type 0=default 1=low pass, 2=bandpass", type=int)
     parser.add_argument("-lc", "--lowcut", help="Filter Low Cuttoff Frequency",  type=float)
     parser.add_argument("-hc", "--highcut", help="Filter High Cuttoff Frequency", type=float)
     parser.add_argument("-o", "--filter_order", help="Filter Order", type=int)
