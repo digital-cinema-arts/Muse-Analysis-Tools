@@ -718,19 +718,6 @@ def connect_to_DB(date_time_now):
     c.execute(sql_insert)
     conn.commit()
         
-
-#     c.execute('SELECT * FROM eeg_data WHERE average=100')
-#     print(c.fetchone())
-
-#     print("connect_to_DB() ***********")
-
-#     for row in c.execute('SELECT * FROM eeg_data WHERE average=100'):
-#         print("connect_to_DB() ***********")
-#         print("data row: ", row)
-        
-#     print("connect_to_DB() ***********")
-
-
     conn.close()
     if Verbosity > 1:
         print("connect_to_DB(): Closed DB")
