@@ -722,71 +722,9 @@ def connect_to_DB(date_time_now):
         print("connect_to_DB(): Closed DB")
 
 
-
-
-#     global session_dict
-#     global EEG_Dict
-# 
-#     if init:
-# 
-#         if Verbosity > 1:
-#             print("manage_session_data(): Initialize Session Data")
-# 
-#         # Fill in default values for now.  
-#         # (NOTE: Need to create DB interface)
-#         session_dict = {
-#             'ABCS Info':{'Version':VERSION_NUM},
-#             'Muse Info':{'Headband Version':'2016'},
-#             'Session_Data':{
-#             'session_date': session_date,
-#             'date': date_time,
-#             'data_file_fname': 'data file name',
-#             'mood': 'calm',
-#             'location': 'home',
-#             'activity': "sitting",
-#             'misc': 'This field is for misc. data to be stored in the database'
-#             },
-#             'Participants':{ 
-#                 'Meditators':{
-#                     0:{
-#                         'name': 'Debra',
-#                         'age': 63,
-#                         'gender': 'female'
-#                         },          
-#                     1:{
-#                         'name': 'Savahn',
-#                         'age': 38,
-#                         'gender': 'female'
-#                         }     
-#                     },
-#                 'Coordinators':{
-#                     0:{
-#                         'name': 'Patti',
-#                         'age': 32,
-#                         'gender': 'female'
-#                         }
-#                     },
-#                 'Helpers':{
-#                     0:{
-#                         'name': 'Oni',
-#                         'age': 23,
-#                         'gender': 'male'
-#                         }
-#                     },
-#                 'Participants':{
-#                     0:{
-#                         'name': 'Shiloh',
-#                         'age': 28,
-#                         'gender': 'male'
-#                         }
-#                     }
-#                 }
-#             }
-
-
     return True
-   
-   
+
+
    
    
 
@@ -890,7 +828,8 @@ def read_eeg_data(fname, date_time_now):
 
 #     sys.exit()
 
-     
+ # TODO: Insert markers 
+    
     elements_df['Elements'] = elements_df.Elements.astype(str)
 
 #     for index, row in elements_df.iterrows():
@@ -961,8 +900,6 @@ Auto reject that exceeds min/max limits.
 
 '''
 def auto_reject_EEG_data(data):
-
-# TODO: Insert markers 
 
     if Verbosity > 0:
         print("auto_reject_EEG_data()")
