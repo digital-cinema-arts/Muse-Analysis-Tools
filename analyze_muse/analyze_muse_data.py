@@ -3190,7 +3190,7 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
     parser.add_argument("-b", "--batch", help="Batch Mode", action="store_true")
     parser.add_argument("-p", "--power", help="Plot Power Bands", action="store_true")
     parser.add_argument("-e", "--eeg", help="Plot EEG Data", action="store_true")
-    parser.add_argument("--hdf5", help="Write output data into HDF5 file", action="store_true")
+    parser.add_argument("-hdf5", "--write_hdf5_file", help="Write output data into HDF5 file", action="store_true")
 #     parser.add_argument("--plot_3D", help="3D Display Plots", action="store_true")
 #     parser.add_argument("-i", "--integrate", help="Integrate EEG Data", action="store_true")
 #     parser.add_argument("-s", "--step_size", help="Integration Step Size", type=int)
