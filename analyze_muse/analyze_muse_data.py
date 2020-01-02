@@ -499,9 +499,7 @@ class The_GUI(QDialog):
         self.verbosityLabel = QtWidgets.QLabel(self)
         self.verbosityLabel.setText('Set Verbosity')
         self.verbosityLabel.setAlignment(Qt.AlignCenter)
-
-# args.verbose
-
+        self.verbosityComboBox.setCurrentIndex(args.verbose)
 
 
         self.labelChooseFile = QLabel(self)
