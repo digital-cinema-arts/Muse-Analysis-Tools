@@ -66,13 +66,14 @@ The ".ABCS_parms.rc" file.
 
 $ analyze_muse_data.py -h 
  
-usage: analyze_muse_data.py [-h] [-c CSV_FILE] [-v VERBOSE] [-d] [-b] [-p]
-                            [-e] [-hdf5] [-f] [-ft FILTER_TYPE] [-lc LOWCUT]
-                            [-hc HIGHCUT] [-o FILTER_ORDER] [-db]
+usage: analyze_muse_data.py [-h] [-f CSV_FILE] [-v VERBOSE] [-d] [-b] [-p]
+                            [-e] [-hdf5] [-ag] [-mc] [-s] [-c] [-r] [-fd]
+                            [-ft FILTER_TYPE] [-lc LOWCUT] [-hc HIGHCUT]
+                            [-o FILTER_ORDER] [-db]
 
 optional arguments:
   -h, --help            show this help message and exit
-  -c CSV_FILE, --csv_file CSV_FILE
+  -f CSV_FILE, --csv_file CSV_FILE
                         CSV file to read)
   -v VERBOSE, --verbose VERBOSE
                         Increase output verbosity
@@ -82,7 +83,16 @@ optional arguments:
   -e, --eeg             Plot EEG Data
   -hdf5, --write_hdf5_file
                         Write output data into HDF5 file
-  -f, --filter_data     Filter EEG Data
+  -ag, --accel_gyro     Plot Acceleration and Gyro Data
+  -mc, --mellow_concentration
+                        Plot Mellow and Concentratio Data (Only For Mind
+                        Monitor Data)
+  -s, --stats_plots     Plot Statistcal Data
+  -c, --coherence_plots
+                        Plot Coherence Data
+  -r, --auto_reject_data
+                        Auto Reject EEG Data
+  -fd, --filter_data    Filter EEG Data
   -ft FILTER_TYPE, --filter_type FILTER_TYPE
                         Filter Type 0=default 1=low pass, 2=bandpass
   -lc LOWCUT, --lowcut LOWCUT
@@ -92,6 +102,7 @@ optional arguments:
   -o FILTER_ORDER, --filter_order FILTER_ORDER
                         Filter Order
   -db, --data_base      Send session data and statistics to database
+
 
   ~~~~
 
