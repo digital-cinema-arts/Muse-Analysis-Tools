@@ -919,11 +919,6 @@ def auto_reject_EEG_data(data):
 # Battery,
 # Elements
 
-#
-#     data.loc[df['column_name'].isin(some_values)]
-#     new_df = data.loc[data['RAW_TP9'] < 1200.]
-#     new_df = new_df.loc[new_df['RAW_TP9'] > 800.]
-
     eeg_clip_padding = 50.
     pwr_clip_padding = 0.01
     
@@ -961,16 +956,6 @@ def write_hdf5_data(muse_EEG_data, data_fname):
 
     global session_dict
     global EEG_Dict
-
-#     f = h5py.File("mytestfile.hdf5", "w")
-
-#     with h5py.File("mytestfile.hdf5", "w") as f:
-#         h5file = tables.open_file("mytestfile.hdf5", driver="H5FD_CORE")
-#         print("tables object - h5file: ", h5file)
-# 
-#         h5file.close()
-
-#     arr = np.random.randn(1000)
 
     df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp', 'RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
 
@@ -1084,6 +1069,7 @@ def filter_all_data(muse_EEG_data):
 
     smooth_sz = 1
     
+    # Default filter
     if Filter_Type == 0:
         muse_EEG_data['RAW_TP9'] = filter_data(muse_EEG_data['RAW_TP9'], smooth_sz)
         muse_EEG_data['RAW_AF7'] = filter_data(muse_EEG_data['RAW_AF7'], smooth_sz)
@@ -1143,6 +1129,7 @@ def filter_all_data(muse_EEG_data):
         if Verbosity > 2:
             print('filter_all_data() finished filtering accel & gyro data')
 
+    # Low pass filter
     if Filter_Type == 1:
         muse_EEG_data['RAW_TP9'] = butter_lowpass_filter(muse_EEG_data['RAW_TP9'], 
                                         Filter_Highcut, Sampling_Rate, Filter_Order)
@@ -1153,6 +1140,89 @@ def filter_all_data(muse_EEG_data):
         muse_EEG_data['RAW_TP10'] = butter_lowpass_filter(muse_EEG_data['RAW_TP10'], 
                                         Filter_Highcut, Sampling_Rate, Filter_Order)
 
+        if Verbosity > 2:
+            print('filter_all_data() finished filtering raw data')
+    
+        muse_EEG_data['Delta_TP9'] = butter_lowpass_filter(muse_EEG_data['Delta_TP9'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Delta_AF7'] = butter_lowpass_filter(muse_EEG_data['Delta_AF7'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Delta_AF8'] = butter_lowpass_filter(muse_EEG_data['Delta_AF8'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Delta_TP10'] = butter_lowpass_filter(muse_EEG_data['Delta_TP10'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+
+        if Verbosity > 2:
+            print('filter_all_data() finished filtering delta data')
+
+        muse_EEG_data['Theta_TP9'] = butter_lowpass_filter(muse_EEG_data['Theta_TP9'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Theta_AF7'] = butter_lowpass_filter(muse_EEG_data['Theta_AF7'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Theta_AF8'] = butter_lowpass_filter(muse_EEG_data['Theta_AF8'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Theta_TP10'] = butter_lowpass_filter(muse_EEG_data['Theta_TP10'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+
+        if Verbosity > 2:
+            print('filter_all_data() finished filtering theta data')
+
+        muse_EEG_data['Alpha_TP9'] = butter_lowpass_filter(muse_EEG_data['Alpha_TP9'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Alpha_AF7'] = butter_lowpass_filter(muse_EEG_data['Alpha_AF7'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Alpha_AF8'] = butter_lowpass_filter(muse_EEG_data['Alpha_AF8'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Alpha_TP10'] = butter_lowpass_filter(muse_EEG_data['Alpha_TP10'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+
+        if Verbosity > 2:
+            print('filter_all_data() finished filtering alpha data')
+
+        muse_EEG_data['Beta_TP9'] = butter_lowpass_filter(muse_EEG_data['Beta_TP9'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Beta_AF7'] = butter_lowpass_filter(muse_EEG_data['Beta_AF7'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Beta_AF8'] = butter_lowpass_filter(muse_EEG_data['Beta_AF8'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Beta_TP10'] = butter_lowpass_filter(muse_EEG_data['Beta_TP10'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+
+        if Verbosity > 2:
+            print('filter_all_data() finished filtering beta data')
+
+        muse_EEG_data['Gamma_TP9'] = butter_lowpass_filter(muse_EEG_data['Gamma_TP9'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Gamma_AF7'] = butter_lowpass_filter(muse_EEG_data['Gamma_AF7'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Gamma_AF8'] = butter_lowpass_filter(muse_EEG_data['Gamma_AF8'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Gamma_TP10'] = butter_lowpass_filter(muse_EEG_data['Gamma_TP10'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+
+        if Verbosity > 2:
+            print('filter_all_data() finished filtering gamma data')
+
+        muse_EEG_data['Accelerometer_X'] = butter_lowpass_filter(muse_EEG_data['Accelerometer_X'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Accelerometer_Y'] = butter_lowpass_filter(muse_EEG_data['Accelerometer_Y'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Accelerometer_Z'] = butter_lowpass_filter(muse_EEG_data['Accelerometer_Z'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Gyro_X'] = butter_lowpass_filter(muse_EEG_data['Gyro_X'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Gyro_Y'] = butter_lowpass_filter(muse_EEG_data['Gyro_Y'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Gyro_Z'] = butter_lowpass_filter(muse_EEG_data['Gyro_Z'], 
+                                        Filter_Highcut, Sampling_Rate, Filter_Order)
+
+        if Verbosity > 2:
+            print('filter_all_data() finished filtering accel & gyro data')
+
+
+
+
+    # Band pass filter
     if Filter_Type == 2:
         muse_EEG_data['RAW_TP9'] = butter_bandpass_filter(muse_EEG_data['RAW_TP9'], 
                                             Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order) 
@@ -1162,6 +1232,87 @@ def filter_all_data(muse_EEG_data):
                                             Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order) 
         muse_EEG_data['RAW_TP10'] = butter_bandpass_filter(muse_EEG_data['RAW_TP10'], 
                                             Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order) 
+
+        if Verbosity > 2:
+            print('filter_all_data() finished filtering raw data')
+    
+        muse_EEG_data['Delta_TP9'] = butter_bandpass_filter(muse_EEG_data['Delta_TP9'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Delta_AF7'] = butter_bandpass_filter(muse_EEG_data['Delta_AF7'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Delta_AF8'] = butter_bandpass_filter(muse_EEG_data['Delta_AF8'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Delta_TP10'] = butter_bandpass_filter(muse_EEG_data['Delta_TP10'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+
+        if Verbosity > 2:
+            print('filter_all_data() finished filtering delta data')
+
+        muse_EEG_data['Theta_TP9'] = butter_bandpass_filter(muse_EEG_data['Theta_TP9'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Theta_AF7'] = butter_bandpass_filter(muse_EEG_data['Theta_AF7'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Theta_AF8'] = butter_bandpass_filter(muse_EEG_data['Theta_AF8'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Theta_TP10'] = butter_bandpass_filter(muse_EEG_data['Theta_TP10'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+
+        if Verbosity > 2:
+            print('filter_all_data() finished filtering theta data')
+
+        muse_EEG_data['Alpha_TP9'] = butter_bandpass_filter(muse_EEG_data['Alpha_TP9'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Alpha_AF7'] = butter_bandpass_filter(muse_EEG_data['Alpha_AF7'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Alpha_AF8'] = butter_bandpass_filter(muse_EEG_data['Alpha_AF8'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Alpha_TP10'] = butter_bandpass_filter(muse_EEG_data['Alpha_TP10'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+
+        if Verbosity > 2:
+            print('filter_all_data() finished filtering alpha data')
+
+        muse_EEG_data['Beta_TP9'] = butter_bandpass_filter(muse_EEG_data['Beta_TP9'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Beta_AF7'] = butter_bandpass_filter(muse_EEG_data['Beta_AF7'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Beta_AF8'] = butter_bandpass_filter(muse_EEG_data['Beta_AF8'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Beta_TP10'] = butter_bandpass_filter(muse_EEG_data['Beta_TP10'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+
+        if Verbosity > 2:
+            print('filter_all_data() finished filtering beta data')
+
+        muse_EEG_data['Gamma_TP9'] = butter_bandpass_filter(muse_EEG_data['Gamma_TP9'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Gamma_AF7'] = butter_bandpass_filter(muse_EEG_data['Gamma_AF7'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Gamma_AF8'] = butter_bandpass_filter(muse_EEG_data['Gamma_AF8'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Gamma_TP10'] = butter_bandpass_filter(muse_EEG_data['Gamma_TP10'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+
+        if Verbosity > 2:
+            print('filter_all_data() finished filtering gamma data')
+
+        muse_EEG_data['Accelerometer_X'] = butter_bandpass_filter(muse_EEG_data['Accelerometer_X'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Accelerometer_Y'] = butter_bandpass_filter(muse_EEG_data['Accelerometer_Y'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Accelerometer_Z'] = butter_bandpass_filter(muse_EEG_data['Accelerometer_Z'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Gyro_X'] = butter_bandpass_filter(muse_EEG_data['Gyro_X'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Gyro_Y'] = butter_bandpass_filter(muse_EEG_data['Gyro_Y'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+        muse_EEG_data['Gyro_Z'] = butter_bandpass_filter(muse_EEG_data['Gyro_Z'], 
+                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+
+        if Verbosity > 2:
+            print('filter_all_data() finished filtering accel & gyro data')
+
+
 
 
 
@@ -1226,10 +1377,10 @@ def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
 Plot  coherence 
 
 '''
-def plot_coherence(x, y, a, b, title, data_fname, plot_fname, date_time_now, analysis_parms, fig_num):
+def plot_coherence_scatter(x, y, a, b, title, data_fname, plot_fname, date_time_now, analysis_parms, fig_num):
 
     if Verbosity > 0:
-        print('plot_coherence() called')
+        print('plot_coherence_scatter() called')
 
     fig, axs = plt.subplots(nrows=1, num=fig_num, figsize=FIGURE_SIZE,
         dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=True,
@@ -1271,8 +1422,6 @@ def plot_coherence(x, y, a, b, title, data_fname, plot_fname, date_time_now, ana
     plt.savefig(plot_fname, dpi=300)
 
     if (args.display_plots or gui_dict['checkBoxInteractive']):
-#     if (args.display_plots):
-#     if (gui_dict['checkBoxInteractive']):
         plt.show()
 
     plt.close()
@@ -1299,8 +1448,6 @@ Plot the coherence data
 
 def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, date_time_now, 
                         title, data_stats, analysis_parms, fig_num):
-
-# TODO Implement difference coherence plot
 
     global session_dict
     
@@ -1443,12 +1590,6 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
 
 
 
-
-
-
-
-
-
 '''
 
 Plot the sensor data 
@@ -1568,11 +1709,7 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
     axs[0].xaxis.set_major_locator(ticker.AutoLocator())  
     axs[0].xaxis.set_minor_locator(ticker.AutoMinorLocator())
     axs[0].set_ylim(y_limits)
-    axs[0].set(title=title, ylabel="Amp uV") 
-
-#     axs[0].axis('auto')
-#     axs[0].grid(True)
-      
+    axs[0].set(title=title, ylabel="Amp uV")       
     axs[0].text(0.975, 0.025, '(All Sensor Data Combined)',
         verticalalignment='bottom', horizontalalignment='right',
         transform=axs[0].transAxes, color='green') 
@@ -1650,8 +1787,6 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
 
     
-#     plt.axis('tight')
-
     plt.savefig(plot_fname, dpi=300)
    
     if (args.display_plots or gui_dict['checkBoxInteractive']):
@@ -1754,8 +1889,6 @@ def plot_sensor_data_single(timestamps, tp9, af7, af8, tp10, data_fname, plot_fn
 
     clip_padding = 25. 
     y_limits = [data_min - clip_padding, data_max + clip_padding]
-
-#     plt.axis('auto')
 
     pt_size = 2
 
@@ -1867,10 +2000,7 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
 
     fig.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
 
-#     fig.subplots_adjust(top=0.85)
-
     plt_axes = plt.gca()
-#     plt.axis('auto')
 
     xmin, xmax, ymin, ymax = plt.axis()
 
@@ -1985,7 +2115,6 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
     plt.savefig(plot_fname, dpi=300)
 
     if (args.display_plots or gui_dict['checkBoxInteractive']):
-#     if args.display_plots:
         plt.show()
 
     plt.close()
@@ -2032,10 +2161,7 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
 
     fig.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
 
-#     fig.subplots_adjust(top=0.85)
-
     plt_axes = plt.gca()
-#     plt.axis('auto')
 
     xmin, xmax, ymin, ymax = plt.axis()
 
@@ -2283,17 +2409,7 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     else:
         plot_color_scheme = MM_Colors
 
-#     fig.subplots_adjust(top=0.85)
-#     plt.hlines([-a, a], 0, T, linestyles='--')
-#     plt.grid(True)
-
     plt_axes = plt.gca()
-
-#     xmin, xmax, ymin, ymax = plt.axis()
-#     print("xmin: ", xmin)
-#     print("xmax: ", xmax)
-#     print("ymin: ", ymin)
-#     print("ymax: ", ymax)
 
     y_limits = [data_stats['gamma']['min'], data_stats['gamma']['max']]
   
@@ -2312,8 +2428,7 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
                 
     axs[0].legend(loc='upper right', prop={'size': 6})     
     axs[0].grid(True)
-#     axs[0].set_ylim(y_limits)
-    
+#     axs[0].set_ylim(y_limits)    
 #     axs[0].hlines([-a, a], 0, T, linestyles='--')
 
     l1 = axs[1].plot(x_series, beta_raw, color=plot_color_scheme['Beta'], 
@@ -2409,7 +2524,6 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     plt.savefig(plot_fname, dpi=300)
 
     if (args.display_plots or gui_dict['checkBoxInteractive']):
-#     if args.display_plots:
         plt.show()
 
     plt.close()
@@ -2523,7 +2637,6 @@ def plot_mellow_concentration(mellow, concentration,
     plt.savefig(plot_fname, dpi=300)
 
     if (args.display_plots or gui_dict['checkBoxInteractive']):
-#     if args.display_plots:
         plt.show()
 
     plt.close()
@@ -2560,11 +2673,8 @@ def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_n
 
     plt.rcParams.update(PLOT_PARAMS)
     plt.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
-
     plt_axes = plt.gca()
-#     plt.axis('auto')
 
- 
     axs[0].set(title=title) 
     axs[0].xaxis.set_major_locator(ticker.AutoLocator())  
     axs[0].xaxis.set_minor_locator(ticker.AutoMinorLocator())
@@ -2786,11 +2896,6 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
 
     ensure_dir(out_dirname + "/plots/")
 
-
-#     if (gui_dict['checkBoxFilter'] or args.filter_data):
-#         muse_EEG_data = filter_all_data(muse_EEG_data)
-
-
     df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp', 'RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
 
     if Verbosity > 1:
@@ -2882,7 +2987,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
                 
     if (gui_dict['checkBoxCoherence']):
 
-        plot_coherence(df['RAW_AF7'], df['RAW_AF8'], df['RAW_TP9'], df['RAW_TP10'],
+        plot_coherence_scatter(df['RAW_AF7'], df['RAW_AF8'], df['RAW_TP9'], df['RAW_TP10'],
             "Raw Data - Coherence", data_fname,
              out_dirname + '/plots/10-ABCS_eeg_raw_coherence_data_' + date_time_now + '.png', 
              date_time_now, analysis_parms, 10)
@@ -3018,7 +3123,6 @@ Main ...
 
 def main(date_time_now):
 
-#     global data_file
     global gui_dict
     global session_dict
     global out_dirname
