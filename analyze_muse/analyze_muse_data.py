@@ -312,9 +312,8 @@ class The_GUI(QDialog):
         
         self.accept()
 
-
          
-         
+    
 
     def createTopLeftGroupBox(self):
         self.topLeftGroupBox = QGroupBox("Select Options")
@@ -328,7 +327,7 @@ class The_GUI(QDialog):
         layout = QVBoxLayout()
 
         self.checkBoxInteractive = QCheckBox("Display Interactive Plots")
-        self.checkBoxInteractive.setChecked(True)
+        self.checkBoxInteractive.setChecked(args.display_plots)
         self.checkBoxInteractive.setEnabled(True)
 
         self.checkBoxEEG = QCheckBox("Create EEG Plots")
@@ -336,7 +335,7 @@ class The_GUI(QDialog):
         self.checkBoxEEG.setEnabled(True)
         
         self.checkBoxCoherence = QCheckBox("Create Coherence Plots")
-        self.checkBoxCoherence.setChecked(False)
+        self.checkBoxCoherence.setChecked(args.coherence_plots)
         self.checkBoxCoherence.setEnabled(True)
         
         self.checkBoxPowerBands = QCheckBox("Create Power Bands Plots")
@@ -344,11 +343,11 @@ class The_GUI(QDialog):
         self.checkBoxPowerBands.setEnabled(True)
         
         self.checkBoxMellowConcentration = QCheckBox("Create Mellow/Concentration Plots")
-        self.checkBoxMellowConcentration.setChecked(False)
+        self.checkBoxMellowConcentration.setChecked(args.mellow_concentration)
         self.checkBoxMellowConcentration.setEnabled(True)
 
         self.checkBoxAccelGyro = QCheckBox("Create Accleration/Gyro Plots")
-        self.checkBoxAccelGyro.setChecked(False)
+        self.checkBoxAccelGyro.setChecked(args.accel_gyro)
         self.checkBoxAccelGyro.setEnabled(True)
 
         self.checkBox3D = QCheckBox("Create 3D Plots")
@@ -356,7 +355,7 @@ class The_GUI(QDialog):
         self.checkBox3D.setEnabled(False)
 
         self.checkBoxFilter = QCheckBox("Filter Data")
-        self.checkBoxFilter.setChecked(False)
+        self.checkBoxFilter.setChecked(args.filter_data)
         self.checkBoxFilter.setEnabled(True)
 
         self.checkBoxResample = QCheckBox("Resample Data")
@@ -368,19 +367,19 @@ class The_GUI(QDialog):
         self.checkBoxMuseDirect.setEnabled(False)
 
         self.checkBoxStatistical = QCheckBox("Include Statistical Plots")
-        self.checkBoxStatistical.setChecked(False)
+        self.checkBoxStatistical.setChecked(args.stats_plots)
         self.checkBoxStatistical.setEnabled(True)
 
         self.checkBoxAutoReject = QCheckBox("Auto-Reject EEG Data")
-        self.checkBoxAutoReject.setChecked(True)
+        self.checkBoxAutoReject.setChecked(args.auto_reject_data)
         self.checkBoxAutoReject.setEnabled(True)
 
         self.checkBoxDB = QCheckBox("Send Results to Database")
-        self.checkBoxDB.setChecked(False)
+        self.checkBoxDB.setChecked(args.data_base)
         self.checkBoxDB.setEnabled(True)
 
         self.checkBoxHFDF5 = QCheckBox("Write HDF5 File")
-        self.checkBoxHFDF5.setChecked(False)
+        self.checkBoxHFDF5.setChecked(args.write_hdf5_file)
         self.checkBoxHFDF5.setEnabled(True)
   
         self.plotColorsComboBox = QComboBox()
@@ -501,7 +500,7 @@ class The_GUI(QDialog):
         self.verbosityLabel.setText('Set Verbosity')
         self.verbosityLabel.setAlignment(Qt.AlignCenter)
 
-#         self.verbosityLabel.setBuddy(self.verbosityComboBox)
+# args.verbose
 
 
 
@@ -3072,7 +3071,7 @@ def main(date_time_now):
 
 
     # Perform auto-reject if user has selected it
-    if (gui_dict['checkBoxAutoReject']): 
+    if (gui_dict['checkBoxAutoReject'] or args.auto_reject_data): 
         if Verbosity > 2:
             print("main() - Calling auto_reject_EEG_data()")
         muse_EEG_data = auto_reject_EEG_data(muse_EEG_data)
@@ -3120,18 +3119,27 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
     date_time_now = strftime('%Y-%m-%d-%H.%M.%S', gmtime())
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-c", "--csv_file", help="CSV file to read)")
+    parser.add_argument("-f", "--csv_file", help="CSV file to read)")
     parser.add_argument("-v", "--verbose", help="Increase output verbosity", type=int)
     parser.add_argument("-d", "--display_plots", help="Display Plots", action="store_true")
     parser.add_argument("-b", "--batch", help="Batch Mode", action="store_true")
     parser.add_argument("-p", "--power", help="Plot Power Bands", action="store_true")
     parser.add_argument("-e", "--eeg", help="Plot EEG Data", action="store_true")
     parser.add_argument("-hdf5", "--write_hdf5_file", help="Write output data into HDF5 file", action="store_true")
+    parser.add_argument("-ag", "--accel_gyro", help="Plot Acceleration and Gyro Data", action="store_true")
+    parser.add_argument("-mc", "--mellow_concentration", 
+                                help="Plot Mellow and Concentratio Data (Only For Mind Monitor Data)", 
+                                action="store_true")
+    parser.add_argument("-s", "--stats_plots", help="Plot Statistcal Data", action="store_true")
+    parser.add_argument("-c", "--coherence_plots", help="Plot Coherence Data", action="store_true")
+
 #     parser.add_argument("--plot_3D", help="3D Display Plots", action="store_true")
 #     parser.add_argument("-i", "--integrate", help="Integrate EEG Data", action="store_true")
 #     parser.add_argument("-s", "--step_size", help="Integration Step Size", type=int)
 #     parser.add_argument("-ps", "--power_spectrum", help="Analyze Spectrum", action="store_true")
-    parser.add_argument("-f", "--filter_data", help="Filter EEG Data", action="store_true")
+
+    parser.add_argument("-r", "--auto_reject_data", help="Auto Reject EEG Data", action="store_true")
+    parser.add_argument("-fd", "--filter_data", help="Filter EEG Data", action="store_true")
     parser.add_argument("-ft", "--filter_type", 
                         help="Filter Type 0=default 1=low pass, 2=bandpass", type=int)
     parser.add_argument("-lc", "--lowcut", help="Filter Low Cuttoff Frequency",  type=float)
@@ -3153,7 +3161,8 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
         if Verbosity > 0:
                 print("display_plots:")
         print(args.display_plots)
-
+    else:
+        args.display_plots = True
 
     if args.batch:
         if Verbosity > 0:
