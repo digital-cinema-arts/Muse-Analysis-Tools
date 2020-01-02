@@ -951,13 +951,13 @@ def auto_reject_EEG_data(data):
 
 '''
  
- Write out on HF=DF5 data file of the data that was plotted
+ Write out on HDF5 data file of the data that was plotted
  
 ''' 
-def write_h5_data(muse_EEG_data, data_fname):
+def write_hdf5_data(muse_EEG_data, data_fname):
 
     if Verbosity > 0:
-        print("write_h5_data()")
+        print("write_hdf5_data()")
 
     global session_dict
     global EEG_Dict
@@ -998,8 +998,8 @@ def write_h5_data(muse_EEG_data, data_fname):
 
 
     if Verbosity > 1:
-        print("write_h5_data() - data_fname: ", data_fname)
-        print("write_h5_data() - basename: ", basename)
+        print("write_hdf5_data() - data_fname: ", data_fname)
+        print("write_hdf5_data() - basename: ", basename)
 
     
     with h5py.File(data_fname, 'w') as f:
@@ -1012,7 +1012,7 @@ def write_h5_data(muse_EEG_data, data_fname):
         stats = g_stats.create_dataset('stats', compression="gzip", compression_opts=9,
                     data=(data_stats))
 #         for k, v in EEG_Dict.items():
-#             print("write_h5_data() -  k, v: ",  k, v)
+#             print("write_hdf5_data() -  k, v: ",  k, v)
 #             g_stats.create_dataset(k, data=np.array(v))
 #             g_stats.create_dataset(k, data=np.array(23))
     
@@ -3084,7 +3084,7 @@ def main(date_time_now):
     if (gui_dict['checkBoxHFDF5'] or args.write_hdf5_file):
         ensure_dir(out_dirname + "/hdf5_data/")
         h5_fname = out_dirname + '/hdf5_data/' + os.path.basename(CVS_fname) + '_' + date_time_now + '.hdf5'
-        write_h5_data(muse_EEG_data, h5_fname)
+        write_hdf5_data(muse_EEG_data, h5_fname)
 
     # Save session data to DB
     if (gui_dict['checkBoxDB'] or args.data_base):
