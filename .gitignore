@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+build_dist.bash
+
 .DS_Store
 
 # C extensions
