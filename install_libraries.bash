@@ -19,7 +19,8 @@ pip3 -v install math
 pip3 -v install tqdm
 pip3 -v install progress.bar
 pip3 -v install json
-pip3 -v install h5py, tables
+pip3 -v install h5py
+pip3 -v install tables
 pip3 -v install pathlib
 pip3 -v install matplotlib
 
@@ -28,6 +29,4 @@ pip3 -v install matplotlib.ticker
 
 pip3 -v install PyQt5.QtWidgets
 pip3 -v install PyQt5.QtGui
-
 pip3 -v install PyQt5.QtCore
-pip3 -v install PyQt5.QtWidgets
