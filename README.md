@@ -124,8 +124,6 @@ https://github.com/digital-cinema-arts/Muse-Analysis-Tools/wiki/Example-Plots
 
 ![picture alt](https://github.com/digital-cinema-arts/Muse-Analysis-Tools/blob/master/images/session_JSON-1.png "JSON session data")
 
-![picture alt](https://github.com/digital-cinema-arts/Muse-Analysis-Tools/blob/master/images/session_JSON-2.png "JSON session data")
-
 ---------------------------------------------------------------------
 
 #### Session/EEG data in HDF5 format.
