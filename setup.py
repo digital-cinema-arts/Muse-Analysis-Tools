@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="Muse-Analysis-Tools",
-    version="1.0.3",
+    version="1.0.4",
 
 
     author="debra_peri",
@@ -36,8 +36,13 @@ setup(
     scripts=['analyze_muse/analyze_muse_data.py'],
 
     install_requires=['docutils>=0.3'],
-#    zip_safe=True,
+    zip_safe=True,
 
+    requires=['time', 'datetime', 'numpy', 'scipy', 'pandas', 'math', 'h5py', 'tables',
+                    'bitstring', 'os', 'sys', 'csv', 'argparse', 'progress', 
+                    'json', 'pathlib', 'pandas.plotting', 'matplotlib', 
+                    'PyQt5'],
+                
      package_data={
          'resources': ['analyze_muse/resources/resources_rc.py']
          },
@@ -48,11 +53,12 @@ setup(
           ('icons', ['analyze_muse/resources/ABCS.ico'])
       ],
 
-#    project_urls={
-#        "Bug Tracker": "https://github.com/digital-cinema-arts/Muse-Analysis-Tools/issues",
-#        "Documentation": "https://github.com/digital-cinema-arts/Muse-Analysis-Tools/wiki",
-#        "Source Code": "https://github.com/digital-cinema-arts/Muse-Analysis-Tools",
-#    },
+   project_urls={
+       "Bug Tracker": "https://github.com/digital-cinema-arts/Muse-Analysis-Tools/issues",
+       "Documentation": "https://github.com/digital-cinema-arts/Muse-Analysis-Tools/wiki",
+       "Source Code": "https://github.com/digital-cinema-arts/Muse-Analysis-Tools",
+   },
 
 )
+
 

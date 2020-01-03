@@ -47,7 +47,7 @@ Python 3.7.4
 
 --------------------------------------------------------------------
 
-For more information about the graphs inteface (from matplotlib) please refer to this link:
+For more information about the graphs interface (from matplotlib) please refer to this link:
 https://matplotlib.org/3.1.1/users/navigation_toolbar.html
 
 --------------------------------------------------------------------
@@ -106,6 +106,11 @@ optional arguments:
 
   ~~~~
 
+----------------------------------------------------------
+
+```
+pip install --upgrade --force-reinstall pandas
+```
 ---------------------------------------------------------------------
 
 ![picture alt](https://github.com/digital-cinema-arts/Muse-Analysis-Tools/blob/master/images/GUI.png "The analyze_muse_data GUI")

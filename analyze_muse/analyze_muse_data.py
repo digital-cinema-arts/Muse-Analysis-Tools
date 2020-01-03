@@ -22,8 +22,8 @@ import sys
 import csv
 import argparse
 import math
-from tqdm import tqdm
-from progress.bar import Bar, IncrementalBar
+# from tqdm import tqdm
+# from progress.bar import Bar, IncrementalBar
 import json
 import h5py, tables
 from pathlib import Path
@@ -223,10 +223,10 @@ class The_GUI(QDialog):
 
 
 
-    def advanceProgressBar(self):
-        curVal = self.progressBar.value()
-        maxVal = self.progressBar.maximum()
-        self.progressBar.setValue(curVal + (maxVal - curVal) / 100)
+#    def advanceProgressBar(self):
+#        curVal = self.progressBar.value()
+#        maxVal = self.progressBar.maximum()
+#        self.progressBar.setValue(curVal + (maxVal - curVal) / 100)
 
 
 #     def on_click(self):
@@ -499,7 +499,8 @@ class The_GUI(QDialog):
         self.verbosityLabel = QtWidgets.QLabel(self)
         self.verbosityLabel.setText('Set Verbosity')
         self.verbosityLabel.setAlignment(Qt.AlignCenter)
-        self.verbosityComboBox.setCurrentIndex(args.verbose)
+#        self.verbosityComboBox.setCurrentIndex(args.verbose)
+        self.verbosityComboBox.setCurrentIndex(0)
 
 
         self.labelChooseFile = QLabel(self)
@@ -521,14 +522,14 @@ class The_GUI(QDialog):
 
 
 
-    def createProgressBar(self):
-        self.progressBar = QProgressBar()
-        self.progressBar.setRange(0, 10000)
-        self.progressBar.setValue(0)
+#    def createProgressBar(self):
+#        self.progressBar = QProgressBar()
+#        self.progressBar.setRange(0, 10000)
+#        self.progressBar.setValue(0)
 
-        timer = QTimer(self)
-        timer.timeout.connect(self.advanceProgressBar)
-        timer.start(1000)
+#        timer = QTimer(self)
+#        timer.timeout.connect(self.advanceProgressBar)
+#        timer.start(1000)
 
 
 
@@ -1022,10 +1023,10 @@ def write_hdf5_data(muse_EEG_data, data_fname):
         raw = g_raw.create_dataset('raw', dtype='f8', compression="gzip", compression_opts=9,
                     data=(df['RAW_TP9'], df['RAW_AF7'], df['RAW_AF8'], df['RAW_TP10']))
        
-        motion = g_motion.create_dataset('accel', dtype='f8', compression="gzip", compression_opts=9,
+        accel = g_motion.create_dataset('accel', dtype='f8', compression="gzip", compression_opts=9,
                     data=(motion_df['Accelerometer_X'], motion_df['Accelerometer_Y'], motion_df['Accelerometer_Z']))
 
-        motion = g_motion.create_dataset('gyro', dtype='f8', compression="gzip", compression_opts=9,
+        gyro = g_motion.create_dataset('gyro', dtype='f8', compression="gzip", compression_opts=9,
                     data=(motion_df['Gyro_X'], motion_df['Gyro_Y'], motion_df['Gyro_Z']))
 
 
