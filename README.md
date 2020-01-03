@@ -108,7 +108,7 @@ optional arguments:
 
 ----------------------------------------------------------
 
-To fix an error with pandas on Linux that occasionally happens, for a reinstall with this command:
+To fix an error with pandas on Linux that occasionally happens, force a reinstall with this command:
 
 ```
 pip install --upgrade --force-reinstall pandas
