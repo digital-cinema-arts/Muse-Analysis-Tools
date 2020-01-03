@@ -39,7 +39,7 @@ setup(
     zip_safe=True,
 
     requires=['time', 'datetime', 'numpy', 'scipy', 'pandas', 'math', 'h5py', 'tables',
-                    'bitstring', 'os', 'sys', 'csv', 'argparse', 'progress.bar', 
+                    'bitstring', 'os', 'sys', 'csv', 'argparse', 'progress', 
                     'json', 'pathlib', 'pandas.plotting', 'matplotlib', 
                     'PyQt5'],
                 

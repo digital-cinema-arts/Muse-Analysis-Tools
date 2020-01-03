@@ -23,7 +23,7 @@ import csv
 import argparse
 import math
 # from tqdm import tqdm
-from progress.bar import Bar, IncrementalBar
+# from progress.bar import Bar, IncrementalBar
 import json
 import h5py, tables
 from pathlib import Path
@@ -223,10 +223,10 @@ class The_GUI(QDialog):
 
 
 
-    def advanceProgressBar(self):
-        curVal = self.progressBar.value()
-        maxVal = self.progressBar.maximum()
-        self.progressBar.setValue(curVal + (maxVal - curVal) / 100)
+#    def advanceProgressBar(self):
+#        curVal = self.progressBar.value()
+#        maxVal = self.progressBar.maximum()
+#        self.progressBar.setValue(curVal + (maxVal - curVal) / 100)
 
 
 #     def on_click(self):
@@ -499,7 +499,8 @@ class The_GUI(QDialog):
         self.verbosityLabel = QtWidgets.QLabel(self)
         self.verbosityLabel.setText('Set Verbosity')
         self.verbosityLabel.setAlignment(Qt.AlignCenter)
-        self.verbosityComboBox.setCurrentIndex(args.verbose)
+#        self.verbosityComboBox.setCurrentIndex(args.verbose)
+        self.verbosityComboBox.setCurrentIndex(0)
 
 
         self.labelChooseFile = QLabel(self)
@@ -521,14 +522,14 @@ class The_GUI(QDialog):
 
 
 
-    def createProgressBar(self):
-        self.progressBar = QProgressBar()
-        self.progressBar.setRange(0, 10000)
-        self.progressBar.setValue(0)
+#    def createProgressBar(self):
+#        self.progressBar = QProgressBar()
+#        self.progressBar.setRange(0, 10000)
+#        self.progressBar.setValue(0)
 
-        timer = QTimer(self)
-        timer.timeout.connect(self.advanceProgressBar)
-        timer.start(1000)
+#        timer = QTimer(self)
+#        timer.timeout.connect(self.advanceProgressBar)
+#        timer.start(1000)
 
 
 
