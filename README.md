@@ -106,6 +106,11 @@ optional arguments:
 
   ~~~~
 
+----------------------------------------------------------
+
+```
+pip install --upgrade --force-reinstall pandas
+```
 ---------------------------------------------------------------------
 
 ![picture alt](https://github.com/digital-cinema-arts/Muse-Analysis-Tools/blob/master/images/GUI.png "The analyze_muse_data GUI")
