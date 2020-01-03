@@ -108,9 +108,12 @@ optional arguments:
 
 ----------------------------------------------------------
 
+To fix an error with pandas on Linux that occasionally happens, for a reinstall with this command:
+
 ```
 pip install --upgrade --force-reinstall pandas
 ```
+
 ---------------------------------------------------------------------
 
 ![picture alt](https://github.com/digital-cinema-arts/Muse-Analysis-Tools/blob/master/images/GUI.png "The analyze_muse_data GUI")
