@@ -788,19 +788,18 @@ def read_eeg_data(fname, date_time_now):
 # df = pd.read_csv(infile, parse_dates=['datetime'], date_parser=dateparse)
 
 
-# df = pd.read_csv('filename.tar.gz', compression='gzip', header=0, sep=',', quotechar='"')
-
     kind = filetype.guess(fname)
     if kind is None:
-        if Verbosity > 0:
+        if Verbosity > 2:
             print("read_eeg_data(): Cannot guess file type!")
     else:
 
-        if Verbosity > 0:    
+        if Verbosity > 1:    
             print('read_eeg_data(): File extension: %s' % kind.extension)
             print('read_eeg_data(): File MIME type: %s' % kind.mime)
 
 
+# df = pd.read_csv('filename.tar.gz', compression='gzip', header=0, sep=',', quotechar='"')
     muse_EEG_data = pd.read_csv(fname, verbose=Verbosity)
 
     num_cols = len(muse_EEG_data.columns)
