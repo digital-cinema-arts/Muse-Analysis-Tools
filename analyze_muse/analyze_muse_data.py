@@ -22,6 +22,7 @@ import sys
 import csv
 import argparse
 import math
+import filetype
 # from tqdm import tqdm
 # from progress.bar import Bar, IncrementalBar
 import json
@@ -54,8 +55,6 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QVBoxLayout, QWidget)
 
 import analyze_muse.resources.resources_rc
-# from resources import resources_rc
-
 
 
 # Globals
@@ -484,7 +483,7 @@ class The_GUI(QDialog):
         self.bottomLeftGroupBox = QGroupBox("Create Plots")
         self.bottomLeftGroupBox.setStyleSheet("color: black; background-color: #F0F0F8;")
 
-        self.filePushButton = QPushButton("Select CSV File")
+        self.filePushButton = QPushButton("Select Data File")
         self.filePushButton.clicked.connect(self.file_button_clicked)
         self.filePushButton.setStyleSheet("color: black; background-color: #b69bc2;")
 #         filePushButton.setDefault(False)
@@ -509,7 +508,7 @@ class The_GUI(QDialog):
 
         layout = QVBoxLayout()
         layout.addWidget(self.splitter)
-        layout.addWidget(self.labelChooseFile)
+#         layout.addWidget(self.labelChooseFile)
         layout.addWidget(self.filePushButton)
         layout.addWidget(self.splitter)
         layout.addWidget(self.verbosityLabel)
@@ -552,13 +551,12 @@ class The_GUI(QDialog):
 #         dialog.setSidebarUrls([QUrl.fromLocalFile(place)])       
 #         dialog.setDirectory(data_dir) 
 
-#         fileName, _ = dialog.getOpenFileUrl(self,
-#                         "Select EEG CSV File", options=options)
+        file_filter = "CSV files (*.csv);;GZIP files (*.gz);;ZIP files (*.zip)"
+#         file_filter = "Images (*.png *.xpm .jpg);;Text files (.txt);;XML files (*.xml)"
 
         fileName, _ = dialog.getOpenFileName(self,
                         "Select EEG CSV File", 
-                        data_dir,
-                        "CSV files (*.csv)", 
+                        data_dir, file_filter, 
                         options=options)
 
         if fileName:
@@ -788,6 +786,19 @@ def read_eeg_data(fname, date_time_now):
 
 # dateparse = lambda x: pd.datetime.strptime(x, '%Y-%m-%d %H:%M:%S')
 # df = pd.read_csv(infile, parse_dates=['datetime'], date_parser=dateparse)
+
+
+# df = pd.read_csv('filename.tar.gz', compression='gzip', header=0, sep=',', quotechar='"')
+
+    kind = filetype.guess(fname)
+    if kind is None:
+        if Verbosity > 0:
+            print("read_eeg_data(): Cannot guess file type!")
+    else:
+
+        if Verbosity > 0:    
+            print('read_eeg_data(): File extension: %s' % kind.extension)
+            print('read_eeg_data(): File MIME type: %s' % kind.mime)
 
 
     muse_EEG_data = pd.read_csv(fname, verbose=Verbosity)
