@@ -48,7 +48,6 @@ setup(
          },
         
      data_files=[
-#          ('resources', ['resources/resources_rc.py']),
           ('resources', ['analyze_muse/resources/resources_rc.py']),
           ('icons', ['analyze_muse/resources/ABCS.ico'])
       ],
