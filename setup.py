@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="Muse-Analysis-Tools",
-    version="1.0.5",
+    version="1.0.6",
 
 
     author="debra_peri",
@@ -39,7 +39,7 @@ setup(
     zip_safe=True,
 
     requires=['time', 'datetime', 'numpy', 'scipy', 'pandas', 'math', 'h5py', 'tables',
-                    'bitstring', 'os', 'sys', 'csv', 'argparse', 'progress', 
+                    'bitstring', 'os', 'sys', 'csv', 'argparse', 'progress', 'filetype',
                     'json', 'pathlib', 'pandas.plotting', 'matplotlib', 
                     'PyQt5'],
                 
