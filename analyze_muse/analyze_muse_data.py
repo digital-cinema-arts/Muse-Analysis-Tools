@@ -499,8 +499,8 @@ class The_GUI(QDialog):
         self.verbosityLabel = QtWidgets.QLabel(self)
         self.verbosityLabel.setText('Set Verbosity')
         self.verbosityLabel.setAlignment(Qt.AlignCenter)
-#        self.verbosityComboBox.setCurrentIndex(args.verbose)
-        self.verbosityComboBox.setCurrentIndex(0)
+        self.verbosityComboBox.setCurrentIndex(args.verbose)
+#         self.verbosityComboBox.setCurrentIndex(0)
 
 
         self.labelChooseFile = QLabel(self)
@@ -3259,6 +3259,8 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
         print("verbose turned on")
         print(args.verbose)
         Verbosity = args.verbose
+    else:
+        args.verbose = 0
 
     if args.display_plots:
         if Verbosity > 0:
