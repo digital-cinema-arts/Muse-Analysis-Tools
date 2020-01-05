@@ -64,7 +64,8 @@ EEG_Dict ={}
 eeg_stats = []
 CVS_fname = ""
 out_dirname = ""
-Sampling_Rate = 250.0
+EEG_data_source = 'Mind Monitor'
+Sampling_Rate = 256.0
 Filter_Lowcut  = 0.1
 Filter_Highcut  = 100.0
 Filter_Order = 3
@@ -788,19 +789,18 @@ def read_eeg_data(fname, date_time_now):
 # df = pd.read_csv(infile, parse_dates=['datetime'], date_parser=dateparse)
 
 
-# df = pd.read_csv('filename.tar.gz', compression='gzip', header=0, sep=',', quotechar='"')
-
     kind = filetype.guess(fname)
     if kind is None:
-        if Verbosity > 0:
+        if Verbosity > 2:
             print("read_eeg_data(): Cannot guess file type!")
     else:
 
-        if Verbosity > 0:    
+        if Verbosity > 1:    
             print('read_eeg_data(): File extension: %s' % kind.extension)
             print('read_eeg_data(): File MIME type: %s' % kind.mime)
 
 
+# df = pd.read_csv('filename.tar.gz', compression='gzip', header=0, sep=',', quotechar='"')
     muse_EEG_data = pd.read_csv(fname, verbose=Verbosity)
 
     num_cols = len(muse_EEG_data.columns)
@@ -828,7 +828,25 @@ def read_eeg_data(fname, date_time_now):
             columns=['Beta_TP9', 'Beta_AF7', 'Beta_AF8', 'Beta_TP10'])    
     gamma_df = pd.DataFrame(muse_EEG_data, 
             columns=['Gamma_TP9', 'Gamma_AF7', 'Gamma_AF8', 'Gamma_TP10'])
-    
+
+
+#     Scale Mind Monitor brainwave data 
+
+#     if False:
+    if EEG_data_source == 'Mind Monitor':
+
+        data_keys = ['Delta_TP9', 'Delta_AF7', 'Delta_AF8', 'Delta_TP10',
+                    'Theta_TP9', 'Theta_AF7', 'Theta_AF8', 'Theta_TP10',
+                    'Alpha_TP9', 'Alpha_AF7', 'Alpha_AF8', 'Alpha_TP10',
+                    'Beta_TP9', 'Beta_AF7', 'Beta_AF8', 'Beta_TP10',                        
+                    'Gamma_TP9', 'Gamma_AF7', 'Gamma_AF8', 'Gamma_TP10']
+#         y = ((x + 1.0) * 50)
+
+        for data_col in data_keys:       
+            muse_EEG_data[data_col] += 1.0
+            muse_EEG_data[data_col] *= 50.
+
+
     elements_df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp', 'Elements'])
 
     if Verbosity > 1:
@@ -1054,9 +1072,14 @@ Scale data
 
 '''
 def scale(x, out_range=(-1, 1), axis=None):
+
+    # Get the min and max of the data 
     domain = np.min(x, axis), np.max(x, axis)
+    # Normalize to +-0.5
     y = (x - (domain[1] + domain[0]) / 2) / (domain[1] - domain[0])
+    # Scale and add offset
     return y * (out_range[1] - out_range[0]) + (out_range[1] + out_range[0]) / 2
+
 
 
 

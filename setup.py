@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="Muse-Analysis-Tools",
-    version="1.0.6",
+    version="1.1.2",
 
 
     author="debra_peri",
@@ -48,7 +48,6 @@ setup(
          },
         
      data_files=[
-#          ('resources', ['resources/resources_rc.py']),
           ('resources', ['analyze_muse/resources/resources_rc.py']),
           ('icons', ['analyze_muse/resources/ABCS.ico'])
       ],
