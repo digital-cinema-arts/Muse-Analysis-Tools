@@ -7,7 +7,6 @@ setup(
     name="Muse-Analysis-Tools",
     version="1.1.2",
 
-
     author="debra_peri",
 #    author="Debra Grace Peri",
     author_email="debragraceperi@gmail.com",
