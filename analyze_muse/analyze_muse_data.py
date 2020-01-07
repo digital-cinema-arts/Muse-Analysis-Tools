@@ -53,6 +53,7 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QVBoxLayout, QWidget)
 
 import analyze_muse.resources.resources_rc
+import analyze_muse.version
 
 
 # Globals
@@ -3243,8 +3244,6 @@ if __name__ == '__main__':
 
     import pkg_resources
     import sys, site
-
-    print("__version__: ", __version__)
 
     
     date_time_now = strftime('%Y-%m-%d-%H.%M.%S', gmtime())
