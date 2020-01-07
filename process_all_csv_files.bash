@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 
 
-filter_order=3
-low_cut=0.5
-high_cut=70.0
+filter_order=8
 
 CSV_FILES=*.csv
 rm -f error_files.txt
@@ -14,10 +12,15 @@ do
  	echo "Processing file: " 
  	echo $f
 
-# ./analyze_muse_data.py -hdf5 -db -fd -ft 1  -hc 20 -lc 5 -o 8 -v 3 -c /Users/dperi/Documents/Muse_Dev/analyze_eeg/data-for-testing.csv
-	
-	# Analyze and plot: save hdf5 file, filter with type 1, create coherence plots, send data to database
-	analyze_muse_data.py -hdf5 -db -fd -ft 1 -hc $high_cut -lc $low_cut -o $filter_order -v 3 -c 
+#   -ft FILTER_TYPE, --filter_type FILTER_TYPE
+#                         Filter Type 0=default 1=low pass, 2=bandpass
+
+# ./analyze_muse_data.py -s -c -ag -mc -db -fd -ft 1  -hc 20 -lc 5 -o 8 -v 3 -hdf5 -r -f /Users/dperi/Documents/Muse_Dev/analyze_eeg/data-for-testing.csv
+
+    analyze_muse_data.py --batch --power --eeg --stats_plots --coherence_plots --accel_gyro \
+                --mellow_concentration --data_base --auto_reject_data \
+                --filter_data --filter_typ 1 --highcut 20.0 --lowcut 0.5 --filter_order 8  \
+                --verbose 3  --write_hdf5_file  -f $f
 
 	case {$?} in
 		0) 
@@ -31,4 +34,5 @@ do
 	esac 
 
 done
+
 

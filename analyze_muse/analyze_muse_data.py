@@ -3174,6 +3174,8 @@ def main(date_time_now):
     global last_name
     global data_dir
 
+    if Verbosity > 1:
+        print("analyze_muse.version.ABCS_version: ", analyze_muse.version.ABCS_version)
 
     rc_filename = str(Path.home()) + "/.ABCS_parms.rc"           
     my_rc_file = Path(rc_filename)
@@ -3356,17 +3358,15 @@ if __name__ == '__main__':
             print(args.data_base)
         Save_DB = args.data_base
 
-if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
+# if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
 #     liblo_path = pkg_resources.resource_filename('liblo', 'liblo.so')
 #     dso_path = [(liblo_path, '.')]
 #     print("DSO path:", dso_path)    
 #     print("LIBLO path:", liblo_path)    
 
-    if Verbosity > 1:
+    if Verbosity > 2:
         print("Platform: ", sys.platform)
-        print("analyze_muse.version.ABCS_version: ", analyze_muse.version.ABCS_version)
     
-
     try:
         main(date_time_now)
 
