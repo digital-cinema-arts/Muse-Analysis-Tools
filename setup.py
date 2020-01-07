@@ -1,11 +1,24 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, find_namespace_packages
+import os, sys
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+this_version = {}
+with open("./analyze_muse/version.py", "r") as fh:
+    this_version = fh.read()
+ 
+print("\n") 
+print("Building Version: ", this_version)
+print("find_packages: ", find_packages())
+print("find_namespace_packages: ", find_namespace_packages())
+print("\n") 
+
+ 
 setup(
     name="Muse-Analysis-Tools",
-    version="1.1.2",
+#     version="1.1.3",
+    version=this_version,
 
     author="debra_peri",
 #    author="Debra Grace Peri",
@@ -26,7 +39,7 @@ setup(
         "Operating System :: OS Independent",
         "Development Status :: 5 - Production/Stable",
         "Topic :: Utilities",
-        "License :: GNU Affero General Public License v3.0",
+#         "License :: GNU Affero General Public License v3.0",
     ],
     python_requires='>=3.6',
 
