@@ -297,6 +297,9 @@ class The_GUI(QDialog):
                 "plotColorsComboBox": plot_colors,               
                 "Mood": mood})
 
+# TODO Sort out this switch for interactive plots and batch mode ... 
+        args.display_plots = gui_dict['checkBoxInteractive']
+        
         if gui_dict['verbosityComboBox'] == 'Quiet':
             Verbosity = 0
         if gui_dict['verbosityComboBox'] == 'Informative':
@@ -1465,7 +1468,8 @@ def plot_coherence_scatter(x, y, a, b, title, data_fname, plot_fname, date_time_
      
     plt.savefig(plot_fname, dpi=300)
 
-    if (args.display_plots or gui_dict['checkBoxInteractive']):
+    if (gui_dict['checkBoxInteractive']):
+#     if (args.display_plots or gui_dict['checkBoxInteractive']):
         plt.show()
 
     plt.close()
@@ -1618,7 +1622,8 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
  
     plt.savefig(plot_fname, dpi=300)
    
-    if (args.display_plots or gui_dict['checkBoxInteractive']):
+    if (gui_dict['checkBoxInteractive']):
+#     if (args.display_plots or gui_dict['checkBoxInteractive']):
         plt.show()
   
     plt.close()
@@ -1833,7 +1838,8 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
     
     plt.savefig(plot_fname, dpi=300)
    
-    if (args.display_plots or gui_dict['checkBoxInteractive']):
+    if (gui_dict['checkBoxInteractive']):
+#     if (args.display_plots or gui_dict['checkBoxInteractive']):
 #     if args.display_plots:
         plt.show()
   
@@ -1941,14 +1947,14 @@ def plot_sensor_data_single(timestamps, tp9, af7, af8, tp10, data_fname, plot_fn
     else:
         plot_color_scheme = MM_Colors
     
-            
-    axs.plot(x_series, tp9, alpha=0.8, ms=pt_size, marker='+',
+    line_alpha = 0.5
+    axs.plot(x_series, tp9, alpha=line_alpha, ms=pt_size, marker='+',
                 color=plot_color_scheme['RawTP9'], label='TP9')                            
-    axs.plot(x_series, af7, alpha=0.8, ms=pt_size, marker='+',
+    axs.plot(x_series, af7, alpha=line_alpha, ms=pt_size, marker='+',
                 color=plot_color_scheme['RawAF7'], label='AF7')
-    axs.plot(x_series, af8, alpha=0.8, ms=pt_size, marker='+',
+    axs.plot(x_series, af8, alpha=line_alpha, ms=pt_size, marker='+',
                 color=plot_color_scheme['RawAF8'], label='AF8')
-    axs.plot(x_series, tp10, alpha=0.8, ms=pt_size, marker='+',
+    axs.plot(x_series, tp10, alpha=line_alpha, ms=pt_size, marker='+',
                 color=plot_color_scheme['RawTP10'], label='TP10')
   
     axs.xaxis.set_major_locator(ticker.AutoLocator())  
@@ -2003,7 +2009,8 @@ def plot_sensor_data_single(timestamps, tp9, af7, af8, tp10, data_fname, plot_fn
 
     plt.savefig(plot_fname, dpi=300)
    
-    if (args.display_plots or gui_dict['checkBoxInteractive']):
+    if (gui_dict['checkBoxInteractive']):
+#     if (args.display_plots or gui_dict['checkBoxInteractive']):
 #     if args.display_plots:
         plt.show()
   
@@ -2158,7 +2165,8 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
 
     plt.savefig(plot_fname, dpi=300)
 
-    if (args.display_plots or gui_dict['checkBoxInteractive']):
+    if (gui_dict['checkBoxInteractive']):
+#     if (args.display_plots or gui_dict['checkBoxInteractive']):
         plt.show()
 
     plt.close()
@@ -2403,7 +2411,8 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
 
     plt.savefig(plot_fname, dpi=300)
 
-    if (args.display_plots or gui_dict['checkBoxInteractive']):
+    if (gui_dict['checkBoxInteractive']):
+#     if (args.display_plots or gui_dict['checkBoxInteractive']):
 #     if args.display_plots:
         plt.show()
 
@@ -2567,7 +2576,8 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
 
     plt.savefig(plot_fname, dpi=300)
 
-    if (args.display_plots or gui_dict['checkBoxInteractive']):
+    if (gui_dict['checkBoxInteractive']):
+#     if (args.display_plots or gui_dict['checkBoxInteractive']):
         plt.show()
 
     plt.close()
@@ -2680,7 +2690,8 @@ def plot_mellow_concentration(mellow, concentration,
 
     plt.savefig(plot_fname, dpi=300)
 
-    if (args.display_plots or gui_dict['checkBoxInteractive']):
+    if (gui_dict['checkBoxInteractive']):
+#     if (args.display_plots or gui_dict['checkBoxInteractive']):
         plt.show()
 
     plt.close()
@@ -2774,7 +2785,8 @@ def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_n
 
     plt.savefig(plot_fname, dpi=300)
 
-    if (args.display_plots or gui_dict['checkBoxInteractive']):
+    if (gui_dict['checkBoxInteractive']):
+#     if (args.display_plots or gui_dict['checkBoxInteractive']):
         plt.show()
  
     plt.close()
@@ -3155,7 +3167,37 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
     return(True)
             
 
+def initialize_GUI_vars(date_time_now):
 
+    if Verbosity > 1:
+        print("initialize_GUI_vars(): ", date_time_now)
+
+    gui_dict.update({'firstName': "",'lastName': "",
+            "session_notes": "",
+            "checkBoxInteractive": False,
+            "checkBoxEEG": True,
+            "checkBoxCoherence": False,
+            "checkBoxPowerBands": True,
+            "checkBoxMellowConcentration": False,
+            "checkBoxAccelGyro": False,
+            "checkBox3D": False,
+            "checkBoxFilter": True,                
+            "checkBoxStatistical": False,
+            "checkBoxMuseDirect": False,
+            "verbosityComboBox": 0,
+            "checkBoxAutoReject": True,
+            "checkBoxDB": False,
+            "checkBoxHFDF5": False,
+            "plotColorsComboBox": 0,               
+            "Mood": 0})
+
+    if Verbosity > 2:
+        print("initialize_GUI_vars() - gui_dict: ", gui_dict)
+#         pause_and_prompt(2, "initialize_GUI_vars()")
+
+
+    return True
+                
 
 '''
 
@@ -3167,6 +3209,9 @@ Main ...
 
 def main(date_time_now):
 
+    if Verbosity > 1:
+        print("main() ")
+
     global gui_dict
     global session_dict
     global out_dirname
@@ -3175,7 +3220,9 @@ def main(date_time_now):
     global data_dir
 
     if Verbosity > 1:
-        print("analyze_muse.version.ABCS_version: ", analyze_muse.version.ABCS_version)
+        print("main() - analyze_muse.version.ABCS_version: ", analyze_muse.version.ABCS_version)
+
+    initialize_GUI_vars(date_time_now)
 
     rc_filename = str(Path.home()) + "/.ABCS_parms.rc"           
     my_rc_file = Path(rc_filename)
@@ -3193,13 +3240,16 @@ def main(date_time_now):
         data_dir = rc_obj['Data Dir']
 
 
-    app = QApplication(sys.argv)
-    gui = The_GUI()
-    gui.show()
-    GUI_status = app.exec_() 
-    gui.close()
-    app.closeAllWindows()
-    app.exit()
+
+    if not args.batch:
+        app = QApplication(sys.argv)
+        gui = The_GUI()
+        gui.show()
+        GUI_status = app.exec_() 
+        gui.close()
+        app.closeAllWindows()
+        app.exit()
+
 
     head_tail = os.path.split(CVS_fname) 
   
@@ -3288,7 +3338,9 @@ if __name__ == '__main__':
                             help="Send session data and statistics to database",  action="store_true")
 #     parser.add_argument("-l", "--logging_level", 
 #                             help="Logging verbosity: 1 = info, 2 = warning, 3 = debug", type=int)    
-                                        
+                  
+
+                                            
     args = parser.parse_args()
 
     if args.verbose:
@@ -3310,6 +3362,7 @@ if __name__ == '__main__':
             print("batch:")
         print(args.batch)
         BatchMode = True
+        args.display_plots = False
 
 
     if args.filter_data:
