@@ -3244,14 +3244,8 @@ if __name__ == '__main__':
     import pkg_resources
     import sys, site
 
-if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
-#     liblo_path = pkg_resources.resource_filename('liblo', 'liblo.so')
-#     dso_path = [(liblo_path, '.')]
-#     print("DSO path:", dso_path)    
-#     print("LIBLO path:", liblo_path)    
+    print("__version__: ", __version__)
 
-    if Verbosity > 1:
-        print("Platform: ", sys.platform)
     
     date_time_now = strftime('%Y-%m-%d-%H.%M.%S', gmtime())
 
@@ -3356,6 +3350,14 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
             print(args.data_base)
         Save_DB = args.data_base
 
+if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
+#     liblo_path = pkg_resources.resource_filename('liblo', 'liblo.so')
+#     dso_path = [(liblo_path, '.')]
+#     print("DSO path:", dso_path)    
+#     print("LIBLO path:", liblo_path)    
+
+    if Verbosity > 1:
+        print("Platform: ", sys.platform)
 
 
     try:

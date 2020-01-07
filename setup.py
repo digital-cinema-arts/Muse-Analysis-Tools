@@ -1,12 +1,37 @@
 from setuptools import setup, find_packages
+import os, sys, codecs, re
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+
+# here = os.path.abspath(os.path.dirname(__file__))
+
+# def read(*parts):
+#     with codecs.open(os.path.join(here, *parts), 'r') as fp:
+#         return fp.read()
+
+# def find_version(*file_paths):
+#     version_file = read(*file_paths)
+#     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
+#                               version_file, re.M)
+#     if version_match:
+#         return version_match.group(1)
+#     raise RuntimeError("Unable to find version string.")
+
+this_version = {}
+with open("./analyze_muse/version.py", "r") as fh:
+    this_version = fh.read()
+ 
+print("\n") 
+print("VBuilding ersion: ", this_version)
+print("\n") 
+    
 setup(
     name="Muse-Analysis-Tools",
-    version="1.1.3",
-
+#     version="1.1.3",
+#     version=find_version("analyze_muse", "__init__.py"),
+    version=this_version,
 
     author="debra_peri",
 #    author="Debra Grace Peri",
