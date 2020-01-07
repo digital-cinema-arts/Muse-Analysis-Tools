@@ -501,6 +501,12 @@ class The_GUI(QDialog):
         self.verbosityComboBox.setCurrentIndex(args.verbose)
 #         self.verbosityComboBox.setCurrentIndex(0)
 
+# analyze_muse.version.ABCS_version
+
+        self.versionLabel = QtWidgets.QLabel(self)
+        self.versionLabel.setText('Version: ' + str(analyze_muse.version.ABCS_version))
+        self.versionLabel.setAlignment(Qt.AlignCenter)
+
 
         self.labelChooseFile = QLabel(self)
         self.labelChooseFile.setText("Choose File")
@@ -515,6 +521,8 @@ class The_GUI(QDialog):
         layout.addWidget(self.verbosityComboBox)
         layout.addWidget(self.splitter)        
         layout.addWidget(self.plotPushButton)
+        layout.addWidget(self.splitter)        
+        layout.addWidget(self.versionLabel)        
 
         layout.addStretch(1)
         self.bottomLeftGroupBox.setLayout(layout)
@@ -3244,7 +3252,6 @@ if __name__ == '__main__':
 
     import pkg_resources
     import sys, site
-
     
     date_time_now = strftime('%Y-%m-%d-%H.%M.%S', gmtime())
 
@@ -3357,7 +3364,8 @@ if sys.platform in ['darwin', 'linux', 'linux2', 'win32']:
 
     if Verbosity > 1:
         print("Platform: ", sys.platform)
-
+        print("analyze_muse.version.ABCS_version: ", analyze_muse.version.ABCS_version)
+    
 
     try:
         main(date_time_now)
