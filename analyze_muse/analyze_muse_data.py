@@ -13,23 +13,21 @@ import datetime as dt
 import numpy as np
 from scipy import fftpack, interpolate
 import scipy.signal as signal
+from scipy import integrate, signal
+from scipy.signal import butter, lfilter
 import math
 import bitstring
 import pandas as pd
 import os
 from time import time, sleep, strftime, gmtime
 import sys
-import csv
+# import csv
 import argparse
-import math
-import filetype
+# import filetype
 # from tqdm import tqdm
 # from progress.bar import Bar, IncrementalBar
 import json
-import h5py, tables
 from pathlib import Path
-from scipy import integrate, signal
-from scipy.signal import butter, lfilter
 
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
@@ -81,7 +79,7 @@ last_name = ""
 data_dir = ""
 
 # Constants
-VERSION_NUM = 0.1
+ABCS_FORMAT_VERSION_NUM = 1.0
 FIGURE_SIZE = (8, 6)
 PLOT_DPI = 100
 
@@ -606,7 +604,7 @@ def manage_session_data(init=False, new_data={}, session_date='', date_time=''):
         # Fill in default values for now.  
         # (NOTE: Need to create DB interface)
         session_dict = {
-            'ABCS Info':{'Version':VERSION_NUM},
+            'ABCS Info':{'Version':ABCS_FORMAT_VERSION_NUM},
             'Muse Info':{'Headband Version':'2016'},
             'Session_Data':{
             'session_date': session_date,
@@ -789,15 +787,15 @@ def read_eeg_data(fname, date_time_now):
 # df = pd.read_csv(infile, parse_dates=['datetime'], date_parser=dateparse)
 
 
-    kind = filetype.guess(fname)
-    if kind is None:
-        if Verbosity > 2:
-            print("read_eeg_data(): Cannot guess file type!")
-    else:
-
-        if Verbosity > 1:    
-            print('read_eeg_data(): File extension: %s' % kind.extension)
-            print('read_eeg_data(): File MIME type: %s' % kind.mime)
+#     kind = filetype.guess(fname)
+#     if kind is None:
+#         if Verbosity > 2:
+#             print("read_eeg_data(): Cannot guess file type!")
+#     else:
+# 
+#         if Verbosity > 1:    
+#             print('read_eeg_data(): File extension: %s' % kind.extension)
+#             print('read_eeg_data(): File MIME type: %s' % kind.mime)
 
 
 # df = pd.read_csv('filename.tar.gz', compression='gzip', header=0, sep=',', quotechar='"')
@@ -980,6 +978,8 @@ def auto_reject_EEG_data(data):
  
 ''' 
 def write_hdf5_data(muse_EEG_data, data_fname):
+
+    import h5py, tables
 
     if Verbosity > 0:
         print("write_hdf5_data()")
