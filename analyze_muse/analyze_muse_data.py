@@ -127,7 +127,7 @@ MM_Colors = {
 ABCS_Colors = {
 'RawTP9': '#8459E2',
 'RawAF7': '#19A724',
-'RawAF8': '#3E40E0',
+'RawAF8': '#dd172b',
 'RawTP10':'#E2D659',
 'Delta': '#A20000',
 'Theta': '#D1A70C',
