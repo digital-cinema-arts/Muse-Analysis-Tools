@@ -52,7 +52,7 @@ https://matplotlib.org/3.1.1/users/navigation_toolbar.html
 
 --------------------------------------------------------------------
 
-The ".ABCS_parms.rc" file.
+The ".ABCS_parms.rc" runtime configuration file can be configured to define often used parameters or for batch processing.
 
 ```
 {"First Name": "Debra", "Last Name": "Peri", "Data Dir": "/Volumes/Archive/muse_recordings/muse_monitor_recordings",
