@@ -1208,15 +1208,15 @@ def filter_all_data(muse_EEG_data):
         if Verbosity > 2:
             print('filter_all_data() finished filtering gamma data')
 
-        muse_EEG_data['Accelerometer_X'] = filter_data(muse_EEG_data['Accelerometer_X'], smooth_sz)
-        muse_EEG_data['Accelerometer_Y'] = filter_data(muse_EEG_data['Accelerometer_Y'], smooth_sz)
-        muse_EEG_data['Accelerometer_Z'] = filter_data(muse_EEG_data['Accelerometer_Z'], smooth_sz)
-        muse_EEG_data['Gyro_X'] = filter_data(muse_EEG_data['Gyro_X'], smooth_sz)
-        muse_EEG_data['Gyro_Y'] = filter_data(muse_EEG_data['Gyro_Y'], smooth_sz)
-        muse_EEG_data['Gyro_Z'] = filter_data(muse_EEG_data['Gyro_Z'], smooth_sz)
-
-        if Verbosity > 2:
-            print('filter_all_data() finished filtering accel & gyro data')
+#         muse_EEG_data['Accelerometer_X'] = filter_data(muse_EEG_data['Accelerometer_X'], smooth_sz)
+#         muse_EEG_data['Accelerometer_Y'] = filter_data(muse_EEG_data['Accelerometer_Y'], smooth_sz)
+#         muse_EEG_data['Accelerometer_Z'] = filter_data(muse_EEG_data['Accelerometer_Z'], smooth_sz)
+#         muse_EEG_data['Gyro_X'] = filter_data(muse_EEG_data['Gyro_X'], smooth_sz)
+#         muse_EEG_data['Gyro_Y'] = filter_data(muse_EEG_data['Gyro_Y'], smooth_sz)
+#         muse_EEG_data['Gyro_Z'] = filter_data(muse_EEG_data['Gyro_Z'], smooth_sz)
+# 
+#         if Verbosity > 2:
+#             print('filter_all_data() finished filtering accel & gyro data')
 
     # Low pass filter
     if Filter_Type == 1:
@@ -1292,21 +1292,21 @@ def filter_all_data(muse_EEG_data):
         if Verbosity > 2:
             print('filter_all_data() finished filtering gamma data')
 
-        muse_EEG_data['Accelerometer_X'] = butter_lowpass_filter(muse_EEG_data['Accelerometer_X'], 
-                                        Filter_Highcut, Sampling_Rate, Filter_Order)
-        muse_EEG_data['Accelerometer_Y'] = butter_lowpass_filter(muse_EEG_data['Accelerometer_Y'], 
-                                        Filter_Highcut, Sampling_Rate, Filter_Order)
-        muse_EEG_data['Accelerometer_Z'] = butter_lowpass_filter(muse_EEG_data['Accelerometer_Z'], 
-                                        Filter_Highcut, Sampling_Rate, Filter_Order)
-        muse_EEG_data['Gyro_X'] = butter_lowpass_filter(muse_EEG_data['Gyro_X'], 
-                                        Filter_Highcut, Sampling_Rate, Filter_Order)
-        muse_EEG_data['Gyro_Y'] = butter_lowpass_filter(muse_EEG_data['Gyro_Y'], 
-                                        Filter_Highcut, Sampling_Rate, Filter_Order)
-        muse_EEG_data['Gyro_Z'] = butter_lowpass_filter(muse_EEG_data['Gyro_Z'], 
-                                        Filter_Highcut, Sampling_Rate, Filter_Order)
-
-        if Verbosity > 2:
-            print('filter_all_data() finished filtering accel & gyro data')
+#         muse_EEG_data['Accelerometer_X'] = butter_lowpass_filter(muse_EEG_data['Accelerometer_X'], 
+#                                         Filter_Highcut, Sampling_Rate, Filter_Order)
+#         muse_EEG_data['Accelerometer_Y'] = butter_lowpass_filter(muse_EEG_data['Accelerometer_Y'], 
+#                                         Filter_Highcut, Sampling_Rate, Filter_Order)
+#         muse_EEG_data['Accelerometer_Z'] = butter_lowpass_filter(muse_EEG_data['Accelerometer_Z'], 
+#                                         Filter_Highcut, Sampling_Rate, Filter_Order)
+#         muse_EEG_data['Gyro_X'] = butter_lowpass_filter(muse_EEG_data['Gyro_X'], 
+#                                         Filter_Highcut, Sampling_Rate, Filter_Order)
+#         muse_EEG_data['Gyro_Y'] = butter_lowpass_filter(muse_EEG_data['Gyro_Y'], 
+#                                         Filter_Highcut, Sampling_Rate, Filter_Order)
+#         muse_EEG_data['Gyro_Z'] = butter_lowpass_filter(muse_EEG_data['Gyro_Z'], 
+#                                         Filter_Highcut, Sampling_Rate, Filter_Order)
+# 
+#         if Verbosity > 2:
+#             print('filter_all_data() finished filtering accel & gyro data')
 
 
 
@@ -1384,21 +1384,21 @@ def filter_all_data(muse_EEG_data):
         if Verbosity > 2:
             print('filter_all_data() finished filtering gamma data')
 
-        muse_EEG_data['Accelerometer_X'] = butter_bandpass_filter(muse_EEG_data['Accelerometer_X'], 
-                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
-        muse_EEG_data['Accelerometer_Y'] = butter_bandpass_filter(muse_EEG_data['Accelerometer_Y'], 
-                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
-        muse_EEG_data['Accelerometer_Z'] = butter_bandpass_filter(muse_EEG_data['Accelerometer_Z'], 
-                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
-        muse_EEG_data['Gyro_X'] = butter_bandpass_filter(muse_EEG_data['Gyro_X'], 
-                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
-        muse_EEG_data['Gyro_Y'] = butter_bandpass_filter(muse_EEG_data['Gyro_Y'], 
-                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
-        muse_EEG_data['Gyro_Z'] = butter_bandpass_filter(muse_EEG_data['Gyro_Z'], 
-                                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
-
-        if Verbosity > 2:
-            print('filter_all_data() finished filtering accel & gyro data')
+#         muse_EEG_data['Accelerometer_X'] = butter_bandpass_filter(muse_EEG_data['Accelerometer_X'], 
+#                                             Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+#         muse_EEG_data['Accelerometer_Y'] = butter_bandpass_filter(muse_EEG_data['Accelerometer_Y'], 
+#                                             Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+#         muse_EEG_data['Accelerometer_Z'] = butter_bandpass_filter(muse_EEG_data['Accelerometer_Z'], 
+#                                             Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+#         muse_EEG_data['Gyro_X'] = butter_bandpass_filter(muse_EEG_data['Gyro_X'], 
+#                                             Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+#         muse_EEG_data['Gyro_Y'] = butter_bandpass_filter(muse_EEG_data['Gyro_Y'], 
+#                                             Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+#         muse_EEG_data['Gyro_Z'] = butter_bandpass_filter(muse_EEG_data['Gyro_Z'], 
+#                                             Filter_Lowcut, Filter_Highcut, Sampling_Rate, Filter_Order)
+# 
+#         if Verbosity > 2:
+#             print('filter_all_data() finished filtering accel & gyro data')
 
 
     return(muse_EEG_data)
