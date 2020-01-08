@@ -43,7 +43,7 @@ import matplotlib.ticker as ticker
 
 from PyQt5.QtWidgets import *
 import PyQt5.QtWidgets as QtWidgets
-from PyQt5.QtGui import QPalette, QIcon, QPixmap
+from PyQt5.QtGui import QPalette, QIcon, QPixmap, QFont
 
 from PyQt5.QtCore import QDateTime, Qt, QTimer, QUrl
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
@@ -508,11 +508,12 @@ class The_GUI(QDialog):
         self.versionLabel = QtWidgets.QLabel(self)
         self.versionLabel.setText('Version: ' + str(analyze_muse.ABCS_version.ABCS_version))
         self.versionLabel.setAlignment(Qt.AlignCenter)
+        self.versionLabel.setFont(QFont("Tahoma", 10, QFont.Light))
 
 
-        self.labelChooseFile = QLabel(self)
-        self.labelChooseFile.setText("Choose File")
-        self.labelChooseFile.setAlignment(Qt.AlignCenter)
+#         self.labelChooseFile = QLabel(self)
+#         self.labelChooseFile.setText("Choose File")
+#         self.labelChooseFile.setAlignment(Qt.AlignCenter)
 
         layout = QVBoxLayout()
         layout.addWidget(self.splitter)
