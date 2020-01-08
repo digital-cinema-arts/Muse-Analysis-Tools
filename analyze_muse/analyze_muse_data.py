@@ -53,7 +53,7 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QVBoxLayout, QWidget)
 
 import analyze_muse.resources.resources_rc
-import analyze_muse.version
+import analyze_muse.ABCS_version
 
 
 # Globals
@@ -506,7 +506,7 @@ class The_GUI(QDialog):
 #         self.verbosityComboBox.setCurrentIndex(0)
 
         self.versionLabel = QtWidgets.QLabel(self)
-        self.versionLabel.setText('Version: ' + str(analyze_muse.version.ABCS_version))
+        self.versionLabel.setText('Version: ' + str(analyze_muse.ABCS_version.ABCS_version))
         self.versionLabel.setAlignment(Qt.AlignCenter)
 
 
@@ -3150,7 +3150,7 @@ def main(date_time_now):
     global db_location
 
     if Verbosity > 1:
-        print("main() - analyze_muse.version.ABCS_version: ", analyze_muse.version.ABCS_version)
+        print("main() - analyze_muse.ABCS_version.ABCS_version: ", analyze_muse.ABCS_version.ABCS_version)
 
     initialize_GUI_vars(date_time_now)
 
