@@ -505,8 +505,6 @@ class The_GUI(QDialog):
         self.verbosityComboBox.setCurrentIndex(args.verbose)
 #         self.verbosityComboBox.setCurrentIndex(0)
 
-# analyze_muse.version.ABCS_version
-
         self.versionLabel = QtWidgets.QLabel(self)
         self.versionLabel.setText('Version: ' + str(analyze_muse.version.ABCS_version))
         self.versionLabel.setAlignment(Qt.AlignCenter)
