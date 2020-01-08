@@ -1,0 +1,14 @@
+numpy
+pandas
+scipy
+time
+sleep
+datetime
+math
+bitstring
+pandas
+filetype
+json
+pathlib
+matplotlib
+PyQt5
