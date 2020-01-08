@@ -274,6 +274,7 @@ class The_GUI(QDialog):
         auto_reject = self.checkBoxAutoReject.isChecked()
         DB = self.checkBoxDB.isChecked()
         HDF5 = self.checkBoxHFDF5.isChecked()
+        vertical_lock = self.checkBoxVerticalLock.isChecked()
         plot_colors = self.plotColorsComboBox.currentText()
         
         mood = self.moodComboBox.currentText()
@@ -295,6 +296,7 @@ class The_GUI(QDialog):
                 "checkBoxAutoReject": auto_reject,
                 "checkBoxDB": DB,
                 "checkBoxHFDF5": HDF5,
+                "checkBoxVerticalLock": vertical_lock,
                 "plotColorsComboBox": plot_colors,               
                 "Mood": mood})
 
@@ -390,7 +392,10 @@ class The_GUI(QDialog):
         self.plotColorsLabel = QtWidgets.QLabel(self)
         self.plotColorsLabel.setText('Set Plot Color Scheme')
 
-
+        self.checkBoxVerticalLock = QCheckBox("Y Axis Lock")
+        self.checkBoxVerticalLock.setChecked(True)
+        self.checkBoxVerticalLock.setEnabled(True)
+  
         layout.addWidget(self.checkBoxInteractive)
         layout.addWidget(self.checkBoxEEG)
         layout.addWidget(self.checkBoxCoherence)
@@ -405,7 +410,8 @@ class The_GUI(QDialog):
         layout.addWidget(self.checkBoxAutoReject)
         layout.addWidget(self.checkBoxDB)
         layout.addWidget(self.checkBoxHFDF5)
-        layout.addWidget(self.splitter)        
+        layout.addWidget(self.checkBoxHFDF5)
+        layout.addWidget(self.checkBoxVerticalLock)        
  
         layout.addWidget(self.plotColorsLabel)
         layout.addWidget(self.plotColorsComboBox)
@@ -1572,8 +1578,9 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
     period = (1.0/Sampling_Rate)
     x_series = np.arange(0, t_len * period, period)
  
+ 
     fig, axs = plt.subplots(nrows=2, num=fig_num, figsize=FIGURE_SIZE, 
-                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=False, 
+                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=gui_dict['checkBoxVerticalLock'], 
                         gridspec_kw={'hspace': 0.25}, tight_layout=False)
        
     plt.suptitle('Algorithmic Biofeedback Control System' + '\n' + title, fontsize=12, fontweight='bold')
@@ -1694,7 +1701,7 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
     x_series = np.arange(0, t_len * period, period)
  
     fig, axs = plt.subplots(nrows=5, num=fig_num, figsize=FIGURE_SIZE, 
-                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=False, 
+                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=gui_dict['checkBoxVerticalLock'], 
                         gridspec_kw={'hspace': 0.25}, tight_layout=False)
        
     plt.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
@@ -1993,7 +2000,7 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
 #     print('plot_all_power_bands() data_stats ', data_stats)
 
     fig, axs = plt.subplots(nrows=5, num=fig_num, figsize=FIGURE_SIZE, 
-                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=False, 
+                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=gui_dict['checkBoxVerticalLock'], 
                         gridspec_kw={'hspace': 0.25}, tight_layout=False)
 
     fig.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
@@ -2147,7 +2154,7 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
         plot_color_scheme = MM_Colors
 
     fig, axs = plt.subplots(nrows=5, num=fig_num, figsize=FIGURE_SIZE, 
-                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=False, 
+                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=gui_dict['checkBoxVerticalLock'], 
                         gridspec_kw={'hspace': 0.25}, tight_layout=False)
 
     fig.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
@@ -2347,8 +2354,9 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     data_stats = calculate_power_stats(delta, theta, alpha, beta, gamma)
 #     print('plot_all_power_bands() data_stats ', data_stats)
 
+
     fig, axs = plt.subplots(nrows=5, num=fig_num, figsize=FIGURE_SIZE, 
-                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=False, 
+                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=gui_dict['checkBoxVerticalLock'], 
                         gridspec_kw={'hspace': 0.25}, tight_layout=False)
 
     plt.rcParams.update(PLOT_PARAMS)
@@ -2525,7 +2533,7 @@ def plot_mellow_concentration(mellow, concentration,
         print("concentration_min: ", concentration_min)
 
     fig, axs = plt.subplots(nrows=2, num=fig_num, figsize=FIGURE_SIZE, 
-                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=False, 
+                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=gui_dict['checkBoxVerticalLock'], 
                         gridspec_kw={'hspace': 0.25}, tight_layout=False)
 
     plt.rcParams.update(PLOT_PARAMS)
@@ -2620,7 +2628,9 @@ def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_n
     x_series = np.arange(0, t_len * period, period)
 
     fig, axs = plt.subplots(nrows=6, num=fig_num, figsize=FIGURE_SIZE, 
-                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=False, 
+                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, 
+                    sharey=False,
+#                     sharey=gui_dict['checkBoxVerticalLock'], 
                         gridspec_kw={'hspace': 0.25}, tight_layout=False)
 
 
