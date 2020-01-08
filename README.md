@@ -57,7 +57,6 @@ The ".ABCS_parms.rc" runtime configuration file can be configured to define ofte
 ```
 {"First Name": "Debra", "Last Name": "Peri", "Data Dir": "/Volumes/Archive/muse_recordings/muse_monitor_recordings",
 "Data Base Location": "/Volumes/Archive/muse_recordings/muse_monitor_recordings", "Filter Data": 1, "Filter Type": 0, "Filter LowCut": 0.5, "Filter HighCut": 7.0}
-
 ```
 
 --------------------------------------------------------------------
