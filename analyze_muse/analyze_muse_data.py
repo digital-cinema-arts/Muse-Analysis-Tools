@@ -635,7 +635,7 @@ def manage_session_data(init=False, new_data={}, session_date='', date_time=''):
                         },          
                     1:{
                         'name': 'Savahn',
-                        'age': 39,
+                        'age': 38,
                         'gender': 'female'
                         }     
                     },
@@ -2900,14 +2900,34 @@ Make labels for the analysis parameters
 
 def create_analysis_parms_text(x, y, plt_axes, analysis_parms):
 
-   plt.text(x, y, 
-        'Sample Time:\n' + "{:.2f}".format(analysis_parms['sample_time_min']) +
-        ' (minutes) ' + "{:.2f}".format(analysis_parms['sample_time_sec']) + " (seconds)" + 
-        '\nSample Length: ' + "{:d}".format(analysis_parms['sample_length']),
-        style='italic', transform=plt_axes.transAxes, 
-        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+    if (gui_dict['checkBoxFilter'] or args.filter_data):
 
-   return True
+        if Filter_Type == 0:
+            filter_type_name = 'Default'
+        if Filter_Type == 1:
+            filter_type_name = 'Low Pass'
+        if Filter_Type == 2:
+            filter_type_name = 'Band Pass'
+
+        text_string = 'Sample Time: ' + "{:.2f}".format(analysis_parms['sample_time_min']) +  \
+            ' (minutes) ' + "{:.2f}".format(analysis_parms['sample_time_sec']) + " (seconds)" +   \
+            '\nSample Length: ' + "{:d}".format(analysis_parms['sample_length']) +    \
+                '\nFilter Type: ' + filter_type_name +  \
+                '  Filter Order: ' + "{:.1f}".format(analysis_parms['filter_order']) + \
+                '\nLow Cut: ' + "{:.1f}".format(analysis_parms['lowcut']) + " HZ " +   \
+                ' High Cut: ' + "{:.1f}".format(analysis_parms['highcut']) + " HZ "
+    else:
+    
+        text_string = 'Sample Time: ' + "{:.2f}".format(analysis_parms['sample_time_min']) +  \
+            ' (minutes) ' + "{:.2f}".format(analysis_parms['sample_time_sec']) + " (seconds)" +   \
+            '\nSample Length: ' + "{:d}".format(analysis_parms['sample_length'])
+    
+
+    plt.text(x, y, text_string,    
+        style='italic', transform=plt_axes.transAxes,
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 2})
+
+    return True
 
 
 def pause_and_prompt(pause_time, msg):
@@ -3268,9 +3288,9 @@ def main(date_time_now):
 
     get_data_description(muse_EEG_data)
 
-    if Verbosity > 2:
-        print("main() - EEG_Dict: ", EEG_Dict)
-        print("\n")
+#     if Verbosity > 2:
+#         print("main() - EEG_Dict: ", EEG_Dict)
+#         print("\n")
 
 
     # Perform auto-reject if user has selected it
@@ -3284,9 +3304,10 @@ def main(date_time_now):
         muse_EEG_data = filter_all_data(muse_EEG_data)
         # If filtering, recompute description data
         get_data_description(muse_EEG_data)
-        if Verbosity > 2:
-            print("main() - EEG_Dict after filtering: ", EEG_Dict)
-            print("\n")
+        
+#         if Verbosity > 2:
+#             print("main() - EEG_Dict after filtering: ", EEG_Dict)
+#             print("\n")
 
 
     # If the user wants an HDF5 file written of the data 
