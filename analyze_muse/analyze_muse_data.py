@@ -78,6 +78,7 @@ plot_color_scheme = {}
 first_name = ""
 last_name = ""
 data_dir = ""
+db_location = ""
 
 # Constants
 ABCS_FORMAT_VERSION_NUM = 1.0
@@ -685,7 +686,7 @@ def connect_to_DB(date_time_now):
     if Verbosity > 0:
         print("connect_to_DB(): Sending data to database ...")
 
-    db_fname = 'EEG_data.db'
+    db_fname = db_location + '/EEG_data.db'
 
     # If the database does not exist, create it
     if os.path.exists(db_fname):
@@ -2708,6 +2709,8 @@ Calculate stats for power data
 
 def calculate_power_stats(delta, theta, alpha, beta, gamma):
 
+# TODO This whole function can be removed, it's redundant
+
     # Run the stats of the incoming data which is specific to each call to this function
     gamma_mean = np.mean(np.nan_to_num(gamma))
     gamma_std = np.std(np.nan_to_num(gamma))
@@ -3146,6 +3149,7 @@ def main(date_time_now):
     global first_name
     global last_name
     global data_dir
+    global db_location
 
     if Verbosity > 1:
         print("main() - analyze_muse.version.ABCS_version: ", analyze_muse.version.ABCS_version)
@@ -3159,13 +3163,15 @@ def main(date_time_now):
         with open(rc_filename, 'r') as myfile:
             data=myfile.read()
 
-        # parse file
+        # parse the runtime config parameters file
         rc_obj = json.loads(data)
         if Verbosity > 1:
             print("main() - rc_obj: ", rc_obj)
         first_name = rc_obj['First Name']
         last_name = rc_obj['Last Name']
         data_dir = rc_obj['Data Dir']
+        # Location of sqllite dababase file
+        db_location = rc_obj['Data Base Location']
 
 
 
