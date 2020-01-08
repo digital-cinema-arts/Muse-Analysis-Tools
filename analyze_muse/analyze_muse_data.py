@@ -1687,50 +1687,6 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
 
     print('\nplot_sensor_data() called: data_stats', data_stats)
     print("\n")
-
-# TODO Make this a function
-    # Run the stats of the incoming data which is specific to each call to this function
-    tp9_mean = np.mean(np.nan_to_num(tp9))
-    tp9_std = np.std(np.nan_to_num(tp9))
-    tp9_max = np.max(np.nan_to_num(tp9))
-    tp9_min = np.min(np.nan_to_num(tp9))
-
-    af7_mean = np.mean(np.nan_to_num(af7))
-    af7_std = np.std(np.nan_to_num(af7))
-    af7_max = np.max(np.nan_to_num(af7))
-    af7_min = np.min(np.nan_to_num(af7))
-
-    af8_mean = np.mean(np.nan_to_num(af8))
-    af8_std = np.std(np.nan_to_num(af8))
-    af8_max = np.max(np.nan_to_num(af8))
-    af8_min = np.min(np.nan_to_num(af8))
-
-    tp10_mean = np.mean(np.nan_to_num(tp10))
-    tp10_std = np.std(np.nan_to_num(tp10))
-    tp10_max = np.max(np.nan_to_num(tp10))
-    tp10_min = np.min(np.nan_to_num(tp10))
-
-    if Verbosity > 2:  
-
-        print("tp9_mean: ", tp9_mean)
-        print("tp9_std: ", tp9_std)
-        print("tp9_max: ", tp9_max)
-        print("tp9_min: ", tp9_min)
-    
-        print("af7_mean: ", af7_mean)
-        print("af7_std: ", af7_std)
-        print("af7_max: ", af7_max)
-        print("af7_min: ", af7_min)
-
-        print("af8_mean: ", af8_mean)
-        print("af8_std: ", af8_std)
-        print("af8_max: ", af8_max)
-        print("af8_min: ", af8_min)
-
-        print("tp10_mean: ", tp10_mean)
-        print("tp10_std: ", tp10_std)
-        print("tp10_max: ", tp10_max)
-        print("tp10_min: ", tp10_min)
   
     t_len = len(timestamps)
     
@@ -1843,37 +1799,36 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
             bbox={'facecolor':'blue', 'alpha':0.1, 'pad':1})
 
     plt.text(1.01, 4.25, 
-        'Mean: ' + "{:.3f}".format(tp9_mean) + 
-        '\nStd: ' + "{:.3f}".format(tp9_std) + 
-        '\nMin: ' + "{:.3f}".format(tp9_min) +
-        '\nMax: ' + "{:.3f}".format(tp9_max), style='italic', 
+        'Mean: ' + "{:.3f}".format(EEG_Dict['RAW_TP9']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(EEG_Dict['RAW_TP9']['std']) + 
+        '\nMin: ' + "{:.3f}".format(EEG_Dict['RAW_TP9']['min']) +
+        '\nMax: ' + "{:.3f}".format(EEG_Dict['RAW_TP9']['max']), style='italic', 
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
 
     plt.text(1.01, 3.0, 
-        'Mean: ' + "{:.3f}".format(af7_mean) + 
-        '\nStd: ' + "{:.3f}".format(af7_std) + 
-        '\nMin: ' + "{:.3f}".format(af7_min) +
-        '\nMax: ' + "{:.3f}".format(af7_max), style='italic', 
+        'Mean: ' + "{:.3f}".format(EEG_Dict['RAW_AF7']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(EEG_Dict['RAW_AF7']['std']) + 
+        '\nMin: ' + "{:.3f}".format(EEG_Dict['RAW_AF7']['min']) +
+        '\nMax: ' + "{:.3f}".format(EEG_Dict['RAW_AF7']['max']), style='italic', 
         transform=plt_axes.transAxes,
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
 
     plt.text(1.01, 1.75, 
-        'Mean: ' + "{:.3f}".format(af8_mean) + 
-        '\nStd: ' + "{:.3f}".format(af8_std) + 
-        '\nMin: ' + "{:.3f}".format(af8_min) +
-        '\nMax: ' + "{:.3f}".format(af8_max), style='italic', 
+        'Mean: ' + "{:.3f}".format(EEG_Dict['RAW_AF8']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(EEG_Dict['RAW_AF8']['std']) + 
+        '\nMin: ' + "{:.3f}".format(EEG_Dict['RAW_AF8']['min']) +
+        '\nMax: ' + "{:.3f}".format(EEG_Dict['RAW_AF8']['max']), style='italic', 
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
 
     plt.text(1.01, 0.50, 
-        'Mean: ' + "{:.3f}".format(tp10_mean) + 
-        '\nStd: ' + "{:.3f}".format(tp10_std) + 
-        '\nMin: ' + "{:.3f}".format(tp10_min) +
-        '\nMax: ' + "{:.3f}".format(tp10_max), style='italic', 
+        'Mean: ' + "{:.3f}".format(EEG_Dict['RAW_TP10']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(EEG_Dict['RAW_TP10']['std']) + 
+        '\nMin: ' + "{:.3f}".format(EEG_Dict['RAW_TP10']['min']) +
+        '\nMax: ' + "{:.3f}".format(EEG_Dict['RAW_TP10']['max']), style='italic', 
         transform=plt_axes.transAxes,
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
-
     
     plt.savefig(plot_fname, dpi=300)
    
@@ -1908,50 +1863,6 @@ def plot_sensor_data_single(timestamps, tp9, af7, af8, tp10, data_fname, plot_fn
     if Verbosity > 0:
         print('plot_sensor_data_single() called')
 #     print('plot_sensor_data_single() data_stats: ', data_stats)
-
-    # Run the stats of the incoming data which is specific to each call to this function
-    tp9_mean = np.mean(np.nan_to_num(tp9))
-    tp9_std = np.std(np.nan_to_num(tp9))
-    tp9_max = np.max(np.nan_to_num(tp9))
-    tp9_min = np.min(np.nan_to_num(tp9))
-
-    af7_mean = np.mean(np.nan_to_num(af7))
-    af7_std = np.std(np.nan_to_num(af7))
-    af7_max = np.max(np.nan_to_num(af7))
-    af7_min = np.min(np.nan_to_num(af7))
-
-    af8_mean = np.mean(np.nan_to_num(af8))
-    af8_std = np.std(np.nan_to_num(af8))
-    af8_max = np.max(np.nan_to_num(af8))
-    af8_min = np.min(np.nan_to_num(af8))
-
-    tp10_mean = np.mean(np.nan_to_num(tp10))
-    tp10_std = np.std(np.nan_to_num(tp10))
-    tp10_max = np.max(np.nan_to_num(tp10))
-    tp10_min = np.min(np.nan_to_num(tp10))
-
-    if Verbosity > 2:  
-
-        print("tp9_mean: ", tp9_mean)
-        print("tp9_std: ", tp9_std)
-        print("tp9_max: ", tp9_max)
-        print("tp9_min: ", tp9_min)
-    
-        print("af7_mean: ", af7_mean)
-        print("af7_std: ", af7_std)
-        print("af7_max: ", af7_max)
-        print("af7_min: ", af7_min)
-
-        print("af8_mean: ", af8_mean)
-        print("af8_std: ", af8_std)
-        print("af8_max: ", af8_max)
-        print("af8_min: ", af8_min)
-
-        print("tp10_mean: ", tp10_mean)
-        print("tp10_std: ", tp10_std)
-        print("tp10_max: ", tp10_max)
-        print("tp10_min: ", tp10_min)
-
    
     t_len = len(timestamps)
     
@@ -2021,25 +1932,25 @@ def plot_sensor_data_single(timestamps, tp9, af7, af8, tp10, data_fname, plot_fn
 
     plt.text(1.01, 0.25, 
         'TP9' +
-        '\nMean: ' + "{:.3f}".format(tp9_mean) + 
-        '\nStd: ' + "{:.3f}".format(tp9_std) + 
-        '\nMin: ' + "{:.3f}".format(tp9_min) +
-        '\nMax: ' + "{:.3f}".format(tp9_max) +
+        '\nMean: ' + "{:.3f}".format(EEG_Dict['RAW_TP9']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(EEG_Dict['RAW_TP9']['std']) + 
+        '\nMin: ' + "{:.3f}".format(EEG_Dict['RAW_TP9']['min']) +
+        '\nMax: ' + "{:.3f}".format(EEG_Dict['RAW_TP9']['max']) +
         '\n\nAF7' +
-        '\nMean: ' + "{:.3f}".format(af7_mean) + 
-        '\nStd: ' + "{:.3f}".format(af7_std) + 
-        '\nMin: ' + "{:.3f}".format(af7_min) +
-        '\nMax: ' + "{:.3f}".format(af7_max) +
+        '\nMean: ' + "{:.3f}".format(EEG_Dict['RAW_AF7']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(EEG_Dict['RAW_AF7']['std']) + 
+        '\nMin: ' + "{:.3f}".format(EEG_Dict['RAW_AF7']['min']) +
+        '\nMax: ' + "{:.3f}".format(EEG_Dict['RAW_AF7']['max']) +
         '\n\nAF8' +
-        '\nMean: ' + "{:.3f}".format(af8_mean) + 
-        '\nStd: ' + "{:.3f}".format(af8_std) + 
-        '\nMin: ' + "{:.3f}".format(af8_min) +
-        '\nMax: ' + "{:.3f}".format(af8_max) +
+        '\nMean: ' + "{:.3f}".format(EEG_Dict['RAW_AF8']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(EEG_Dict['RAW_AF8']['std']) + 
+        '\nMin: ' + "{:.3f}".format(EEG_Dict['RAW_AF8']['min']) +
+        '\nMax: ' + "{:.3f}".format(EEG_Dict['RAW_AF8']['max']) +
         '\n\nTP10' +
-        '\nMean: ' + "{:.3f}".format(tp10_mean) + 
-        '\nStd: ' + "{:.3f}".format(tp10_std) + 
-        '\nMin: ' + "{:.3f}".format(tp10_min) +
-        '\nMax: ' + "{:.3f}".format(tp10_max), style='italic', 
+        '\nMean: ' + "{:.3f}".format(EEG_Dict['RAW_TP10']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(EEG_Dict['RAW_TP10']['std']) + 
+        '\nMin: ' + "{:.3f}".format(EEG_Dict['RAW_TP10']['max']) +
+        '\nMax: ' + "{:.3f}".format(EEG_Dict['RAW_TP10']['min']), style='italic', 
         transform=plt_axes.transAxes, 
         bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
 
@@ -2219,8 +2130,6 @@ Plot all the sensor power bands
 def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
                 lowcut, highcut, fs, point_sz, title, 
                 data_fname, plot_fname, date_time_now, analysis_parms, fig_num):
-
-# TODO:  Make multiple windows
 
     plot_alpha = 0.8
 
