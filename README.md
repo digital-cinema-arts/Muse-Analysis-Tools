@@ -34,7 +34,7 @@ Python 3.7.4
 --------------------------------------------------------------------
 
 #### Usage:
-1) Change directory to where the Mind Monitor CSV files are located.  
+1) Change directory to where the data files are located (option, sometimes makes it easier to locate files).  
 2) Startup the application:  
 ```$ analyze_muse_data.py```
 3) Select the options and CSV file you want to process.
@@ -56,7 +56,7 @@ The ".ABCS_parms.rc" runtime configuration file can be configured to define ofte
 
 ```
 {"First Name": "Debra", "Last Name": "Peri", "Data Dir": "/Volumes/Archive/muse_recordings/muse_monitor_recordings",
-"Data Base Location": "/Volumes/Archive/muse_recordings/muse_monitor_recordings", "Filter Data": 1, "Filter Type": 0, "Filter LowCut": 0.5, "Filter HighCut": 7.0}
+"Data Base Location": "/Volumes/Archive/muse_recordings/muse_monitor_recordings", "Filter Data": 1, "Filter Type": 1, "Filter LowCut": 0.5, "Filter HighCut": 70.0}
 ```
 
 --------------------------------------------------------------------
