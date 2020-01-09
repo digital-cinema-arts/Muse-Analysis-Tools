@@ -2627,11 +2627,15 @@ def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_n
     period = (1.0/Sampling_Rate)
     x_series = np.arange(0, t_len * period, period)
 
-    fig, axs = plt.subplots(nrows=6, num=fig_num, figsize=FIGURE_SIZE, 
-                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, 
-                    sharey=False,
+#     fig, axs = plt.subplots(nrows=6, num=fig_num, figsize=FIGURE_SIZE, 
+#                     dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, 
 #                     sharey=gui_dict['checkBoxVerticalLock'], 
-                        gridspec_kw={'hspace': 0.25}, tight_layout=False)
+#                         gridspec_kw={'hspace': 0.25})
+
+    fig, axs = plt.subplots(nrows=6, num=fig_num, figsize=FIGURE_SIZE, 
+                        dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, 
+#                         sharey=gui_dict['checkBoxVerticalLock'], 
+                            gridspec_kw={'hspace': 0.25}, tight_layout=False)
 
 
     plt.rcParams.update(PLOT_PARAMS)
@@ -2642,44 +2646,48 @@ def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_n
     axs[0].xaxis.set_major_locator(ticker.AutoLocator())  
     axs[0].xaxis.set_minor_locator(ticker.AutoMinorLocator())
 
+    # Plot accelerometer data  
     axs[1].set(ylabel="Accelerometer") 
-    axs[4].set(ylabel="Gyro") 
             
     l0 = axs[0].plot(x_series, acc_gyro_df['Accelerometer_X'], color='r', 
             alpha=plot_alpha, label='X')
     axs[0].legend(loc='upper right', prop={'size': 6})     
     axs[0].grid(True)
-#     axs[0].axis('auto')
+    axs[0].set_ylim((-1.5, 1.5))
 
     l1 = axs[1].plot(x_series, acc_gyro_df['Accelerometer_Y'], color='g', 
             alpha=plot_alpha, label='Y')
     axs[1].legend(loc='upper right', prop={'size': 6})
     axs[1].grid(True)
-#     axs[1].axis('auto')
+    axs[1].set_ylim((-1.5, 1.5))
 
     l2 = axs[2].plot(x_series, acc_gyro_df['Accelerometer_Z'], color='b', 
             alpha=plot_alpha, label='Z')
     axs[2].legend(loc='upper right', prop={'size': 6})
     axs[2].grid(True)
-#     axs[2].axis('auto')
+    axs[2].set_ylim((-1.5, 1.5))
+
+
+    # Plot gyro data
+    axs[4].set(ylabel="Gyro") 
 
     l3 = axs[3].plot(x_series, acc_gyro_df['Gyro_X'], color='#FF3AAA', 
             alpha=plot_alpha, label='Pitch')
     axs[3].legend(loc='upper right', prop={'size': 6})     
     axs[3].grid(True)
-#     axs[3].axis('auto')
+    axs[3].set_ylim((-50.0, 50.0))
 
     l4 = axs[4].plot(x_series, acc_gyro_df['Gyro_Y'], color='#3affe5',
             alpha=plot_alpha, label='Yaw')
     axs[4].legend(loc='upper right', prop={'size': 6})
     axs[4].grid(True)
-#     axs[4].axis('auto')
+    axs[4].set_ylim((-50.0, 50.0))
 
     l5 = axs[5].plot(x_series, acc_gyro_df['Gyro_Z'], color='#FFC73A', 
             alpha=plot_alpha, label='Roll')
     axs[5].legend(loc='upper right', prop={'size': 6})
     axs[5].grid(True)
-#     axs[5].axis('auto')
+    axs[5].set_ylim((-50.0, 50.0))
 
     axs[5].set(xlabel="Time (Seconds)") 
        
