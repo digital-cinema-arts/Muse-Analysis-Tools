@@ -88,8 +88,8 @@ PLOT_DPI = 100
 PLOT_PARAMS = {
     'axes.titlesize' : 8,
     'axes.labelsize' : 7,
-    'lines.linewidth' : 1,
-    'lines.markersize' : 2,
+    'lines.linewidth' : 1.25,
+    'lines.markersize' : 2.0,
     'xtick.labelsize' : 7,
     'ytick.labelsize' : 7,
     'legend.fontsize': 6,
@@ -1597,12 +1597,8 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
         print('plot_coherence_data() data_min: ', data_min)
         print('plot_coherence_data() data_max: ', data_max)
 
-
     clip_padding = 50. 
     y_limits = [data_min - clip_padding, data_max + clip_padding]
-
-# TODO Use global plot point size instead
-    pt_size = 2
 
 # TODO Make this switch global
     if (gui_dict['plotColorsComboBox'] == 'ABCS Colors'):
@@ -1611,12 +1607,12 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
         plot_color_scheme = MM_Colors
     
 
-    axs[0].plot(x_series, af_diff, alpha=0.8, ms=pt_size, 
+    axs[0].plot(x_series, af_diff, alpha=0.8, 
                 color=plot_color_scheme['RawAF8'], label='AF Diff')
     axs[0].set(title='AF7 - AF8', ylabel="Amp uV")      
     axs[0].set_ylim((af_min, af_max))
      
-    axs[1].plot(x_series, tp_diff, alpha=0.8, ms=pt_size, 
+    axs[1].plot(x_series, tp_diff, alpha=0.8, 
                 color=plot_color_scheme['RawTP9'], label='TP Diff')
                               
     axs[1].xaxis.set_major_locator(ticker.AutoLocator())  
@@ -1751,16 +1747,18 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
 #     interp_data = f1(xnew1)  
 #     print('plot_sensor_data() interp_data: ', interp_data)
 
+# matplotlib.cm.get_cmap('autumn_r')
 
-    axs[0].plot(x_series, tp9, alpha=0.8, ms=pt_size, 
-                color=plot_color_scheme['RawTP9'], label='TP9')
-                              
-    axs[0].plot(x_series, af7, alpha=0.8, ms=pt_size, 
+
+    axs[0].plot(x_series, tp9, alpha=0.8, marker='.', mec='xkcd:dark pink',
+                color=plot_color_scheme['RawTP9'], label='TP9')                              
+    axs[0].plot(x_series, af7, alpha=0.8, marker='.', mec='xkcd:salmon',
                 color=plot_color_scheme['RawAF7'], label='AF7')
-    axs[0].plot(x_series, af8, alpha=0.8, ms=pt_size, 
+    axs[0].plot(x_series, af8, alpha=0.8, marker='.', mec='xkcd:cerulean',
                 color=plot_color_scheme['RawAF8'], label='AF8')
-    axs[0].plot(x_series, tp10, alpha=0.8, ms=pt_size, 
+    axs[0].plot(x_series, tp10, alpha=0.8, marker='.', mec='xkcd:dark lilac',
                 color=plot_color_scheme['RawTP10'], label='TP10')
+  
   
     axs[0].xaxis.set_major_locator(ticker.AutoLocator())  
     axs[0].xaxis.set_minor_locator(ticker.AutoMinorLocator())
@@ -1776,19 +1774,23 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
 #             arrowprops=dict(facecolor='black', shrink=0.01))
             
 
-    axs[1].plot(x_series, tp9, alpha=1.0, ms=pt_size, color=plot_color_scheme['RawTP9'], label='TP9')
+    axs[1].plot(x_series, tp9, alpha=1.0, marker='.', mec='xkcd:dark pink',
+            color=plot_color_scheme['RawTP9'], label='TP9')
     axs[1].set(title='TP9', ylabel="Amp uV")      
     axs[1].set_ylim((EEG_Dict['RAW_TP9']['25%'] - clip_padding), (EEG_Dict['RAW_TP9']['75%'] + clip_padding))
     
-    axs[2].plot(x_series, af7, alpha=1.0, ms=pt_size, color=plot_color_scheme['RawAF7'], label='AF7')
+    axs[2].plot(x_series, af7, alpha=1.0, marker='.', mec='xkcd:salmon',
+            color=plot_color_scheme['RawAF7'], label='AF7')
     axs[2].set(title='AF7', ylabel="Amp uV") 
     axs[2].set_ylim((EEG_Dict['RAW_AF7']['25%'] - clip_padding), (EEG_Dict['RAW_AF7']['75%'] + clip_padding))
 
-    axs[3].plot(x_series, af8, alpha=1.0, ms=pt_size, color=plot_color_scheme['RawAF8'], label='AF8')
+    axs[3].plot(x_series, af8, alpha=1.0, marker='.', mec='xkcd:cerulean',
+            color=plot_color_scheme['RawAF8'], label='AF8')
     axs[3].set(title='AF8', ylabel="Amp uV") 
     axs[3].set_ylim((EEG_Dict['RAW_AF8']['25%'] - clip_padding), (EEG_Dict['RAW_AF8']['75%'] + clip_padding))
 
-    axs[4].plot(x_series, tp10, alpha=1.0, ms=pt_size, color=plot_color_scheme['RawTP10'], label='TP10')
+    axs[4].plot(x_series, tp10, alpha=1.0, marker='.', mec='xkcd:dark lilac',
+            color=plot_color_scheme['RawTP10'], label='TP10')
     axs[4].set(title='TP10', xlabel="Time (Seconds)", ylabel="Amp uV") 
     axs[4].set_ylim((EEG_Dict['RAW_TP10']['25%'] - clip_padding), (EEG_Dict['RAW_TP10']['75%'] + clip_padding))
      
@@ -1896,21 +1898,19 @@ def plot_sensor_data_single(timestamps, tp9, af7, af8, tp10, data_fname, plot_fn
     clip_padding = 50. 
     y_limits = [data_min - clip_padding, data_max + clip_padding]
 
-    pt_size = 2
-
     if (gui_dict['plotColorsComboBox'] == 'ABCS Colors'):
         plot_color_scheme = ABCS_Colors
     else:
         plot_color_scheme = MM_Colors
     
     line_alpha = 0.5
-    axs.plot(x_series, tp9, alpha=line_alpha, ms=pt_size, marker='+',
+    axs.plot(x_series, tp9, alpha=line_alpha, marker='.', mec='xkcd:dark pink',
                 color=plot_color_scheme['RawTP9'], label='TP9')                            
-    axs.plot(x_series, af7, alpha=line_alpha, ms=pt_size, marker='+',
+    axs.plot(x_series, af7, alpha=line_alpha, marker='.', mec='xkcd:salmon',
                 color=plot_color_scheme['RawAF7'], label='AF7')
-    axs.plot(x_series, af8, alpha=line_alpha, ms=pt_size, marker='+',
+    axs.plot(x_series, af8, alpha=line_alpha, marker='.', mec='xkcd:cerulean',
                 color=plot_color_scheme['RawAF8'], label='AF8')
-    axs.plot(x_series, tp10, alpha=line_alpha, ms=pt_size, marker='+',
+    axs.plot(x_series, tp10, alpha=line_alpha, marker='.', mec='xkcd:dark lilac',
                 color=plot_color_scheme['RawTP10'], label='TP10')
   
     axs.xaxis.set_major_locator(ticker.AutoLocator())  
