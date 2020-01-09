@@ -88,8 +88,8 @@ PLOT_DPI = 100
 PLOT_PARAMS = {
     'axes.titlesize' : 8,
     'axes.labelsize' : 7,
-    'lines.linewidth' : 1,
-    'lines.markersize' : 2,
+    'lines.linewidth' : 1.25,
+    'lines.markersize' : 2.0,
     'xtick.labelsize' : 7,
     'ytick.labelsize' : 7,
     'legend.fontsize': 6,
@@ -274,6 +274,7 @@ class The_GUI(QDialog):
         auto_reject = self.checkBoxAutoReject.isChecked()
         DB = self.checkBoxDB.isChecked()
         HDF5 = self.checkBoxHFDF5.isChecked()
+        vertical_lock = self.checkBoxVerticalLock.isChecked()
         plot_colors = self.plotColorsComboBox.currentText()
         
         mood = self.moodComboBox.currentText()
@@ -295,6 +296,7 @@ class The_GUI(QDialog):
                 "checkBoxAutoReject": auto_reject,
                 "checkBoxDB": DB,
                 "checkBoxHFDF5": HDF5,
+                "checkBoxVerticalLock": vertical_lock,
                 "plotColorsComboBox": plot_colors,               
                 "Mood": mood})
 
@@ -390,7 +392,10 @@ class The_GUI(QDialog):
         self.plotColorsLabel = QtWidgets.QLabel(self)
         self.plotColorsLabel.setText('Set Plot Color Scheme')
 
-
+        self.checkBoxVerticalLock = QCheckBox("Y Axis Lock")
+        self.checkBoxVerticalLock.setChecked(True)
+        self.checkBoxVerticalLock.setEnabled(True)
+  
         layout.addWidget(self.checkBoxInteractive)
         layout.addWidget(self.checkBoxEEG)
         layout.addWidget(self.checkBoxCoherence)
@@ -405,7 +410,8 @@ class The_GUI(QDialog):
         layout.addWidget(self.checkBoxAutoReject)
         layout.addWidget(self.checkBoxDB)
         layout.addWidget(self.checkBoxHFDF5)
-        layout.addWidget(self.splitter)        
+        layout.addWidget(self.checkBoxHFDF5)
+        layout.addWidget(self.checkBoxVerticalLock)        
  
         layout.addWidget(self.plotColorsLabel)
         layout.addWidget(self.plotColorsComboBox)
@@ -1572,8 +1578,9 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
     period = (1.0/Sampling_Rate)
     x_series = np.arange(0, t_len * period, period)
  
+ 
     fig, axs = plt.subplots(nrows=2, num=fig_num, figsize=FIGURE_SIZE, 
-                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=False, 
+                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=gui_dict['checkBoxVerticalLock'], 
                         gridspec_kw={'hspace': 0.25}, tight_layout=False)
        
     plt.suptitle('Algorithmic Biofeedback Control System' + '\n' + title, fontsize=12, fontweight='bold')
@@ -1590,12 +1597,8 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
         print('plot_coherence_data() data_min: ', data_min)
         print('plot_coherence_data() data_max: ', data_max)
 
-
     clip_padding = 50. 
     y_limits = [data_min - clip_padding, data_max + clip_padding]
-
-# TODO Use global plot point size instead
-    pt_size = 2
 
 # TODO Make this switch global
     if (gui_dict['plotColorsComboBox'] == 'ABCS Colors'):
@@ -1604,12 +1607,12 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
         plot_color_scheme = MM_Colors
     
 
-    axs[0].plot(x_series, af_diff, alpha=0.8, ms=pt_size, 
+    axs[0].plot(x_series, af_diff, alpha=0.8, 
                 color=plot_color_scheme['RawAF8'], label='AF Diff')
     axs[0].set(title='AF7 - AF8', ylabel="Amp uV")      
     axs[0].set_ylim((af_min, af_max))
      
-    axs[1].plot(x_series, tp_diff, alpha=0.8, ms=pt_size, 
+    axs[1].plot(x_series, tp_diff, alpha=0.8, 
                 color=plot_color_scheme['RawTP9'], label='TP Diff')
                               
     axs[1].xaxis.set_major_locator(ticker.AutoLocator())  
@@ -1694,7 +1697,7 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
     x_series = np.arange(0, t_len * period, period)
  
     fig, axs = plt.subplots(nrows=5, num=fig_num, figsize=FIGURE_SIZE, 
-                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=False, 
+                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=gui_dict['checkBoxVerticalLock'], 
                         gridspec_kw={'hspace': 0.25}, tight_layout=False)
        
     plt.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
@@ -1744,16 +1747,18 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
 #     interp_data = f1(xnew1)  
 #     print('plot_sensor_data() interp_data: ', interp_data)
 
+# matplotlib.cm.get_cmap('autumn_r')
 
-    axs[0].plot(x_series, tp9, alpha=0.8, ms=pt_size, 
-                color=plot_color_scheme['RawTP9'], label='TP9')
-                              
-    axs[0].plot(x_series, af7, alpha=0.8, ms=pt_size, 
+
+    axs[0].plot(x_series, tp9, alpha=0.8, marker='.', mec='xkcd:dark pink',
+                color=plot_color_scheme['RawTP9'], label='TP9')                              
+    axs[0].plot(x_series, af7, alpha=0.8, marker='.', mec='xkcd:salmon',
                 color=plot_color_scheme['RawAF7'], label='AF7')
-    axs[0].plot(x_series, af8, alpha=0.8, ms=pt_size, 
+    axs[0].plot(x_series, af8, alpha=0.8, marker='.', mec='xkcd:cerulean',
                 color=plot_color_scheme['RawAF8'], label='AF8')
-    axs[0].plot(x_series, tp10, alpha=0.8, ms=pt_size, 
+    axs[0].plot(x_series, tp10, alpha=0.8, marker='.', mec='xkcd:dark lilac',
                 color=plot_color_scheme['RawTP10'], label='TP10')
+  
   
     axs[0].xaxis.set_major_locator(ticker.AutoLocator())  
     axs[0].xaxis.set_minor_locator(ticker.AutoMinorLocator())
@@ -1769,19 +1774,23 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
 #             arrowprops=dict(facecolor='black', shrink=0.01))
             
 
-    axs[1].plot(x_series, tp9, alpha=1.0, ms=pt_size, color=plot_color_scheme['RawTP9'], label='TP9')
+    axs[1].plot(x_series, tp9, alpha=1.0, marker='.', mec='xkcd:dark pink',
+            color=plot_color_scheme['RawTP9'], label='TP9')
     axs[1].set(title='TP9', ylabel="Amp uV")      
     axs[1].set_ylim((EEG_Dict['RAW_TP9']['25%'] - clip_padding), (EEG_Dict['RAW_TP9']['75%'] + clip_padding))
     
-    axs[2].plot(x_series, af7, alpha=1.0, ms=pt_size, color=plot_color_scheme['RawAF7'], label='AF7')
+    axs[2].plot(x_series, af7, alpha=1.0, marker='.', mec='xkcd:salmon',
+            color=plot_color_scheme['RawAF7'], label='AF7')
     axs[2].set(title='AF7', ylabel="Amp uV") 
     axs[2].set_ylim((EEG_Dict['RAW_AF7']['25%'] - clip_padding), (EEG_Dict['RAW_AF7']['75%'] + clip_padding))
 
-    axs[3].plot(x_series, af8, alpha=1.0, ms=pt_size, color=plot_color_scheme['RawAF8'], label='AF8')
+    axs[3].plot(x_series, af8, alpha=1.0, marker='.', mec='xkcd:cerulean',
+            color=plot_color_scheme['RawAF8'], label='AF8')
     axs[3].set(title='AF8', ylabel="Amp uV") 
     axs[3].set_ylim((EEG_Dict['RAW_AF8']['25%'] - clip_padding), (EEG_Dict['RAW_AF8']['75%'] + clip_padding))
 
-    axs[4].plot(x_series, tp10, alpha=1.0, ms=pt_size, color=plot_color_scheme['RawTP10'], label='TP10')
+    axs[4].plot(x_series, tp10, alpha=1.0, marker='.', mec='xkcd:dark lilac',
+            color=plot_color_scheme['RawTP10'], label='TP10')
     axs[4].set(title='TP10', xlabel="Time (Seconds)", ylabel="Amp uV") 
     axs[4].set_ylim((EEG_Dict['RAW_TP10']['25%'] - clip_padding), (EEG_Dict['RAW_TP10']['75%'] + clip_padding))
      
@@ -1889,21 +1898,19 @@ def plot_sensor_data_single(timestamps, tp9, af7, af8, tp10, data_fname, plot_fn
     clip_padding = 50. 
     y_limits = [data_min - clip_padding, data_max + clip_padding]
 
-    pt_size = 2
-
     if (gui_dict['plotColorsComboBox'] == 'ABCS Colors'):
         plot_color_scheme = ABCS_Colors
     else:
         plot_color_scheme = MM_Colors
     
     line_alpha = 0.5
-    axs.plot(x_series, tp9, alpha=line_alpha, ms=pt_size, marker='+',
+    axs.plot(x_series, tp9, alpha=line_alpha, marker='.', mec='xkcd:dark pink',
                 color=plot_color_scheme['RawTP9'], label='TP9')                            
-    axs.plot(x_series, af7, alpha=line_alpha, ms=pt_size, marker='+',
+    axs.plot(x_series, af7, alpha=line_alpha, marker='.', mec='xkcd:salmon',
                 color=plot_color_scheme['RawAF7'], label='AF7')
-    axs.plot(x_series, af8, alpha=line_alpha, ms=pt_size, marker='+',
+    axs.plot(x_series, af8, alpha=line_alpha, marker='.', mec='xkcd:cerulean',
                 color=plot_color_scheme['RawAF8'], label='AF8')
-    axs.plot(x_series, tp10, alpha=line_alpha, ms=pt_size, marker='+',
+    axs.plot(x_series, tp10, alpha=line_alpha, marker='.', mec='xkcd:dark lilac',
                 color=plot_color_scheme['RawTP10'], label='TP10')
   
     axs.xaxis.set_major_locator(ticker.AutoLocator())  
@@ -1993,7 +2000,7 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
 #     print('plot_all_power_bands() data_stats ', data_stats)
 
     fig, axs = plt.subplots(nrows=5, num=fig_num, figsize=FIGURE_SIZE, 
-                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=False, 
+                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=gui_dict['checkBoxVerticalLock'], 
                         gridspec_kw={'hspace': 0.25}, tight_layout=False)
 
     fig.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
@@ -2147,7 +2154,7 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
         plot_color_scheme = MM_Colors
 
     fig, axs = plt.subplots(nrows=5, num=fig_num, figsize=FIGURE_SIZE, 
-                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=False, 
+                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=gui_dict['checkBoxVerticalLock'], 
                         gridspec_kw={'hspace': 0.25}, tight_layout=False)
 
     fig.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
@@ -2347,8 +2354,9 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     data_stats = calculate_power_stats(delta, theta, alpha, beta, gamma)
 #     print('plot_all_power_bands() data_stats ', data_stats)
 
+
     fig, axs = plt.subplots(nrows=5, num=fig_num, figsize=FIGURE_SIZE, 
-                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=False, 
+                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=gui_dict['checkBoxVerticalLock'], 
                         gridspec_kw={'hspace': 0.25}, tight_layout=False)
 
     plt.rcParams.update(PLOT_PARAMS)
@@ -2525,7 +2533,7 @@ def plot_mellow_concentration(mellow, concentration,
         print("concentration_min: ", concentration_min)
 
     fig, axs = plt.subplots(nrows=2, num=fig_num, figsize=FIGURE_SIZE, 
-                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=False, 
+                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=gui_dict['checkBoxVerticalLock'], 
                         gridspec_kw={'hspace': 0.25}, tight_layout=False)
 
     plt.rcParams.update(PLOT_PARAMS)
@@ -2619,9 +2627,15 @@ def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_n
     period = (1.0/Sampling_Rate)
     x_series = np.arange(0, t_len * period, period)
 
+#     fig, axs = plt.subplots(nrows=6, num=fig_num, figsize=FIGURE_SIZE, 
+#                     dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, 
+#                     sharey=gui_dict['checkBoxVerticalLock'], 
+#                         gridspec_kw={'hspace': 0.25})
+
     fig, axs = plt.subplots(nrows=6, num=fig_num, figsize=FIGURE_SIZE, 
-                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=False, 
-                        gridspec_kw={'hspace': 0.25}, tight_layout=False)
+                        dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, 
+#                         sharey=gui_dict['checkBoxVerticalLock'], 
+                            gridspec_kw={'hspace': 0.25}, tight_layout=False)
 
 
     plt.rcParams.update(PLOT_PARAMS)
@@ -2632,44 +2646,48 @@ def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_n
     axs[0].xaxis.set_major_locator(ticker.AutoLocator())  
     axs[0].xaxis.set_minor_locator(ticker.AutoMinorLocator())
 
+    # Plot accelerometer data  
     axs[1].set(ylabel="Accelerometer") 
-    axs[4].set(ylabel="Gyro") 
             
     l0 = axs[0].plot(x_series, acc_gyro_df['Accelerometer_X'], color='r', 
             alpha=plot_alpha, label='X')
     axs[0].legend(loc='upper right', prop={'size': 6})     
     axs[0].grid(True)
-#     axs[0].axis('auto')
+    axs[0].set_ylim((-1.5, 1.5))
 
     l1 = axs[1].plot(x_series, acc_gyro_df['Accelerometer_Y'], color='g', 
             alpha=plot_alpha, label='Y')
     axs[1].legend(loc='upper right', prop={'size': 6})
     axs[1].grid(True)
-#     axs[1].axis('auto')
+    axs[1].set_ylim((-1.5, 1.5))
 
     l2 = axs[2].plot(x_series, acc_gyro_df['Accelerometer_Z'], color='b', 
             alpha=plot_alpha, label='Z')
     axs[2].legend(loc='upper right', prop={'size': 6})
     axs[2].grid(True)
-#     axs[2].axis('auto')
+    axs[2].set_ylim((-1.5, 1.5))
+
+
+    # Plot gyro data
+    axs[4].set(ylabel="Gyro") 
 
     l3 = axs[3].plot(x_series, acc_gyro_df['Gyro_X'], color='#FF3AAA', 
             alpha=plot_alpha, label='Pitch')
     axs[3].legend(loc='upper right', prop={'size': 6})     
     axs[3].grid(True)
-#     axs[3].axis('auto')
+    axs[3].set_ylim((-50.0, 50.0))
 
     l4 = axs[4].plot(x_series, acc_gyro_df['Gyro_Y'], color='#3affe5',
             alpha=plot_alpha, label='Yaw')
     axs[4].legend(loc='upper right', prop={'size': 6})
     axs[4].grid(True)
-#     axs[4].axis('auto')
+    axs[4].set_ylim((-50.0, 50.0))
 
     l5 = axs[5].plot(x_series, acc_gyro_df['Gyro_Z'], color='#FFC73A', 
             alpha=plot_alpha, label='Roll')
     axs[5].legend(loc='upper right', prop={'size': 6})
     axs[5].grid(True)
-#     axs[5].axis('auto')
+    axs[5].set_ylim((-50.0, 50.0))
 
     axs[5].set(xlabel="Time (Seconds)") 
        
