@@ -88,8 +88,8 @@ PLOT_DPI = 100
 PLOT_PARAMS = {
     'axes.titlesize' : 8,
     'axes.labelsize' : 7,
-    'lines.linewidth' : 1.25,
-    'lines.markersize' : 2.0,
+    'lines.linewidth' : 1.0,
+    'lines.markersize' : 1.75,
     'xtick.labelsize' : 7,
     'ytick.labelsize' : 7,
     'legend.fontsize': 6,
@@ -1727,8 +1727,6 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
     clip_padding = 100. 
     y_limits = [data_min - clip_padding, data_max + clip_padding]
 
-# TODO Use global plot point size instead
-    pt_size = 2
 
 # TODO Make this switch global
     if (gui_dict['plotColorsComboBox'] == 'ABCS Colors'):
@@ -1749,7 +1747,8 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
 
 # matplotlib.cm.get_cmap('autumn_r')
 
-
+#     matplotlib.style.use('seaborn')
+    
     axs[0].plot(x_series, tp9, alpha=0.8, marker='.', mec='xkcd:dark pink',
                 color=plot_color_scheme['RawTP9'], label='TP9')                              
     axs[0].plot(x_series, af7, alpha=0.8, marker='.', mec='xkcd:salmon',
@@ -2931,7 +2930,19 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
                 EEG_Dict['RAW_AF8']['25%'], EEG_Dict['RAW_AF8']['75%'],
                 EEG_Dict['RAW_TP9']['25%'], EEG_Dict['RAW_TP9']['75%'],
                 EEG_Dict['RAW_TP10']['25%'], EEG_Dict['RAW_TP10']['75%'])
- 
+
+    # If the user wants to use an alternative plot style 
+    if args.plot_style == 1:
+        matplotlib.style.use('seaborn')
+    elif args.plot_style == 2:
+        matplotlib.style.use('seaborn-pastel')
+    elif args.plot_style == 3:
+        matplotlib.style.use('seaborn-ticks')
+    elif args.plot_style == 4:
+        matplotlib.style.use('fast')
+    elif args.plot_style == 5:
+        matplotlib.style.use('bmh')
+    
     
     if (gui_dict['checkBoxEEG']):
 
@@ -3283,6 +3294,8 @@ if __name__ == '__main__':
                                 action="store_true")
     parser.add_argument("-s", "--stats_plots", help="Plot Statistcal Data", action="store_true")
     parser.add_argument("-c", "--coherence_plots", help="Plot Coherence Data", action="store_true")
+    parser.add_argument("--plot_style", 
+                help="Plot Syle: 1=seaborn, 2=seaborn-pastel, 3=seaborn-ticks, 4=fast, 5=bmh", type=int)
 
 #     parser.add_argument("--plot_3D", help="3D Display Plots", action="store_true")
 #     parser.add_argument("-i", "--integrate", help="Integrate EEG Data", action="store_true")
@@ -3301,8 +3314,7 @@ if __name__ == '__main__':
 #     parser.add_argument("-l", "--logging_level", 
 #                             help="Logging verbosity: 1 = info, 2 = warning, 3 = debug", type=int)    
                   
-
-                                            
+                                                
     args = parser.parse_args()
 
     if args.verbose:
@@ -3318,6 +3330,13 @@ if __name__ == '__main__':
         print(args.display_plots)
     else:
         args.display_plots = True
+
+    if args.plot_style:
+        if Verbosity > 0:
+                print("plot_style:")
+        print(args.plot_style)
+    else:
+        args.plot_style = 0
 
     if args.batch:
         if Verbosity > 0:
