@@ -89,9 +89,10 @@ PLOT_PARAMS = {
     'axes.titlesize' : 8,
     'axes.labelsize' : 7,
     'lines.linewidth' : 1.0,
-    'lines.markersize' : 1.75,
+    'lines.markersize' : 1.5,
     'xtick.labelsize' : 7,
     'ytick.labelsize' : 7,
+    'scatter.marker' : '.',
     'legend.fontsize': 6,
     'legend.handlelength': 2}
 # plt.rcParams.update(PLOT_PARAMS)
@@ -275,6 +276,7 @@ class The_GUI(QDialog):
         DB = self.checkBoxDB.isChecked()
         HDF5 = self.checkBoxHFDF5.isChecked()
         vertical_lock = self.checkBoxVerticalLock.isChecked()
+        graph_markers = self.checkBoxGraphMarkers.isChecked()
         plot_colors = self.plotColorsComboBox.currentText()
         
         mood = self.moodComboBox.currentText()
@@ -297,6 +299,7 @@ class The_GUI(QDialog):
                 "checkBoxDB": DB,
                 "checkBoxHFDF5": HDF5,
                 "checkBoxVerticalLock": vertical_lock,
+                "checkBoxGraphMarkers": graph_markers,
                 "plotColorsComboBox": plot_colors,               
                 "Mood": mood})
 
@@ -312,7 +315,7 @@ class The_GUI(QDialog):
         if gui_dict['verbosityComboBox'] == 'Debug':
             Verbosity = 3
 
-        if Verbosity > 1:
+        if Verbosity > 2:
             print("plot_button_clicked(): gui_dict ", gui_dict)
         
         self.accept()
@@ -395,6 +398,10 @@ class The_GUI(QDialog):
         self.checkBoxVerticalLock = QCheckBox("Y Axis Lock")
         self.checkBoxVerticalLock.setChecked(True)
         self.checkBoxVerticalLock.setEnabled(True)
+
+        self.checkBoxGraphMarkers = QCheckBox("Add Graph Markers")
+        self.checkBoxGraphMarkers.setChecked(False)
+        self.checkBoxGraphMarkers.setEnabled(True)
   
         layout.addWidget(self.checkBoxInteractive)
         layout.addWidget(self.checkBoxEEG)
@@ -412,6 +419,7 @@ class The_GUI(QDialog):
         layout.addWidget(self.checkBoxHFDF5)
         layout.addWidget(self.checkBoxHFDF5)
         layout.addWidget(self.checkBoxVerticalLock)        
+        layout.addWidget(self.checkBoxGraphMarkers)        
  
         layout.addWidget(self.plotColorsLabel)
         layout.addWidget(self.plotColorsComboBox)
@@ -717,7 +725,7 @@ def connect_to_DB(date_time_now):
                         json.dumps(session_dict) + "','" + json.dumps(gui_dict) + "', 100, 0.05)"
 
 
-    if Verbosity > 1:
+    if Verbosity > 2:
         print("connect_to_DB() - sql_insert: ", sql_insert)
     
     c.execute(sql_insert)
@@ -841,7 +849,7 @@ def read_eeg_data(fname, date_time_now):
     num_cols = len(muse_EEG_data.columns)
 
     time_df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp'])    
-    if Verbosity > 1:
+    if Verbosity > 2:
         print("read_eeg_data(): Session Date: ", time_df['TimeStamp'][0])
         print("read_eeg_data(): num_cols: ", num_cols)
         print("read_eeg_data(): muse_EEG_data.columns: ", muse_EEG_data.columns)
@@ -881,7 +889,7 @@ def read_eeg_data(fname, date_time_now):
 
     elements_df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp', 'Elements'])
 
-    if Verbosity > 1:
+    if Verbosity > 2:
 #         print("read_eeg_data() - Elements.describe(): ", elements_df.describe())   
         print("read_eeg_data() - elements_df.count(): ", elements_df.count())
 
@@ -900,7 +908,7 @@ def read_eeg_data(fname, date_time_now):
 # #         if args.verbose:
 # #             print("verbose turned on")
 # 
-#         if Verbosity > 1:
+#         if Verbosity > 2:
 #             print("read_eeg_data(): Sensor data description", temp_df.describe())
 # #         data_str = temp_df.mean()
 #         data_str = temp_df.describe()
@@ -970,7 +978,7 @@ def get_data_description(muse_EEG_data):
 
     for temp_df in (raw_df, delta_df, theta_df, alpha_df, beta_df, gamma_df):
 
-        if Verbosity > 1:
+        if Verbosity > 2:
             print("get_data_description(): Sensor data description", temp_df.describe())
 #         data_str = temp_df.mean()
         data_str = temp_df.describe()
@@ -1165,61 +1173,62 @@ def filter_all_data(muse_EEG_data):
     smooth_sz = 1
     
     # Default filter
+#     if False:
     if Filter_Type == 0:
-        muse_EEG_data['RAW_TP9'] = filter_data(muse_EEG_data['RAW_TP9'], smooth_sz)
-        muse_EEG_data['RAW_AF7'] = filter_data(muse_EEG_data['RAW_AF7'], smooth_sz)
-        muse_EEG_data['RAW_AF8'] = filter_data(muse_EEG_data['RAW_AF8'], smooth_sz)
-        muse_EEG_data['RAW_TP10'] = filter_data(muse_EEG_data['RAW_TP10'], smooth_sz)
+        muse_EEG_data['RAW_TP9'] = filter_data(muse_EEG_data['RAW_TP9'])
+        muse_EEG_data['RAW_AF7'] = filter_data(muse_EEG_data['RAW_AF7'])
+        muse_EEG_data['RAW_AF8'] = filter_data(muse_EEG_data['RAW_AF8'])
+        muse_EEG_data['RAW_TP10'] = filter_data(muse_EEG_data['RAW_TP10'])
 
         if Verbosity > 2:
             print('filter_all_data() finished filtering raw data')
     
-        muse_EEG_data['Delta_TP9'] = filter_data(muse_EEG_data['Delta_TP9'], smooth_sz)
-        muse_EEG_data['Delta_AF7'] = filter_data(muse_EEG_data['Delta_AF7'], smooth_sz)
-        muse_EEG_data['Delta_AF8'] = filter_data(muse_EEG_data['Delta_AF8'], smooth_sz)
-        muse_EEG_data['Delta_TP10'] = filter_data(muse_EEG_data['Delta_TP10'], smooth_sz)
+        muse_EEG_data['Delta_TP9'] = filter_data(muse_EEG_data['Delta_TP9'])
+        muse_EEG_data['Delta_AF7'] = filter_data(muse_EEG_data['Delta_AF7'])
+        muse_EEG_data['Delta_AF8'] = filter_data(muse_EEG_data['Delta_AF8'])
+        muse_EEG_data['Delta_TP10'] = filter_data(muse_EEG_data['Delta_TP10'])
 
         if Verbosity > 2:
             print('filter_all_data() finished filtering delta data')
 
-        muse_EEG_data['Theta_TP9'] = filter_data(muse_EEG_data['Theta_TP9'], smooth_sz)
-        muse_EEG_data['Theta_AF7'] = filter_data(muse_EEG_data['Theta_AF7'], smooth_sz)
-        muse_EEG_data['Theta_AF8'] = filter_data(muse_EEG_data['Theta_AF8'], smooth_sz)
-        muse_EEG_data['Theta_TP10'] = filter_data(muse_EEG_data['Theta_TP10'], smooth_sz)
+        muse_EEG_data['Theta_TP9'] = filter_data(muse_EEG_data['Theta_TP9'])
+        muse_EEG_data['Theta_AF7'] = filter_data(muse_EEG_data['Theta_AF7'])
+        muse_EEG_data['Theta_AF8'] = filter_data(muse_EEG_data['Theta_AF8'])
+        muse_EEG_data['Theta_TP10'] = filter_data(muse_EEG_data['Theta_TP10'])
 
         if Verbosity > 2:
             print('filter_all_data() finished filtering theta data')
 
-        muse_EEG_data['Alpha_TP9'] = filter_data(muse_EEG_data['Alpha_TP9'], smooth_sz)
-        muse_EEG_data['Alpha_AF7'] = filter_data(muse_EEG_data['Alpha_AF7'], smooth_sz)
-        muse_EEG_data['Alpha_AF8'] = filter_data(muse_EEG_data['Alpha_AF8'], smooth_sz)
-        muse_EEG_data['Alpha_TP10'] = filter_data(muse_EEG_data['Alpha_TP10'], smooth_sz)
+        muse_EEG_data['Alpha_TP9'] = filter_data(muse_EEG_data['Alpha_TP9'])
+        muse_EEG_data['Alpha_AF7'] = filter_data(muse_EEG_data['Alpha_AF7'])
+        muse_EEG_data['Alpha_AF8'] = filter_data(muse_EEG_data['Alpha_AF8'])
+        muse_EEG_data['Alpha_TP10'] = filter_data(muse_EEG_data['Alpha_TP10'])
 
         if Verbosity > 2:
             print('filter_all_data() finished filtering alpha data')
 
-        muse_EEG_data['Beta_TP9'] = filter_data(muse_EEG_data['Beta_TP9'], smooth_sz)
-        muse_EEG_data['Beta_AF7'] = filter_data(muse_EEG_data['Beta_AF7'], smooth_sz)
-        muse_EEG_data['Beta_AF8'] = filter_data(muse_EEG_data['Beta_AF8'], smooth_sz)
-        muse_EEG_data['Beta_TP10'] = filter_data(muse_EEG_data['Beta_TP10'], smooth_sz)
+        muse_EEG_data['Beta_TP9'] = filter_data(muse_EEG_data['Beta_TP9'])
+        muse_EEG_data['Beta_AF7'] = filter_data(muse_EEG_data['Beta_AF7'])
+        muse_EEG_data['Beta_AF8'] = filter_data(muse_EEG_data['Beta_AF8'])
+        muse_EEG_data['Beta_TP10'] = filter_data(muse_EEG_data['Beta_TP10'])
 
         if Verbosity > 2:
             print('filter_all_data() finished filtering beta data')
 
-        muse_EEG_data['Gamma_TP9'] = filter_data(muse_EEG_data['Gamma_TP9'], smooth_sz)
-        muse_EEG_data['Gamma_AF7'] = filter_data(muse_EEG_data['Gamma_AF7'], smooth_sz)
-        muse_EEG_data['Gamma_AF8'] = filter_data(muse_EEG_data['Gamma_AF8'], smooth_sz)
-        muse_EEG_data['Gamma_TP10'] = filter_data(muse_EEG_data['Gamma_TP10'], smooth_sz)
+        muse_EEG_data['Gamma_TP9'] = filter_data(muse_EEG_data['Gamma_TP9'])
+        muse_EEG_data['Gamma_AF7'] = filter_data(muse_EEG_data['Gamma_AF7'])
+        muse_EEG_data['Gamma_AF8'] = filter_data(muse_EEG_data['Gamma_AF8'])
+        muse_EEG_data['Gamma_TP10'] = filter_data(muse_EEG_data['Gamma_TP10'])
 
         if Verbosity > 2:
             print('filter_all_data() finished filtering gamma data')
 
-#         muse_EEG_data['Accelerometer_X'] = filter_data(muse_EEG_data['Accelerometer_X'], smooth_sz)
-#         muse_EEG_data['Accelerometer_Y'] = filter_data(muse_EEG_data['Accelerometer_Y'], smooth_sz)
-#         muse_EEG_data['Accelerometer_Z'] = filter_data(muse_EEG_data['Accelerometer_Z'], smooth_sz)
-#         muse_EEG_data['Gyro_X'] = filter_data(muse_EEG_data['Gyro_X'], smooth_sz)
-#         muse_EEG_data['Gyro_Y'] = filter_data(muse_EEG_data['Gyro_Y'], smooth_sz)
-#         muse_EEG_data['Gyro_Z'] = filter_data(muse_EEG_data['Gyro_Z'], smooth_sz)
+#         muse_EEG_data['Accelerometer_X'] = filter_data(muse_EEG_data['Accelerometer_X'])
+#         muse_EEG_data['Accelerometer_Y'] = filter_data(muse_EEG_data['Accelerometer_Y'])
+#         muse_EEG_data['Accelerometer_Z'] = filter_data(muse_EEG_data['Accelerometer_Z'])
+#         muse_EEG_data['Gyro_X'] = filter_data(muse_EEG_data['Gyro_X'])
+#         muse_EEG_data['Gyro_Y'] = filter_data(muse_EEG_data['Gyro_Y'])
+#         muse_EEG_data['Gyro_Z'] = filter_data(muse_EEG_data['Gyro_Z'])
 # 
 #         if Verbosity > 2:
 #             print('filter_all_data() finished filtering accel & gyro data')
@@ -1412,11 +1421,27 @@ def filter_all_data(muse_EEG_data):
 
 
 
-def filter_data(data_in, win):
-    N  = 3    # Filter order
-    Wn = 0.5 # Cutoff frequency
-    B, A = signal.butter(N, Wn, output='ba')
-    filtered_data = signal.filtfilt(B,A, data_in)
+def filter_data(data_in):
+
+#     filtered_data = butter_lowpass_filter(data_in100.0, Sampling_Rate)
+
+# TODO: FInd a simple/faster/better lowpass filter 
+
+    b, a = butter_lowpass(50.0, Sampling_Rate, order=3)
+    filtered_data = lfilter(b, a, data_in)
+
+
+#     N  = 3    
+#     Wn = 0.05
+#     B, A = signal.butter(N, Wn, output='ba')
+#     filtered_data = signal.filtfilt(B,A, data_in)
+
+# 
+#     fc = 300;
+#     fs = 1000;
+# 
+#     [b,a] = butter(6,fc/(fs/2));
+#     freqz(b,a)
 
     return filtered_data
 
@@ -1592,7 +1617,7 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
     data_max = np.max((data_stats[1], data_stats[3], data_stats[5], data_stats[7]))
 
 
-    if Verbosity > 1:  
+    if Verbosity > 2:  
         print('plot_coherence_data() data_stats: ', data_stats)
         print('plot_coherence_data() data_min: ', data_min)
         print('plot_coherence_data() data_max: ', data_max)
@@ -1600,19 +1625,12 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
     clip_padding = 50. 
     y_limits = [data_min - clip_padding, data_max + clip_padding]
 
-# TODO Make this switch global
-    if (gui_dict['plotColorsComboBox'] == 'ABCS Colors'):
-        plot_color_scheme = ABCS_Colors
-    else:
-        plot_color_scheme = MM_Colors
-    
-
-    axs[0].plot(x_series, af_diff, alpha=0.8, 
+    axs[0].plot(x_series, af_diff, alpha=0.8, marker='.', mec='xkcd:dark brown',
                 color=plot_color_scheme['RawAF8'], label='AF Diff')
     axs[0].set(title='AF7 - AF8', ylabel="Amp uV")      
     axs[0].set_ylim((af_min, af_max))
      
-    axs[1].plot(x_series, tp_diff, alpha=0.8, 
+    axs[1].plot(x_series, tp_diff, alpha=0.8, marker='.', mec='xkcd:wine',
                 color=plot_color_scheme['RawTP9'], label='TP Diff')
                               
     axs[1].xaxis.set_major_locator(ticker.AutoLocator())  
@@ -1718,7 +1736,7 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
 #     data_max = np.max((data_stats[1], data_stats[3], data_stats[5], data_stats[7]))
 
   
-    if Verbosity > 1:  
+    if Verbosity > 2:  
         print('plot_sensor_data() data_stats: ', data_stats)
         print('plot_sensor_data() data_min: ', data_min)
         print('plot_sensor_data() data_max: ', data_max)
@@ -1726,13 +1744,6 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
 
     clip_padding = 100. 
     y_limits = [data_min - clip_padding, data_max + clip_padding]
-
-
-# TODO Make this switch global
-    if (gui_dict['plotColorsComboBox'] == 'ABCS Colors'):
-        plot_color_scheme = ABCS_Colors
-    else:
-        plot_color_scheme = MM_Colors
     
 
 #     x1 = np.arange(0, t_len)    
@@ -1889,7 +1900,7 @@ def plot_sensor_data_single(timestamps, tp9, af7, af8, tp10, data_fname, plot_fn
     data_min = np.min((data_stats[0], data_stats[2], data_stats[4], data_stats[6]))
     data_max = np.max((data_stats[1], data_stats[3], data_stats[5], data_stats[7]))
   
-    if Verbosity > 1:  
+    if Verbosity > 2:  
         print('plot_sensor_data_single() data_stats: ', data_stats)
         print('plot_sensor_data_single() data_min: ', data_min)
         print('plot_sensor_data_single() data_max: ', data_max)
@@ -1897,11 +1908,6 @@ def plot_sensor_data_single(timestamps, tp9, af7, af8, tp10, data_fname, plot_fn
     clip_padding = 50. 
     y_limits = [data_min - clip_padding, data_max + clip_padding]
 
-    if (gui_dict['plotColorsComboBox'] == 'ABCS Colors'):
-        plot_color_scheme = ABCS_Colors
-    else:
-        plot_color_scheme = MM_Colors
-    
     line_alpha = 0.5
     axs.plot(x_series, tp9, alpha=line_alpha, marker='.', mec='xkcd:dark pink',
                 color=plot_color_scheme['RawTP9'], label='TP9')                            
@@ -2010,12 +2016,6 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
 
     plt.rcParams.update(PLOT_PARAMS)
 
-    if (gui_dict['plotColorsComboBox'] == 'ABCS Colors'):
-        plot_color_scheme = ABCS_Colors
-    else:
-        plot_color_scheme = MM_Colors
-
-
     t_len = len(delta)
     period = (1.0/Sampling_Rate)
     x_series = np.arange(0, t_len * period, period)
@@ -2024,34 +2024,34 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
     axs[0].xaxis.set_major_locator(ticker.AutoLocator())  
     axs[0].xaxis.set_minor_locator(ticker.AutoMinorLocator())
 
-    l0 = axs[0].plot(x_series, gamma,  color=plot_color_scheme['Gamma'], 
+    l0 = axs[0].plot(x_series, gamma,  color=plot_color_scheme['Gamma'], marker='.', mec='xkcd:dark pink',
                     alpha=plot_alpha, label='Gamma')
     axs[0].legend(loc='upper right', prop={'size': 6})     
     axs[0].grid(True)
 #     axs[0].hlines([-a, a], 0, T, linestyles='--')
 
-    l1 = axs[1].plot(x_series, beta,  color=plot_color_scheme['Beta'], 
+    l1 = axs[1].plot(x_series, beta,  color=plot_color_scheme['Beta'], marker='.', mec='xkcd:dark teal',
                     alpha=plot_alpha, label='Beta')
     axs[1].legend(loc='upper right', prop={'size': 6})
     axs[1].grid(True)
 #     axs[1].hlines([-a, a], 0, T, linestyles='--')
 #     axs[1].set(title='Beta') 
 
-    l2 = axs[2].plot(x_series, alpha,  color=plot_color_scheme['Alpha'], 
+    l2 = axs[2].plot(x_series, alpha,  color=plot_color_scheme['Alpha'], marker='.', mec='xkcd:dark brown',
                     alpha=plot_alpha, label='Alpha')
     axs[2].legend(loc='upper right', prop={'size': 6})
     axs[2].grid(True)
 #     axs[2].hlines([-a, a], 0, T, linestyles='--')
 #     axs[2].set(title='Alpha') 
 
-    l3 = axs[3].plot(x_series, theta,  color=plot_color_scheme['Theta'], 
+    l3 = axs[3].plot(x_series, theta,  color=plot_color_scheme['Theta'], marker='.', mec='xkcd:crimson',
                 alpha=plot_alpha, label='Theta')
     axs[3].legend(loc='upper right', prop={'size': 6})
     axs[3].grid(True)
 #     axs[3].hlines([-a, a], 0, T, linestyles='--')
 #     axs[3].set(title='Theta') 
 
-    l4 = axs[4].plot(x_series, delta,  color=plot_color_scheme['Delta'], 
+    l4 = axs[4].plot(x_series, delta,  color=plot_color_scheme['Delta'], marker='.', mec='xkcd:wine',
                 alpha=plot_alpha, label='Delta')
     axs[4].legend(loc='upper right', prop={'size': 6})
     axs[4].grid(True)
@@ -2147,11 +2147,6 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
 
     plt.rcParams.update(PLOT_PARAMS)
     
-    if (gui_dict['plotColorsComboBox'] == 'ABCS Colors'):
-        plot_color_scheme = ABCS_Colors
-    else:
-        plot_color_scheme = MM_Colors
-
     fig, axs = plt.subplots(nrows=5, num=fig_num, figsize=FIGURE_SIZE, 
                     dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=gui_dict['checkBoxVerticalLock'], 
                         gridspec_kw={'hspace': 0.25}, tight_layout=False)
@@ -2185,7 +2180,7 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
 # #                 markerfacecolor=('#000000'), markevery=10, ms=marker_size,
 #                     marker=markers[loop_cntr - 1], alpha=plot_alpha, label=key)
 
-    l0 = axs[0].plot(x_series, gamma,  color=plot_color_scheme['Gamma'], 
+    l0 = axs[0].plot(x_series, gamma,  color=plot_color_scheme['Gamma'], marker='.', mec='xkcd:dark pink',
                     alpha=plot_alpha, label='Gamma')
 
     axs[0].legend(loc='upper right', prop={'size': 6})     
@@ -2202,7 +2197,7 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
 # #                 markerfacecolor=('#000000'), markevery=10, ms=marker_size,
 #                     marker=markers[loop_cntr - 1], alpha=plot_alpha, label=key)
 
-    l1 = axs[1].plot(x_series, beta,  color=plot_color_scheme['Beta'], 
+    l1 = axs[1].plot(x_series, beta,  color=plot_color_scheme['Beta'], marker='.', mec='xkcd:dark teal',
                     alpha=plot_alpha, label='Beta')
 
     axs[1].legend(loc='upper right', prop={'size': 6})
@@ -2219,7 +2214,7 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
 # #                 markerfacecolor=('#000000'), markevery=10, ms=marker_size,
 #                     marker=markers[loop_cntr - 1], alpha=plot_alpha, label=key)
 
-    l2 = axs[2].plot(x_series, alpha,  color=plot_color_scheme['Alpha'], 
+    l2 = axs[2].plot(x_series, alpha,  color=plot_color_scheme['Alpha'], marker='.', mec='xkcd:dark brown',
                     alpha=plot_alpha, label='Alpha')
 
     axs[2].legend(loc='upper right', prop={'size': 6})
@@ -2236,7 +2231,7 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
 # #                 markerfacecolor=('#000000'), markevery=10, ms=marker_size,
 #                     marker=markers[loop_cntr - 1], alpha=plot_alpha, label=key)
 
-    l3 = axs[3].plot(x_series, theta,  color=plot_color_scheme['Theta'], 
+    l3 = axs[3].plot(x_series, theta,  color=plot_color_scheme['Theta'], marker='.', mec='xkcd:crimson',
                     alpha=plot_alpha, label='Theta')
 
     axs[3].legend(loc='upper right', prop={'size': 6})
@@ -2253,7 +2248,7 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
 # #                 markerfacecolor=('#000000'), markevery=10, ms=marker_size,
 #                     marker=markers[loop_cntr - 1], alpha=plot_alpha, label=key)
 
-    l4 = axs[4].plot(x_series, delta,  color=plot_color_scheme['Delta'], 
+    l4 = axs[4].plot(x_series, delta,  color=plot_color_scheme['Delta'], marker='.', mec='xkcd:wine',
                     alpha=plot_alpha, label='Delta')
 
     axs[4].set(xlabel="Time (Seconds)") 
@@ -2343,8 +2338,6 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
                 data_fname, plot_fname, date_time_now, analysis_parms, fig_num):
 
 
-# TODO:  Make multiple windows correctly
-
     if Verbosity > 0:
         print('plot_combined_power_bands() called')
 
@@ -2361,11 +2354,6 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     plt.rcParams.update(PLOT_PARAMS)
     fig.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
 
-    if (gui_dict['plotColorsComboBox'] == 'ABCS Colors'):
-        plot_color_scheme = ABCS_Colors
-    else:
-        plot_color_scheme = MM_Colors
-
     plt_axes = plt.gca()
 
     y_limits = [data_stats['gamma']['min'], data_stats['gamma']['max']]
@@ -2378,45 +2366,45 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     axs[0].xaxis.set_major_locator(ticker.AutoLocator())  
     axs[0].xaxis.set_minor_locator(ticker.AutoMinorLocator())
 
-    l0 = axs[0].plot(x_series, gamma_raw, color=plot_color_scheme['Gamma'], 
+    l0 = axs[0].plot(x_series, gamma_raw, color=plot_color_scheme['Gamma'],  marker='.', mec='xkcd:dark pink',
                 alpha=plot_alpha, label='Gamma Raw')
-    l00 = axs[0].scatter(x_series, gamma, s=1, color=plot_color_scheme['Gamma'], marker='+',
+    l00 = axs[0].scatter(x_series, gamma, s=1, color=plot_color_scheme['Gamma'],
                 alpha=plot_alpha, label='Gamma')
                 
     axs[0].legend(loc='upper right', prop={'size': 6})     
     axs[0].grid(True)
 #     axs[0].hlines([-a, a], 0, T, linestyles='--')
 
-    l1 = axs[1].plot(x_series, beta_raw, color=plot_color_scheme['Beta'], 
+    l1 = axs[1].plot(x_series, beta_raw, color=plot_color_scheme['Beta'],  marker='.', mec='xkcd:dark teal',
         alpha=plot_alpha, label='Beta Raw')
-    l11 = axs[1].scatter(x_series, beta, s=1, color=plot_color_scheme['Beta'], marker='+',
+    l11 = axs[1].scatter(x_series, beta, s=1, color=plot_color_scheme['Beta'], 
         alpha=plot_alpha, label='Beta')
     axs[1].legend(loc='upper right', prop={'size': 6})
     axs[1].grid(True)
 #     axs[1].set_ylim(y_limits)
 #     axs[1].hlines([-a, a], 0, T, linestyles='--')
 
-    l2 = axs[2].plot(x_series, alpha_raw, color=plot_color_scheme['Alpha'], 
+    l2 = axs[2].plot(x_series, alpha_raw, color=plot_color_scheme['Alpha'], marker='.', mec='xkcd:dark brown',
         alpha=plot_alpha, label='Alpha Raw')
-    l22 = axs[2].scatter(x_series, alpha, s=1, color=plot_color_scheme['Alpha'], marker='+', 
+    l22 = axs[2].scatter(x_series, alpha, s=1, color=plot_color_scheme['Alpha'],
         alpha=plot_alpha, label='Alpha')
     axs[2].legend(loc='upper right', prop={'size': 6})
     axs[2].grid(True)
 #     axs[2].set_ylim(y_limits)    
 #     axs[2].hlines([-a, a], 0, T, linestyles='--')
 
-    l3 = axs[3].plot(x_series, theta_raw, color=plot_color_scheme['Theta'], 
+    l3 = axs[3].plot(x_series, theta_raw, color=plot_color_scheme['Theta'], marker='.', mec='xkcd:crimson',
         alpha=plot_alpha, label='Theta Raw')
-    l33 = axs[3].scatter(x_series, theta, s=1, color=plot_color_scheme['Theta'], marker='+', 
+    l33 = axs[3].scatter(x_series, theta, s=1, color=plot_color_scheme['Theta'],
         alpha=plot_alpha, label='Theta')
     axs[3].legend(loc='upper right', prop={'size': 6})
     axs[3].grid(True)
 #     axs[3].set_ylim(y_limits)
 #     axs[3].hlines([-a, a], 0, T, linestyles='--')
 
-    l4 = axs[4].plot(x_series, delta_raw, color=plot_color_scheme['Delta'], 
+    l4 = axs[4].plot(x_series, delta_raw, color=plot_color_scheme['Delta'], marker='.', mec='xkcd:wine',
         alpha=plot_alpha, label='Delta Raw')
-    l44 = axs[4].scatter(x_series, delta, s=1, color=plot_color_scheme['Delta'], marker='+', 
+    l44 = axs[4].scatter(x_series, delta, s=1, color=plot_color_scheme['Delta'],
         alpha=plot_alpha, label='Delta')
     axs[4].legend(loc='upper right', prop={'size': 6})
     axs[4].grid(True)
@@ -2520,7 +2508,7 @@ def plot_mellow_concentration(mellow, concentration,
     concentration_max = np.max(np.nan_to_num(concentration))
     concentration_min = np.min(np.nan_to_num(concentration))
 
-    if Verbosity > 1:
+    if Verbosity > 2:
         print("mellow_mean: ", mellow_mean)
         print("mellow_std: ", mellow_std)
         print("mellow_max: ", mellow_max)
@@ -2554,12 +2542,14 @@ def plot_mellow_concentration(mellow, concentration,
     axs[0].xaxis.set_major_locator(ticker.AutoLocator())  
     axs[0].xaxis.set_minor_locator(ticker.AutoMinorLocator())
 
-    l0 = axs[0].plot(x_series, mellow,  color='b', alpha=plot_alpha, label='Mellow')
+    l0 = axs[0].plot(x_series, mellow,  color='b', 
+                alpha=plot_alpha, marker='.', mec='xkcd:wine', label='Mellow')
     axs[0].legend(loc='upper right', prop={'size': 6})     
     axs[0].grid(True)
 #     axs[0].hlines([-a, a], 0, T, linestyles='--')
 
-    l1 = axs[1].plot(x_series, concentration,  color='g', alpha=plot_alpha, label='Concentration')
+    l1 = axs[1].plot(x_series, concentration,  color='g', 
+                alpha=plot_alpha, marker='.', mec='xkcd:wine', label='Concentration')
     axs[1].legend(loc='upper right', prop={'size': 6})
     axs[1].grid(True)
     axs[1].set(xlabel="Time (Seconds)") 
@@ -2648,19 +2638,19 @@ def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_n
     # Plot accelerometer data  
     axs[1].set(ylabel="Accelerometer") 
             
-    l0 = axs[0].plot(x_series, acc_gyro_df['Accelerometer_X'], color='r', 
+    l0 = axs[0].plot(x_series, acc_gyro_df['Accelerometer_X'], color='r', marker='.', mec='xkcd:wine',
             alpha=plot_alpha, label='X')
     axs[0].legend(loc='upper right', prop={'size': 6})     
     axs[0].grid(True)
     axs[0].set_ylim((-1.5, 1.5))
 
-    l1 = axs[1].plot(x_series, acc_gyro_df['Accelerometer_Y'], color='g', 
+    l1 = axs[1].plot(x_series, acc_gyro_df['Accelerometer_Y'], color='g', marker='.', mec='xkcd:wine', 
             alpha=plot_alpha, label='Y')
     axs[1].legend(loc='upper right', prop={'size': 6})
     axs[1].grid(True)
     axs[1].set_ylim((-1.5, 1.5))
 
-    l2 = axs[2].plot(x_series, acc_gyro_df['Accelerometer_Z'], color='b', 
+    l2 = axs[2].plot(x_series, acc_gyro_df['Accelerometer_Z'], color='b', marker='.', mec='xkcd:wine', 
             alpha=plot_alpha, label='Z')
     axs[2].legend(loc='upper right', prop={'size': 6})
     axs[2].grid(True)
@@ -2670,19 +2660,19 @@ def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_n
     # Plot gyro data
     axs[4].set(ylabel="Gyro") 
 
-    l3 = axs[3].plot(x_series, acc_gyro_df['Gyro_X'], color='#FF3AAA', 
+    l3 = axs[3].plot(x_series, acc_gyro_df['Gyro_X'], color='#FF3AAA', marker='.', mec='xkcd:wine', 
             alpha=plot_alpha, label='Pitch')
     axs[3].legend(loc='upper right', prop={'size': 6})     
     axs[3].grid(True)
     axs[3].set_ylim((-50.0, 50.0))
 
-    l4 = axs[4].plot(x_series, acc_gyro_df['Gyro_Y'], color='#3affe5',
+    l4 = axs[4].plot(x_series, acc_gyro_df['Gyro_Y'], color='#3affe5', marker='.', mec='xkcd:wine',
             alpha=plot_alpha, label='Yaw')
     axs[4].legend(loc='upper right', prop={'size': 6})
     axs[4].grid(True)
     axs[4].set_ylim((-50.0, 50.0))
 
-    l5 = axs[5].plot(x_series, acc_gyro_df['Gyro_Z'], color='#FFC73A', 
+    l5 = axs[5].plot(x_series, acc_gyro_df['Gyro_Z'], color='#FFC73A', marker='.', mec='xkcd:wine', 
             alpha=plot_alpha, label='Roll')
     axs[5].legend(loc='upper right', prop={'size': 6})
     axs[5].grid(True)
@@ -2789,7 +2779,7 @@ def calculate_power_stats(delta, theta, alpha, beta, gamma):
         print("delta_min: ", delta_min)
 
 
-    if Verbosity > 1:  
+    if Verbosity > 2:  
         print("data_stats: ", data_stats)
 
 
@@ -2943,6 +2933,17 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
     elif args.plot_style == 5:
         matplotlib.style.use('bmh')
     
+    # Select color scheme
+    global plot_color_scheme
+    if (gui_dict['plotColorsComboBox'] == 'ABCS Colors'):
+        plot_color_scheme = ABCS_Colors
+    else:
+        plot_color_scheme = MM_Colors
+    
+
+    if (not gui_dict['checkBoxGraphMarkers']):    
+        PLOT_PARAMS['lines.markersize'] = 0.0005
+        
     
     if (gui_dict['checkBoxEEG']):
 
@@ -3128,7 +3129,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
 
 def initialize_GUI_vars(date_time_now):
 
-    if Verbosity > 1:
+    if Verbosity > 2:
         print("initialize_GUI_vars(): ", date_time_now)
 
     gui_dict.update({'firstName': "",'lastName': "",
@@ -3345,6 +3346,12 @@ if __name__ == '__main__':
         BatchMode = True
         args.display_plots = False
 
+    if args.auto_reject_data:
+        if Verbosity > 0:
+            print("auto_reject_data:")
+        print(args.auto_reject_data)
+    else:
+        args.auto_reject_data = True
 
     if args.filter_data:
         if Verbosity > 0:
