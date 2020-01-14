@@ -1500,6 +1500,9 @@ Plot  coherence
 '''
 def plot_coherence_scatter(x, y, a, b, title, data_fname, plot_fname, date_time_now, analysis_parms, fig_num):
 
+    global session_dict
+    global muse_EEG_data
+
     if Verbosity > 0:
         print('plot_coherence_scatter() called')
 
@@ -1566,6 +1569,7 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
                         title, data_stats, analysis_parms, fig_num):
 
     global session_dict
+    global muse_EEG_data
     
     if Verbosity > 0:
         print('plot_coherence_data() called')
@@ -1700,6 +1704,7 @@ Plot the sensor data
 def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, date_time_now, 
                         title, data_stats, analysis_parms, fig_num):
 
+    global muse_EEG_data    
     global session_dict
     
     if Verbosity > 0:
@@ -1723,10 +1728,10 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
     plt_axes = plt.gca()
 
 
-#     data_stats = (EEG_Dict['RAW_AF7']['25%'], EEG_Dict['RAW_AF7']['75%'],
-#                 EEG_Dict['RAW_AF8']['25%'], EEG_Dict['RAW_AF8']['75%'],
-#                 EEG_Dict['RAW_TP9']['25%'], EEG_Dict['RAW_TP9']['75%'],
-#                 EEG_Dict['RAW_TP10']['25%'], EEG_Dict['RAW_TP10']['75%'])
+    data_stats = (EEG_Dict['RAW_AF7']['25%'], EEG_Dict['RAW_AF7']['75%'],
+                EEG_Dict['RAW_AF8']['25%'], EEG_Dict['RAW_AF8']['75%'],
+                EEG_Dict['RAW_TP9']['25%'], EEG_Dict['RAW_TP9']['75%'],
+                EEG_Dict['RAW_TP10']['25%'], EEG_Dict['RAW_TP10']['75%'])
 
 
     data_min = np.min((EEG_Dict['RAW_AF7']['25%'], data_stats[2], data_stats[4], data_stats[6]))
@@ -1777,6 +1782,8 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
     axs[0].text(0.975, 0.025, '(All Sensor Data Combined)',
         verticalalignment='bottom', horizontalalignment='right',
         transform=axs[0].transAxes, color='green') 
+
+    generate_data_markers(muse_EEG_data, axs[0], data_max)
        
                    
 #     axs[0].annotate('Notable Data Point', xy=([data_stats[0], data_stats[1]]), 
@@ -1788,21 +1795,25 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
             color=plot_color_scheme['RawTP9'], label='TP9')
     axs[1].set(title='TP9', ylabel="Amp uV")      
     axs[1].set_ylim((EEG_Dict['RAW_TP9']['25%'] - clip_padding), (EEG_Dict['RAW_TP9']['75%'] + clip_padding))
+    generate_data_markers(muse_EEG_data, axs[1], data_max)
     
     axs[2].plot(x_series, af7, alpha=1.0, marker='.', mec='xkcd:salmon',
             color=plot_color_scheme['RawAF7'], label='AF7')
     axs[2].set(title='AF7', ylabel="Amp uV") 
     axs[2].set_ylim((EEG_Dict['RAW_AF7']['25%'] - clip_padding), (EEG_Dict['RAW_AF7']['75%'] + clip_padding))
+    generate_data_markers(muse_EEG_data, axs[2], data_max)
 
     axs[3].plot(x_series, af8, alpha=1.0, marker='.', mec='xkcd:cerulean',
             color=plot_color_scheme['RawAF8'], label='AF8')
     axs[3].set(title='AF8', ylabel="Amp uV") 
     axs[3].set_ylim((EEG_Dict['RAW_AF8']['25%'] - clip_padding), (EEG_Dict['RAW_AF8']['75%'] + clip_padding))
+    generate_data_markers(muse_EEG_data, axs[3], data_max)
 
     axs[4].plot(x_series, tp10, alpha=1.0, marker='.', mec='xkcd:dark lilac',
             color=plot_color_scheme['RawTP10'], label='TP10')
     axs[4].set(title='TP10', xlabel="Time (Seconds)", ylabel="Amp uV") 
     axs[4].set_ylim((EEG_Dict['RAW_TP10']['25%'] - clip_padding), (EEG_Dict['RAW_TP10']['75%'] + clip_padding))
+    generate_data_markers(muse_EEG_data, axs[4], data_max)
      
     for tmp_ax in axs:
             tmp_ax.grid(True)
@@ -1878,6 +1889,7 @@ def plot_sensor_data_single(timestamps, tp9, af7, af8, tp10, data_fname, plot_fn
                         title, data_stats, analysis_parms, fig_num):
 
     global session_dict
+    global muse_EEG_data
     
     if Verbosity > 0:
         print('plot_sensor_data_single() called')
@@ -1924,6 +1936,7 @@ def plot_sensor_data_single(timestamps, tp9, af7, af8, tp10, data_fname, plot_fn
                 
     axs.set(title=title, ylabel="Amp uV", xlabel="Time (Seconds)") 
 
+    generate_data_markers(muse_EEG_data, axs, data_max)
                   
 #     axs[0].annotate('Notable Data Point', xy=([data_stats[0], data_stats[1]]), 
 #                             xytext=([data_stats[2], data_stats[3]]),
@@ -2004,6 +2017,12 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
     data_stats = calculate_power_stats(delta, theta, alpha, beta, gamma)
 #     print('plot_all_power_bands() data_stats ', data_stats)
 
+    data_min = np.min((data_stats['delta']['min'], data_stats['theta']['min'], 
+                        data_stats['alpha']['min'], data_stats['beta']['min'], data_stats['gamma']['min']))
+    data_max = np.max((data_stats['delta']['max'], data_stats['theta']['max'], 
+                        data_stats['alpha']['max'], data_stats['beta']['max'], data_stats['gamma']['max']))
+
+
     fig, axs = plt.subplots(nrows=5, num=fig_num, figsize=FIGURE_SIZE, 
                     dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=gui_dict['checkBoxVerticalLock'], 
                         gridspec_kw={'hspace': 0.25}, tight_layout=False)
@@ -2030,12 +2049,15 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
     axs[0].grid(True)
 #     axs[0].hlines([-a, a], 0, T, linestyles='--')
 
+    generate_data_markers(muse_EEG_data, axs[0], data_max)
+                  
     l1 = axs[1].plot(x_series, beta,  color=plot_color_scheme['Beta'], marker='.', mec='xkcd:dark teal',
                     alpha=plot_alpha, label='Beta')
     axs[1].legend(loc='upper right', prop={'size': 6})
     axs[1].grid(True)
 #     axs[1].hlines([-a, a], 0, T, linestyles='--')
 #     axs[1].set(title='Beta') 
+    generate_data_markers(muse_EEG_data, axs[1], data_max)
 
     l2 = axs[2].plot(x_series, alpha,  color=plot_color_scheme['Alpha'], marker='.', mec='xkcd:dark brown',
                     alpha=plot_alpha, label='Alpha')
@@ -2043,6 +2065,7 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
     axs[2].grid(True)
 #     axs[2].hlines([-a, a], 0, T, linestyles='--')
 #     axs[2].set(title='Alpha') 
+    generate_data_markers(muse_EEG_data, axs[2], data_max)
 
     l3 = axs[3].plot(x_series, theta,  color=plot_color_scheme['Theta'], marker='.', mec='xkcd:crimson',
                 alpha=plot_alpha, label='Theta')
@@ -2050,6 +2073,7 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
     axs[3].grid(True)
 #     axs[3].hlines([-a, a], 0, T, linestyles='--')
 #     axs[3].set(title='Theta') 
+    generate_data_markers(muse_EEG_data, axs[3], data_max)
 
     l4 = axs[4].plot(x_series, delta,  color=plot_color_scheme['Delta'], marker='.', mec='xkcd:wine',
                 alpha=plot_alpha, label='Delta')
@@ -2057,6 +2081,7 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
     axs[4].grid(True)
 #     axs[4].hlines([-a, a], 0, T, linestyles='--')
 #     axs[4].set(title='Delta') 
+    generate_data_markers(muse_EEG_data, axs[4], data_max)
 
     axs[4].set(xlabel="Time (Seconds)") 
 
@@ -2137,6 +2162,9 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
                 lowcut, highcut, fs, point_sz, title, 
                 data_fname, plot_fname, date_time_now, analysis_parms, fig_num):
 
+    global session_dict
+    global muse_EEG_data
+
     plot_alpha = 0.8
 
     if Verbosity > 0:
@@ -2144,6 +2172,12 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
 
     data_stats = calculate_power_stats(delta, theta, alpha, beta, gamma)
 #     print('plot_all_power_bands() data_stats ', data_stats)
+
+    data_min = np.min((data_stats['delta']['min'], data_stats['theta']['min'], 
+                        data_stats['alpha']['min'], data_stats['beta']['min'], data_stats['gamma']['min']))
+    data_max = np.max((data_stats['delta']['max'], data_stats['theta']['max'], 
+                        data_stats['alpha']['max'], data_stats['beta']['max'], data_stats['gamma']['max']))
+
 
     plt.rcParams.update(PLOT_PARAMS)
     
@@ -2187,6 +2221,9 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
     axs[0].grid(True)
     #     axs[0].hlines([-a, a], 0, T, linestyles='--')
 
+    generate_data_markers(muse_EEG_data, axs[0], 50.)
+
+
 # TODO Need figure out a better way to iterate through the 4 data sets    
 #     loop_cntr = 0 
 #     for key, value in beta.iteritems():
@@ -2203,6 +2240,7 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
     axs[1].legend(loc='upper right', prop={'size': 6})
     axs[1].grid(True)
 #     axs[1].hlines([-a, a], 0, T, linestyles='--')
+    generate_data_markers(muse_EEG_data, axs[1], 50.)
 
 # TODO Need figure out a better way to iterate through the 4 data sets    
 #     loop_cntr = 0 
@@ -2220,6 +2258,7 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
     axs[2].legend(loc='upper right', prop={'size': 6})
     axs[2].grid(True)
 #     axs[2].hlines([-a, a], 0, T, linestyles='--')
+    generate_data_markers(muse_EEG_data, axs[2], 50.)
 
 # TODO Need figure out a better way to iterate through the 4 data sets    
 #     loop_cntr = 0 
@@ -2237,6 +2276,7 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
     axs[3].legend(loc='upper right', prop={'size': 6})
     axs[3].grid(True)
 #     axs[3].hlines([-a, a], 0, T, linestyles='--')
+    generate_data_markers(muse_EEG_data, axs[3], 50.)
 
 # TODO Need figure out a better way to iterate through the 4 data sets    
 #     loop_cntr = 0 
@@ -2256,6 +2296,7 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
     axs[4].legend(loc='upper right', prop={'size': 6})
     axs[4].grid(True)
 #     axs[4].hlines([-a, a], 0, T, linestyles='--')
+    generate_data_markers(muse_EEG_data, axs[4], 50.)
 
 
     plt.text(1.01, 5.5, 
@@ -2337,6 +2378,8 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
                 lowcut, highcut, fs, point_sz, title, 
                 data_fname, plot_fname, date_time_now, analysis_parms, fig_num):
 
+    global session_dict
+    global muse_EEG_data
 
     if Verbosity > 0:
         print('plot_combined_power_bands() called')
@@ -2346,6 +2389,10 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     data_stats = calculate_power_stats(delta, theta, alpha, beta, gamma)
 #     print('plot_all_power_bands() data_stats ', data_stats)
 
+    data_min = np.min((data_stats['delta']['min'], data_stats['theta']['min'], 
+                        data_stats['alpha']['min'], data_stats['beta']['min'], data_stats['gamma']['min']))
+    data_max = np.max((data_stats['delta']['max'], data_stats['theta']['max'], 
+                        data_stats['alpha']['max'], data_stats['beta']['max'], data_stats['gamma']['max']))
 
     fig, axs = plt.subplots(nrows=5, num=fig_num, figsize=FIGURE_SIZE, 
                     dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, sharey=gui_dict['checkBoxVerticalLock'], 
@@ -2374,6 +2421,8 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     axs[0].legend(loc='upper right', prop={'size': 6})     
     axs[0].grid(True)
 #     axs[0].hlines([-a, a], 0, T, linestyles='--')
+    generate_data_markers(muse_EEG_data, axs[0], 50.0)
+
 
     l1 = axs[1].plot(x_series, beta_raw, color=plot_color_scheme['Beta'],  marker='.', mec='xkcd:dark teal',
         alpha=plot_alpha, label='Beta Raw')
@@ -2383,6 +2432,7 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     axs[1].grid(True)
 #     axs[1].set_ylim(y_limits)
 #     axs[1].hlines([-a, a], 0, T, linestyles='--')
+    generate_data_markers(muse_EEG_data, axs[1], 50.0)
 
     l2 = axs[2].plot(x_series, alpha_raw, color=plot_color_scheme['Alpha'], marker='.', mec='xkcd:dark brown',
         alpha=plot_alpha, label='Alpha Raw')
@@ -2392,6 +2442,7 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     axs[2].grid(True)
 #     axs[2].set_ylim(y_limits)    
 #     axs[2].hlines([-a, a], 0, T, linestyles='--')
+    generate_data_markers(muse_EEG_data, axs[2], 50.0)
 
     l3 = axs[3].plot(x_series, theta_raw, color=plot_color_scheme['Theta'], marker='.', mec='xkcd:crimson',
         alpha=plot_alpha, label='Theta Raw')
@@ -2401,6 +2452,7 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     axs[3].grid(True)
 #     axs[3].set_ylim(y_limits)
 #     axs[3].hlines([-a, a], 0, T, linestyles='--')
+    generate_data_markers(muse_EEG_data, axs[3], 50.0)
 
     l4 = axs[4].plot(x_series, delta_raw, color=plot_color_scheme['Delta'], marker='.', mec='xkcd:wine',
         alpha=plot_alpha, label='Delta Raw')
@@ -2410,6 +2462,7 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     axs[4].grid(True)
 #     axs[4].set_ylim(y_limits)
 #     axs[4].hlines([-a, a], 0, T, linestyles='--')
+    generate_data_markers(muse_EEG_data, axs[4], 50.0)
 
     axs[4].set(xlabel="Time (Seconds)")
    
@@ -2491,6 +2544,9 @@ Plot Mind Monitor's mellow and concentration data
 def plot_mellow_concentration(mellow, concentration,
                 lowcut, highcut, fs, point_sz, title, 
                 data_fname, plot_fname, date_time_now, analysis_parms, fig_num):
+
+    global session_dict
+    global muse_EEG_data
 
     plot_alpha = 0.9
 
@@ -2606,6 +2662,9 @@ Plot the accelerometer and gyro data
 '''
 
 def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_now, analysis_parms, fig_num):
+
+    global session_dict
+    global muse_EEG_data
 
     if Verbosity > 0:
         print('plot_accel_gryo_data() called')
@@ -2785,6 +2844,88 @@ def calculate_power_stats(delta, theta, alpha, beta, gamma):
 
     return data_stats
     
+   
+   
+'''
+
+Generate data markers
+
+
+'''
+
+def generate_data_markers(muse_EEG_data, axs, y):
+
+    col_select = 'RAW_TP9'
+    elements_df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp', col_select, 'Elements'])
+
+    if Verbosity > 2:
+#         print("read_eeg_data() - Elements.describe(): ", elements_df.describe())   
+        print("read_eeg_data() - elements_df.count(): ", elements_df.count())
+
+    elements_df['Elements'] = elements_df.Elements.astype(str)
+
+    elements_df = elements_df[~elements_df['Elements'].str.contains('nan')]
+
+    for index, row in elements_df.iterrows():
+        if Verbosity > 2:
+            print(row['TimeStamp'] + '  ' + row['Elements'])
+#             print(row['Elements'])
+        
+        if 'jaw' in row['Elements']:
+            marker_text = 'J'
+        elif 'blink' in row['Elements']:
+            marker_text = 'B'
+#         elif row['Elements'].str.contains('jaw'):
+#             marker_text = 'J'
+        else:
+            marker_text = row['Elements']
+                    
+#         foo = row[col_select]
+#         print('foo: ', foo)
+
+                    
+        axs.annotate(marker_text, xy=((index/Sampling_Rate), y), xytext=((index/Sampling_Rate)+2, y+1),
+                bbox=dict(boxstyle="round", alpha=0.1), ha='right', va="center", rotation=33,
+                arrowprops=dict(arrowstyle='simple', color='blue', facecolor='green',
+                connectionstyle="angle3,angleA=0,angleB=-90"))
+
+# ha='right', va="center", size=8,
+
+#         axs.annotate(marker_text, xy=((index/Sampling_Rate), foo), 
+#                 xytext=((index/Sampling_Rate), foo + 1),
+#                 arrowprops=dict(arrowstyle='fancy', facecolor='blue', connectionstyle="arc3"))
+
+#         axs.annotate(row['Elements'], xy=((index/Sampling_Rate), y), xytext=((index/Sampling_Rate), y+1),
+#                 arrowprops=dict(arrowstyle='-|>', facecolor='r', connectionstyle="arc3"))
+
+
+# ax.annotate('Christmas', xy=('2012-12-25', 3850),  xycoords='data',
+#              xytext=(-30, 0), textcoords='offset points',
+#              size=13, ha='right', va="center",
+#              bbox=dict(boxstyle="round", alpha=0.1),
+#              arrowprops=dict(arrowstyle="wedge,tail_width=0.5", alpha=0.1));
+             
+
+
+# ax.annotate("",
+#             xy=(0.2, 0.2), xycoords='data',
+#             xytext=(0.8, 0.8), textcoords='data',
+#             arrowprops=dict(arrowstyle="->",
+#                             connectionstyle="arc3"),
+#             )
+                        
+# matplotlib.colors
+# b : blue.
+# g : green.
+# r : red.
+# c : cyan.
+# m : magenta.
+# y : yellow.
+# k : black.
+# w : white.
+
+
+   
    
    
    
@@ -3174,6 +3315,7 @@ def main(date_time_now):
 
     global gui_dict
     global session_dict
+    global muse_EEG_data
     global out_dirname
     global first_name
     global last_name
@@ -3238,7 +3380,8 @@ def main(date_time_now):
 
 
     # Perform auto-reject if user has selected it
-    if (gui_dict['checkBoxAutoReject'] or args.auto_reject_data): 
+#     if (gui_dict['checkBoxAutoReject'] or args.auto_reject_data): 
+    if (gui_dict['checkBoxAutoReject']): 
         if Verbosity > 2:
             print("main() - Calling auto_reject_EEG_data()")
         muse_EEG_data = auto_reject_EEG_data(muse_EEG_data)
