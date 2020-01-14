@@ -277,6 +277,7 @@ class The_GUI(QDialog):
         HDF5 = self.checkBoxHFDF5.isChecked()
         vertical_lock = self.checkBoxVerticalLock.isChecked()
         graph_markers = self.checkBoxGraphMarkers.isChecked()
+        data_markers = self.checkBoxDataMarkers.isChecked()
         plot_colors = self.plotColorsComboBox.currentText()
         
         mood = self.moodComboBox.currentText()
@@ -300,6 +301,7 @@ class The_GUI(QDialog):
                 "checkBoxHFDF5": HDF5,
                 "checkBoxVerticalLock": vertical_lock,
                 "checkBoxGraphMarkers": graph_markers,
+                "checkBoxDataMarkers": data_markers,
                 "plotColorsComboBox": plot_colors,               
                 "Mood": mood})
 
@@ -403,6 +405,10 @@ class The_GUI(QDialog):
         self.checkBoxGraphMarkers.setChecked(False)
         self.checkBoxGraphMarkers.setEnabled(True)
   
+        self.checkBoxDataMarkers = QCheckBox("Add Data Markers")
+        self.checkBoxDataMarkers.setChecked(False)
+        self.checkBoxDataMarkers.setEnabled(True)
+  
         layout.addWidget(self.checkBoxInteractive)
         layout.addWidget(self.checkBoxEEG)
         layout.addWidget(self.checkBoxCoherence)
@@ -420,6 +426,7 @@ class The_GUI(QDialog):
         layout.addWidget(self.checkBoxHFDF5)
         layout.addWidget(self.checkBoxVerticalLock)        
         layout.addWidget(self.checkBoxGraphMarkers)        
+        layout.addWidget(self.checkBoxDataMarkers)        
  
         layout.addWidget(self.plotColorsLabel)
         layout.addWidget(self.plotColorsComboBox)
@@ -1633,6 +1640,9 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
                 color=plot_color_scheme['RawAF8'], label='AF Diff')
     axs[0].set(title='AF7 - AF8', ylabel="Amp uV")      
     axs[0].set_ylim((af_min, af_max))
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[0], 'RAW_AF8')
+     
      
     axs[1].plot(x_series, tp_diff, alpha=0.8, marker='.', mec='xkcd:wine',
                 color=plot_color_scheme['RawTP9'], label='TP Diff')
@@ -1641,6 +1651,8 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
     axs[1].xaxis.set_minor_locator(ticker.AutoMinorLocator())
     axs[1].set_ylim((tp_min, tp_max))
     axs[1].set(title='TP9 - TP10', ylabel="Amp uV") 
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[1], 'RAW_TP9')
 
 #     axs[0].grid(True)
 
@@ -1783,7 +1795,8 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
         verticalalignment='bottom', horizontalalignment='right',
         transform=axs[0].transAxes, color='green') 
 
-    generate_data_markers(muse_EEG_data, axs[0], 'RAW_TP10')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[0], 'RAW_TP10')
        
                    
 #     axs[0].annotate('Notable Data Point', xy=([data_stats[0], data_stats[1]]), 
@@ -1795,25 +1808,29 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
             color=plot_color_scheme['RawTP9'], label='TP9')
     axs[1].set(title='TP9', ylabel="Amp uV")      
     axs[1].set_ylim((EEG_Dict['RAW_TP9']['25%'] - clip_padding), (EEG_Dict['RAW_TP9']['75%'] + clip_padding))
-    generate_data_markers(muse_EEG_data, axs[1], 'RAW_TP9')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[1], 'RAW_TP9')
     
     axs[2].plot(x_series, af7, alpha=1.0, marker='.', mec='xkcd:salmon',
             color=plot_color_scheme['RawAF7'], label='AF7')
     axs[2].set(title='AF7', ylabel="Amp uV") 
     axs[2].set_ylim((EEG_Dict['RAW_AF7']['25%'] - clip_padding), (EEG_Dict['RAW_AF7']['75%'] + clip_padding))
-    generate_data_markers(muse_EEG_data, axs[2], 'RAW_AF7')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[2], 'RAW_AF7')
 
     axs[3].plot(x_series, af8, alpha=1.0, marker='.', mec='xkcd:cerulean',
             color=plot_color_scheme['RawAF8'], label='AF8')
     axs[3].set(title='AF8', ylabel="Amp uV") 
     axs[3].set_ylim((EEG_Dict['RAW_AF8']['25%'] - clip_padding), (EEG_Dict['RAW_AF8']['75%'] + clip_padding))
-    generate_data_markers(muse_EEG_data, axs[3], 'RAW_AF8')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[3], 'RAW_AF8')
 
     axs[4].plot(x_series, tp10, alpha=1.0, marker='.', mec='xkcd:dark lilac',
             color=plot_color_scheme['RawTP10'], label='TP10')
     axs[4].set(title='TP10', xlabel="Time (Seconds)", ylabel="Amp uV") 
     axs[4].set_ylim((EEG_Dict['RAW_TP10']['25%'] - clip_padding), (EEG_Dict['RAW_TP10']['75%'] + clip_padding))
-    generate_data_markers(muse_EEG_data, axs[4], 'RAW_TP10')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[4], 'RAW_TP10')
      
     for tmp_ax in axs:
             tmp_ax.grid(True)
@@ -1936,7 +1953,8 @@ def plot_sensor_data_single(timestamps, tp9, af7, af8, tp10, data_fname, plot_fn
                 
     axs.set(title=title, ylabel="Amp uV", xlabel="Time (Seconds)") 
 
-    generate_data_markers(muse_EEG_data, axs, 'RAW_TP10')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs, 'RAW_TP10')
                   
 #     axs[0].annotate('Notable Data Point', xy=([data_stats[0], data_stats[1]]), 
 #                             xytext=([data_stats[2], data_stats[3]]),
@@ -2049,7 +2067,8 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
     axs[0].grid(True)
 #     axs[0].hlines([-a, a], 0, T, linestyles='--')
 
-    generate_data_markers(muse_EEG_data, axs[0], 'Gamma_TP10')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[0], 'Gamma_TP10')
                   
     l1 = axs[1].plot(x_series, beta,  color=plot_color_scheme['Beta'], marker='.', mec='xkcd:dark teal',
                     alpha=plot_alpha, label='Beta')
@@ -2057,7 +2076,8 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
     axs[1].grid(True)
 #     axs[1].hlines([-a, a], 0, T, linestyles='--')
 #     axs[1].set(title='Beta') 
-    generate_data_markers(muse_EEG_data, axs[1], 'Beta_TP10')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[1], 'Beta_TP10')
 
     l2 = axs[2].plot(x_series, alpha,  color=plot_color_scheme['Alpha'], marker='.', mec='xkcd:dark brown',
                     alpha=plot_alpha, label='Alpha')
@@ -2065,7 +2085,8 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
     axs[2].grid(True)
 #     axs[2].hlines([-a, a], 0, T, linestyles='--')
 #     axs[2].set(title='Alpha') 
-    generate_data_markers(muse_EEG_data, axs[2], 'Alpha_TP10')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[2], 'Alpha_TP10')
 
     l3 = axs[3].plot(x_series, theta,  color=plot_color_scheme['Theta'], marker='.', mec='xkcd:crimson',
                 alpha=plot_alpha, label='Theta')
@@ -2073,7 +2094,8 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
     axs[3].grid(True)
 #     axs[3].hlines([-a, a], 0, T, linestyles='--')
 #     axs[3].set(title='Theta') 
-    generate_data_markers(muse_EEG_data, axs[3], 'Theta_TP10')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[3], 'Theta_TP10')
 
     l4 = axs[4].plot(x_series, delta,  color=plot_color_scheme['Delta'], marker='.', mec='xkcd:wine',
                 alpha=plot_alpha, label='Delta')
@@ -2081,7 +2103,8 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
     axs[4].grid(True)
 #     axs[4].hlines([-a, a], 0, T, linestyles='--')
 #     axs[4].set(title='Delta') 
-    generate_data_markers(muse_EEG_data, axs[4], 'Delta_TP10')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[4], 'Delta_TP10')
 
     axs[4].set(xlabel="Time (Seconds)") 
 
@@ -2221,7 +2244,8 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
     axs[0].grid(True)
     #     axs[0].hlines([-a, a], 0, T, linestyles='--')
 
-    generate_data_markers(muse_EEG_data, axs[0], 'Gamma_TP10')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[0], 'Gamma_TP10')
 
 
 # TODO Need figure out a better way to iterate through the 4 data sets    
@@ -2240,7 +2264,8 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
     axs[1].legend(loc='upper right', prop={'size': 6})
     axs[1].grid(True)
 #     axs[1].hlines([-a, a], 0, T, linestyles='--')
-    generate_data_markers(muse_EEG_data, axs[1], 'Beta_TP10')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[1], 'Beta_TP10')
 
 # TODO Need figure out a better way to iterate through the 4 data sets    
 #     loop_cntr = 0 
@@ -2258,7 +2283,8 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
     axs[2].legend(loc='upper right', prop={'size': 6})
     axs[2].grid(True)
 #     axs[2].hlines([-a, a], 0, T, linestyles='--')
-    generate_data_markers(muse_EEG_data, axs[2], 'Alpha_TP10')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[2], 'Alpha_TP10')
 
 # TODO Need figure out a better way to iterate through the 4 data sets    
 #     loop_cntr = 0 
@@ -2276,7 +2302,8 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
     axs[3].legend(loc='upper right', prop={'size': 6})
     axs[3].grid(True)
 #     axs[3].hlines([-a, a], 0, T, linestyles='--')
-    generate_data_markers(muse_EEG_data, axs[3], 'Theta_TP10')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[3], 'Theta_TP10')
 
 # TODO Need figure out a better way to iterate through the 4 data sets    
 #     loop_cntr = 0 
@@ -2296,7 +2323,8 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
     axs[4].legend(loc='upper right', prop={'size': 6})
     axs[4].grid(True)
 #     axs[4].hlines([-a, a], 0, T, linestyles='--')
-    generate_data_markers(muse_EEG_data, axs[4], 'Delta_TP10')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[4], 'Delta_TP10')
 
 
     plt.text(1.01, 5.5, 
@@ -2421,7 +2449,8 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     axs[0].legend(loc='upper right', prop={'size': 6})     
     axs[0].grid(True)
 #     axs[0].hlines([-a, a], 0, T, linestyles='--')
-    generate_data_markers(muse_EEG_data, axs[0], 'Gamma_TP10')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[0], 'Gamma_TP10')
 
 
     l1 = axs[1].plot(x_series, beta_raw, color=plot_color_scheme['Beta'],  marker='.', mec='xkcd:dark teal',
@@ -2432,7 +2461,8 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     axs[1].grid(True)
 #     axs[1].set_ylim(y_limits)
 #     axs[1].hlines([-a, a], 0, T, linestyles='--')
-    generate_data_markers(muse_EEG_data, axs[1], 'Beta_TP10')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[1], 'Beta_TP10')
 
     l2 = axs[2].plot(x_series, alpha_raw, color=plot_color_scheme['Alpha'], marker='.', mec='xkcd:dark brown',
         alpha=plot_alpha, label='Alpha Raw')
@@ -2442,7 +2472,8 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     axs[2].grid(True)
 #     axs[2].set_ylim(y_limits)    
 #     axs[2].hlines([-a, a], 0, T, linestyles='--')
-    generate_data_markers(muse_EEG_data, axs[2], 'Alpha_TP10')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[2], 'Alpha_TP10')
 
     l3 = axs[3].plot(x_series, theta_raw, color=plot_color_scheme['Theta'], marker='.', mec='xkcd:crimson',
         alpha=plot_alpha, label='Theta Raw')
@@ -2452,7 +2483,8 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     axs[3].grid(True)
 #     axs[3].set_ylim(y_limits)
 #     axs[3].hlines([-a, a], 0, T, linestyles='--')
-    generate_data_markers(muse_EEG_data, axs[3], 'Theta_TP10')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[3], 'Theta_TP10')
 
     l4 = axs[4].plot(x_series, delta_raw, color=plot_color_scheme['Delta'], marker='.', mec='xkcd:wine',
         alpha=plot_alpha, label='Delta Raw')
@@ -2462,7 +2494,8 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
     axs[4].grid(True)
 #     axs[4].set_ylim(y_limits)
 #     axs[4].hlines([-a, a], 0, T, linestyles='--')
-    generate_data_markers(muse_EEG_data, axs[4], 'Delta_TP10')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[4], 'Delta_TP10')
 
     axs[4].set(xlabel="Time (Seconds)")
    
@@ -2603,11 +2636,16 @@ def plot_mellow_concentration(mellow, concentration,
     axs[0].legend(loc='upper right', prop={'size': 6})     
     axs[0].grid(True)
 #     axs[0].hlines([-a, a], 0, T, linestyles='--')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[0], 'Mellow')
 
     l1 = axs[1].plot(x_series, concentration,  color='g', 
                 alpha=plot_alpha, marker='.', mec='xkcd:wine', label='Concentration')
     axs[1].legend(loc='upper right', prop={'size': 6})
     axs[1].grid(True)
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[1], 'Concentration')
+
     axs[1].set(xlabel="Time (Seconds)") 
 
     axs[0].set(ylabel="Mellow") 
@@ -2715,6 +2753,9 @@ def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_n
     axs[2].grid(True)
     axs[2].set_ylim((-1.5, 1.5))
 
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[0], 'Accelerometer_X')
+
 
     # Plot gyro data
     axs[4].set(ylabel="Gyro") 
@@ -2736,6 +2777,9 @@ def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_n
     axs[5].legend(loc='upper right', prop={'size': 6})
     axs[5].grid(True)
     axs[5].set_ylim((-50.0, 50.0))
+
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[3], 'Gyro_X')
 
     axs[5].set(xlabel="Time (Seconds)") 
        
@@ -2862,9 +2906,9 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
     elements_df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp', 'Elements'])
     data_df = pd.DataFrame(muse_EEG_data, columns=[col_select])
 
-    print('generate_data_markers - 111 col_select: ', col_select)
-    print('generate_data_markers - 111 data_df.describe(): ', data_df.describe())
-    print('generate_data_markers - 111 data_df.columns: ', data_df.columns)
+#     print('generate_data_markers - 111 col_select: ', col_select)
+#     print('generate_data_markers - 111 data_df.describe(): ', data_df.describe())
+#     print('generate_data_markers - 111 data_df.columns: ', data_df.columns)
     
     
     if Verbosity > 2:
@@ -2880,15 +2924,14 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
 #     new_df =  pd.DataFrame(np.nan_to_num(data_df[col_select]))
     new_df = data_df.fillna(0)
 
-    print('generate_data_markers - 222 new_df.describe(): ', new_df.describe())
-    print('generate_data_markers - 222 new_df.columns: ', new_df.columns)
+#     print('generate_data_markers - 222 new_df.describe(): ', new_df.describe())
+#     print('generate_data_markers - 222 new_df.columns: ', new_df.columns)
 
 
 
     for index, row in elements_df.iterrows():
         if Verbosity > 2:
             print(row['TimeStamp'] + '  ' + row['Elements'])
-#             print(row['Elements'])
         
         if 'jaw' in row['Elements']:
             marker_text = 'J'
@@ -2902,17 +2945,9 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
 #         foo = row[col_select]
 #         print('foo: ', foo)
 
-        y_offset =  np.max(new_df[index:index + 3])
-        print('DATA1: ', y_offset)
-#         print('DATA1: ', elements_df[col_select][index:index + 2])
-#         print('DATA1: ', elements_df[col_select][index:index + 3])
-#         print('DATA1: ', elements_df[col_select][index:index + 4])
-#         print('DATA1: ', elements_df[col_select][index:index + 5])
-#         print('DATA1: ', elements_df[col_select][index:index + 6])
-
-#         data_val = np.nan_to_num(np.mean(elements_df[col_select][index:index + 10]))
-#         print('DATA: ', data_val)
-        
+        y_offset =  np.max(new_df[index:index + 30])     
+        if Verbosity > 2:
+            print('generate_data_markers() - y_offset: ', y_offset)
                             
         axs.annotate(marker_text, xy=((index/Sampling_Rate), y_offset), xytext=((index/Sampling_Rate)+2, y_offset+1),
                 bbox=dict(boxstyle="round", alpha=0.1), ha='right', va="center", rotation=33,
