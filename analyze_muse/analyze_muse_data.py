@@ -9,7 +9,6 @@ This code will analyze Muse EEG headband CSV files and plot the results.
 
 from time import time, sleep
 import datetime as dt
-
 import numpy as np
 from scipy import fftpack, interpolate
 import scipy.signal as signal
@@ -95,7 +94,6 @@ PLOT_PARAMS = {
     'scatter.marker' : '.',
     'legend.fontsize': 6,
     'legend.handlelength': 2}
-# plt.rcParams.update(PLOT_PARAMS)
 
 plt.rcParams['font.family'] = 'sans-serif'
 plt.rcParams['font.sans-serif'] = ['Tahoma', 'DejaVu Sans',
@@ -104,12 +102,6 @@ plt.rcParams['font.family'] = 'sans-serif'
 plt.rcParams['font.sans-serif'] = ['Tahoma']
 # plt.rcParams['font.weight'] = ['bold']
 plt.rcParams['font.size'] = 6
-
-
-# font = {'family' : 'monospace',
-#         'weight' : 'bold',
-#         'size'   : 8}
-# matplotlib.rc('font', **font)
 
 
 # Muse Monitor Colors
@@ -276,7 +268,7 @@ class The_GUI(QDialog):
         DB = self.checkBoxDB.isChecked()
         HDF5 = self.checkBoxHFDF5.isChecked()
         vertical_lock = self.checkBoxVerticalLock.isChecked()
-        graph_markers = self.checkBoxGraphMarkers.isChecked()
+        graph_markers = self.checkBoxPlotMarkers.isChecked()
         data_markers = self.checkBoxDataMarkers.isChecked()
         plot_colors = self.plotColorsComboBox.currentText()
         
@@ -300,7 +292,7 @@ class The_GUI(QDialog):
                 "checkBoxDB": DB,
                 "checkBoxHFDF5": HDF5,
                 "checkBoxVerticalLock": vertical_lock,
-                "checkBoxGraphMarkers": graph_markers,
+                "checkBoxPlotMarkers": graph_markers,
                 "checkBoxDataMarkers": data_markers,
                 "plotColorsComboBox": plot_colors,               
                 "Mood": mood})
@@ -401,12 +393,12 @@ class The_GUI(QDialog):
         self.checkBoxVerticalLock.setChecked(True)
         self.checkBoxVerticalLock.setEnabled(True)
 
-        self.checkBoxGraphMarkers = QCheckBox("Add Graph Markers")
-        self.checkBoxGraphMarkers.setChecked(False)
-        self.checkBoxGraphMarkers.setEnabled(True)
+        self.checkBoxPlotMarkers = QCheckBox("Add Plot Markers")
+        self.checkBoxPlotMarkers.setChecked(False)
+        self.checkBoxPlotMarkers.setEnabled(True)
   
         self.checkBoxDataMarkers = QCheckBox("Add Data Markers")
-        self.checkBoxDataMarkers.setChecked(False)
+        self.checkBoxDataMarkers.setChecked(args.data_markers)
         self.checkBoxDataMarkers.setEnabled(True)
   
         layout.addWidget(self.checkBoxInteractive)
@@ -425,7 +417,7 @@ class The_GUI(QDialog):
         layout.addWidget(self.checkBoxHFDF5)
         layout.addWidget(self.checkBoxHFDF5)
         layout.addWidget(self.checkBoxVerticalLock)        
-        layout.addWidget(self.checkBoxGraphMarkers)        
+        layout.addWidget(self.checkBoxPlotMarkers)        
         layout.addWidget(self.checkBoxDataMarkers)        
  
         layout.addWidget(self.plotColorsLabel)
@@ -859,9 +851,11 @@ def read_eeg_data(fname, date_time_now):
     if Verbosity > 2:
         print("read_eeg_data(): Session Date: ", time_df['TimeStamp'][0])
         print("read_eeg_data(): num_cols: ", num_cols)
+        print("read_eeg_data(): time_df.shape: ", time_df.shape)
         print("read_eeg_data(): muse_EEG_data.columns: ", muse_EEG_data.columns)
         print("read_eeg_data() - muse_EEG_data.describe(): ", muse_EEG_data.describe())   
         print("read_eeg_data() - muse_EEG_data.keys(): ", muse_EEG_data.keys())   
+    
     
     pause_and_prompt(1, "Data successfuly read")
 
@@ -1641,8 +1635,7 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
     axs[0].set(title='AF7 - AF8', ylabel="Amp uV")      
     axs[0].set_ylim((af_min, af_max))
     if (gui_dict['checkBoxDataMarkers']):    
-        generate_data_markers(muse_EEG_data, axs[0], 'RAW_AF8')
-     
+        generate_data_markers(muse_EEG_data, axs[0], 'No Offset')
      
     axs[1].plot(x_series, tp_diff, alpha=0.8, marker='.', mec='xkcd:wine',
                 color=plot_color_scheme['RawTP9'], label='TP Diff')
@@ -1652,7 +1645,7 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
     axs[1].set_ylim((tp_min, tp_max))
     axs[1].set(title='TP9 - TP10', ylabel="Amp uV") 
     if (gui_dict['checkBoxDataMarkers']):    
-        generate_data_markers(muse_EEG_data, axs[1], 'RAW_TP9')
+        generate_data_markers(muse_EEG_data, axs[1], 'No Offset')
 
 #     axs[0].grid(True)
 
@@ -2733,28 +2726,32 @@ def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_n
     axs[0].xaxis.set_minor_locator(ticker.AutoMinorLocator())
 
     # Plot accelerometer data  
-    axs[1].set(ylabel="Accelerometer") 
             
     l0 = axs[0].plot(x_series, acc_gyro_df['Accelerometer_X'], color='r', marker='.', mec='xkcd:wine',
             alpha=plot_alpha, label='X')
     axs[0].legend(loc='upper right', prop={'size': 6})     
     axs[0].grid(True)
     axs[0].set_ylim((-1.5, 1.5))
+    axs[0].set(ylabel="Accelerometer X") 
 
     l1 = axs[1].plot(x_series, acc_gyro_df['Accelerometer_Y'], color='g', marker='.', mec='xkcd:wine', 
             alpha=plot_alpha, label='Y')
     axs[1].legend(loc='upper right', prop={'size': 6})
     axs[1].grid(True)
     axs[1].set_ylim((-1.5, 1.5))
+    axs[1].set(ylabel="Accelerometer Y") 
 
     l2 = axs[2].plot(x_series, acc_gyro_df['Accelerometer_Z'], color='b', marker='.', mec='xkcd:wine', 
             alpha=plot_alpha, label='Z')
     axs[2].legend(loc='upper right', prop={'size': 6})
     axs[2].grid(True)
     axs[2].set_ylim((-1.5, 1.5))
+    axs[2].set(ylabel="Accelerometer Z") 
 
     if (gui_dict['checkBoxDataMarkers']):    
         generate_data_markers(muse_EEG_data, axs[0], 'Accelerometer_X')
+        generate_data_markers(muse_EEG_data, axs[1], 'Accelerometer_X')
+        generate_data_markers(muse_EEG_data, axs[2], 'Accelerometer_X')
 
 
     # Plot gyro data
@@ -2765,21 +2762,26 @@ def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_n
     axs[3].legend(loc='upper right', prop={'size': 6})     
     axs[3].grid(True)
     axs[3].set_ylim((-50.0, 50.0))
+    axs[3].set(ylabel="Gyro Pitch") 
 
     l4 = axs[4].plot(x_series, acc_gyro_df['Gyro_Y'], color='#3affe5', marker='.', mec='xkcd:wine',
             alpha=plot_alpha, label='Yaw')
     axs[4].legend(loc='upper right', prop={'size': 6})
     axs[4].grid(True)
     axs[4].set_ylim((-50.0, 50.0))
+    axs[4].set(ylabel="Gyro Yaw") 
 
     l5 = axs[5].plot(x_series, acc_gyro_df['Gyro_Z'], color='#FFC73A', marker='.', mec='xkcd:wine', 
             alpha=plot_alpha, label='Roll')
     axs[5].legend(loc='upper right', prop={'size': 6})
     axs[5].grid(True)
     axs[5].set_ylim((-50.0, 50.0))
+    axs[5].set(ylabel="Gyro Roll") 
 
     if (gui_dict['checkBoxDataMarkers']):    
         generate_data_markers(muse_EEG_data, axs[3], 'Gyro_X')
+        generate_data_markers(muse_EEG_data, axs[4], 'Gyro_X')
+        generate_data_markers(muse_EEG_data, axs[5], 'Gyro_X')
 
     axs[5].set(xlabel="Time (Seconds)") 
        
@@ -2902,31 +2904,18 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
     if Verbosity > 2:
         print("generate_data_markers() called")
 
-#     col_select = 'RAW_TP9'
     elements_df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp', 'Elements'])
-    data_df = pd.DataFrame(muse_EEG_data, columns=[col_select])
 
-#     print('generate_data_markers - 111 col_select: ', col_select)
-#     print('generate_data_markers - 111 data_df.describe(): ', data_df.describe())
-#     print('generate_data_markers - 111 data_df.columns: ', data_df.columns)
-    
-    
+    if not ((col_select == 'Accelerometer_X') or (col_select == 'Gyro_X') or (col_select == 'No Offset')):
+        data_df = pd.DataFrame(muse_EEG_data, columns=[col_select])
+        new_df = data_df.fillna(0)
+        
     if Verbosity > 2:
 #         print("generate_data_markers() - Elements.describe(): ", elements_df.describe())   
         print("generate_data_markers() - elements_df.count(): ", elements_df.count())
 
     elements_df['Elements'] = elements_df.Elements.astype(str)
     elements_df = elements_df[~elements_df['Elements'].str.contains('nan')]
-
-#     data_df = elements_df[~data_df[col_select].str.contains('nan')]
-
-#     new_df = np.min(np.nan_to_num(data_df))
-#     new_df =  pd.DataFrame(np.nan_to_num(data_df[col_select]))
-    new_df = data_df.fillna(0)
-
-#     print('generate_data_markers - 222 new_df.describe(): ', new_df.describe())
-#     print('generate_data_markers - 222 new_df.columns: ', new_df.columns)
-
 
 
     for index, row in elements_df.iterrows():
@@ -2935,38 +2924,28 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
         
         if 'jaw' in row['Elements']:
             marker_text = 'J'
+# TODO don't mark eye blinks for now
         elif 'blink' in row['Elements']:
-            marker_text = 'B'
-#         elif row['Elements'].str.contains('jaw'):
-#             marker_text = 'J'
+#             marker_text = 'B'
+            continue 
         else:
             marker_text = row['Elements']
                     
-#         foo = row[col_select]
-#         print('foo: ', foo)
-
-        y_offset =  np.max(new_df[index:index + 30])     
+        if (col_select == 'Accelerometer_X') or (col_select == 'Gyro_X') or (col_select == 'No Offset'):
+            y_offset = 0            
+        else:
+            y_offset = np.max(new_df[index:index + 30])     
+    
         if Verbosity > 2:
             print('generate_data_markers() - y_offset: ', y_offset)
                             
         axs.annotate(marker_text, xy=((index/Sampling_Rate), y_offset), xytext=((index/Sampling_Rate)+2, y_offset+1),
                 bbox=dict(boxstyle="round", alpha=0.1), ha='right', va="center", rotation=33,
-                arrowprops=dict(arrowstyle='simple', color='blue', facecolor='green',
-                connectionstyle="angle3,angleA=0,angleB=-90"))
+                arrowprops=dict(arrowstyle='simple', color='blue', alpha=0.5,
+                connectionstyle="arc3, rad=0.03"))
 
-                        
-# matplotlib.colors
-# b : blue.
-# g : green.
-# r : red.
-# c : cyan.
-# m : magenta.
-# y : yellow.
-# k : black.
-# w : white.
-
-
-   
+        
+    return True   
    
    
    
@@ -3123,10 +3102,9 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
         plot_color_scheme = MM_Colors
     
 
-    if (not gui_dict['checkBoxGraphMarkers']):    
+    if (not gui_dict['checkBoxPlotMarkers']):    
         PLOT_PARAMS['lines.markersize'] = 0.0005
         
-    
     if (gui_dict['checkBoxEEG']):
 
         # TODO don't plot this one for now ...
@@ -3470,6 +3448,7 @@ if __name__ == '__main__':
     parser.add_argument("-v", "--verbose", help="Increase output verbosity", type=int)
     parser.add_argument("-d", "--display_plots", help="Display Plots", action="store_true")
     parser.add_argument("-b", "--batch", help="Batch Mode", action="store_true")
+    parser.add_argument("-dm", "--data_markers", help="Add Data Markers", action="store_true")
     parser.add_argument("-p", "--power", help="Plot Power Bands", action="store_true")
     parser.add_argument("-e", "--eeg", help="Plot EEG Data", action="store_true")
     parser.add_argument("-hdf5", "--write_hdf5_file", help="Write output data into HDF5 file", action="store_true")
@@ -3523,6 +3502,13 @@ if __name__ == '__main__':
     else:
         args.plot_style = 0
 
+    if args.data_markers:
+        if Verbosity > 0:
+                print("data_markers:")
+        print(args.data_markers)
+    else:
+        args.data_markers = False
+
     if args.batch:
         if Verbosity > 0:
             print("batch:")
@@ -3535,7 +3521,7 @@ if __name__ == '__main__':
             print("auto_reject_data:")
         print(args.auto_reject_data)
     else:
-        args.auto_reject_data = True
+        args.auto_reject_data = False
 
     if args.filter_data:
         if Verbosity > 0:
