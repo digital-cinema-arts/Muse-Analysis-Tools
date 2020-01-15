@@ -67,8 +67,9 @@ The ".ABCS_parms.rc" runtime configuration file can be configured to define ofte
 
 $ analyze_muse_data.py -h 
  
-usage: analyze_muse_data.py [-h] [-f CSV_FILE] [-v VERBOSE] [-d] [-b] [-p]
-                            [-e] [-hdf5] [-ag] [-mc] [-s] [-c] [-r] [-fd]
+usage: analyze_muse_data.py [-h] [-f CSV_FILE] [-v VERBOSE] [-d] [-b] [-dm]
+                            [-p] [-e] [-hdf5] [-ag] [-mc] [-s] [-c]
+                            [--plot_style PLOT_STYLE] [-r] [-fd]
                             [-ft FILTER_TYPE] [-lc LOWCUT] [-hc HIGHCUT]
                             [-o FILTER_ORDER] [-db]
 
@@ -80,6 +81,7 @@ optional arguments:
                         Increase output verbosity
   -d, --display_plots   Display Plots
   -b, --batch           Batch Mode
+  -dm, --data_markers   Add Data Markers
   -p, --power           Plot Power Bands
   -e, --eeg             Plot EEG Data
   -hdf5, --write_hdf5_file
@@ -91,6 +93,9 @@ optional arguments:
   -s, --stats_plots     Plot Statistcal Data
   -c, --coherence_plots
                         Plot Coherence Data
+  --plot_style PLOT_STYLE
+                        Plot Syle: 1=seaborn, 2=seaborn-pastel, 3=seaborn-
+                        ticks, 4=fast, 5=bmh
   -r, --auto_reject_data
                         Auto Reject EEG Data
   -fd, --filter_data    Filter EEG Data
@@ -103,7 +108,6 @@ optional arguments:
   -o FILTER_ORDER, --filter_order FILTER_ORDER
                         Filter Order
   -db, --data_base      Send session data and statistics to database
-
 
   ~~~~
 
