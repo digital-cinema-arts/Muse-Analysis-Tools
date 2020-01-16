@@ -841,9 +841,66 @@ def read_eeg_data(fname, date_time_now):
 #             print('read_eeg_data(): File extension: %s' % kind.extension)
 #             print('read_eeg_data(): File MIME type: %s' % kind.mime)
 
+ 
+#     dtypes={'TimeStamp': 'str', 
+#             'Delta_TP9': 'float', 
+#             'Delta_AF7': 'float', 
+#             'Delta_AF8': 'float', 
+#             'Delta_TP10': 'float',
+#             'Theta_TP9': 'float', 
+#             'Theta_AF7': 'float', 
+#             'Theta_AF8': 'float', 
+#             'Theta_TP10': 'float',
+#             'Alpha_TP9': 'float', 
+#             'Alpha_AF7': 'float', 
+#             'Alpha_AF8': 'float', 
+#             'Alpha_TP10': 'float',
+#             'Beta_TP9': 'float', 
+#             'Beta_AF7': 'float', 
+#             'Beta_AF8': 'float', 
+#             'Beta_TP10': 'float',
+#             'Gamma_TP9': 'float', 
+#             'Gamma_AF7': 'float', 
+#             'Gamma_AF8': 'float', 
+#             'Gamma_TP10': 'float',
+#             'RAW_TP9': 'float', 
+#             'RAW_AF7': 'float', 
+#             'RAW_AF8': 'float', 
+#             'RAW_TP10': 'float',
+#             'Mellow': 'float', 
+#             'Concentration': 'float', 
+#             'Accelerometer_X': 'float', 
+#             'Accelerometer_Y': 'float', 
+#             'Accelerometer_Z': 'float', 
+#             'Gyro_X': 'float', 
+#             'Gyro_Y': 'float', 
+#             'Gyro_Z': 'float', 
+#             'HeadBandOn': 'float', 
+#             'HSI_TP9': 'float', 
+#             'HSI_AF7': 'float', 
+#             'HSI_AF8': 'float', 
+#             'HSI_TP10': 'float', 
+#             'Battery': 'float', 
+#             'Elements': 'str'
+#             }
 
+#     csv_data = pd.read_csv(fname, parse_dates=['TimeStamp'], 
+# #                     date_parser=pd.to_datetime, compression='infer')
+#                     date_parser=pd.to_datetime, dtype=dtypes, compression='infer')
+#     num_cols = len(csv_data.columns)
+    
+    dtypes={'TimeStamp': 'str', 
+            'Battery': 'float',
+            'Elements': 'str'
+            }
+
+#     csv_data = pd.read_csv(fname, parse_dates=['TimeStamp'], 
+#                     date_parser=pd.to_datetime, dtype=dtypes, compression='infer')    
+    
 # df = pd.read_csv('filename.tar.gz', compression='gzip', header=0, sep=',', quotechar='"')
-    muse_EEG_data = pd.read_csv(fname, compression='infer', verbose=Verbosity)
+    muse_EEG_data = pd.read_csv(fname,  parse_dates=['TimeStamp'], 
+                        date_parser=pd.to_datetime, dtype=dtypes, 
+                        compression='infer', verbose=Verbosity)
 
     num_cols = len(muse_EEG_data.columns)
 
@@ -2920,7 +2977,8 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
 
     for index, row in elements_df.iterrows():
         if Verbosity > 2:
-            print(row['TimeStamp'] + '  ' + row['Elements'])
+            print(row['TimeStamp'])
+            print(row['Elements'])
         
         if 'jaw' in row['Elements']:
             marker_text = 'J'
