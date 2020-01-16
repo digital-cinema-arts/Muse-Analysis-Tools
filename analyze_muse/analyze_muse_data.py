@@ -2994,8 +2994,8 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
         else:
             y_offset = np.max(new_df[index:index + 30])     
     
-        if Verbosity > 2:
-            print('generate_data_markers() - y_offset: ', y_offset)
+#         if Verbosity > 2:
+#             print('generate_data_markers() - y_offset: ', y_offset)
                             
         axs.annotate(marker_text, xy=((index/Sampling_Rate), y_offset), xytext=((index/Sampling_Rate)+2, y_offset+1),
                 bbox=dict(boxstyle="round", alpha=0.1), ha='right', va="center", rotation=33,
