@@ -1692,7 +1692,7 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
     axs[0].set(title='AF7 - AF8', ylabel="Amp uV")      
     axs[0].set_ylim((af_min, af_max))
     if (gui_dict['checkBoxDataMarkers']):    
-        generate_data_markers(muse_EEG_data, axs[0], 'No Offset')
+        generate_data_markers(muse_EEG_data, axs[0], 'Coherence')
      
     axs[1].plot(x_series, tp_diff, alpha=0.8, marker='.', mec='xkcd:wine',
                 color=plot_color_scheme['RawTP9'], label='TP Diff')
@@ -1702,7 +1702,7 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
     axs[1].set_ylim((tp_min, tp_max))
     axs[1].set(title='TP9 - TP10', ylabel="Amp uV") 
     if (gui_dict['checkBoxDataMarkers']):    
-        generate_data_markers(muse_EEG_data, axs[1], 'No Offset')
+        generate_data_markers(muse_EEG_data, axs[1], 'Coherence')
 
 #     axs[0].grid(True)
 
@@ -2991,6 +2991,8 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
                     
         if (col_select == 'Accelerometer_X') or (col_select == 'Gyro_X') or (col_select == 'No Offset'):
             y_offset = 0            
+        elif (col_select == 'Coherence'):
+            y_offset = 30            
         else:
             y_offset = np.max(new_df[index:index + 30])     
     
@@ -2998,7 +3000,7 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
 #             print('generate_data_markers() - y_offset: ', y_offset)
                             
         axs.annotate(marker_text, xy=((index/Sampling_Rate), y_offset), xytext=((index/Sampling_Rate)+2, y_offset+1),
-                bbox=dict(boxstyle="round", alpha=0.1), ha='right', va="center", rotation=33,
+                bbox=dict(boxstyle="round", alpha=0.1), ha='right', va="center", rotation=33, size=8,
                 arrowprops=dict(arrowstyle='simple', color='blue', alpha=0.5,
                 connectionstyle="arc3, rad=0.03"))
 
