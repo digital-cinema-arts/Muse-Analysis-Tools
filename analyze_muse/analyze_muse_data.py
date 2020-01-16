@@ -914,7 +914,7 @@ def read_eeg_data(fname, date_time_now):
         print("read_eeg_data() - muse_EEG_data.keys(): ", muse_EEG_data.keys())   
     
     
-    pause_and_prompt(1, "Data successfuly read")
+    pause_and_prompt(0.5, "Data successfuly read")
 
     raw_df = pd.DataFrame(muse_EEG_data, 
             columns=['RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
@@ -2967,12 +2967,21 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
         data_df = pd.DataFrame(muse_EEG_data, columns=[col_select])
         new_df = data_df.fillna(0)
         
-    if Verbosity > 2:
+    if Verbosity > 3:
 #         print("generate_data_markers() - Elements.describe(): ", elements_df.describe())   
         print("generate_data_markers() - elements_df.count(): ", elements_df.count())
+        print("generate_data_markers() - elements_df.shape: ", elements_df.shape)
 
     elements_df['Elements'] = elements_df.Elements.astype(str)
+
+#     print("generate_data_markers() - after converting data type to str - elements_df.count(): ", elements_df.count())
+#     print("generate_data_markers() - after converting data type to str - elements_df.shape: ", elements_df.shape)
+
     elements_df = elements_df[~elements_df['Elements'].str.contains('nan')]
+
+#     print("generate_data_markers() - after culling data - elements_df.count(): ", elements_df.count())
+#     print("generate_data_markers() - after culling data - elements_df.shape: ", elements_df.shape)
+#     print("generate_data_markers() - after culling data - elements_df.['Elements']: ", elements_df['Elements'])
 
 
     for index, row in elements_df.iterrows():
