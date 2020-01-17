@@ -2984,7 +2984,7 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
             marker_text = row['Elements']
                     
         if (col_select == 'Accelerometer_X') or (col_select == 'Gyro_X') or (col_select == 'No Offset'):
-            y_offset = 0            
+            y_offset = 0.2        
         elif (col_select == 'Coherence'):
             y_offset = 30            
         else:
@@ -3397,7 +3397,8 @@ def main(date_time_now):
     global db_location
 
     if Verbosity > 1:
-        print("main() - analyze_muse.ABCS_version.ABCS_version: ", analyze_muse.ABCS_version.ABCS_version)
+        print("main() - analyze_muse.ABCS_version.ABCS_version: ",
+                analyze_muse.ABCS_version.ABCS_version)
 
     initialize_GUI_vars(date_time_now)
 
@@ -3499,6 +3500,7 @@ if __name__ == '__main__':
     date_time_now = strftime('%Y-%m-%d-%H.%M.%S', gmtime())
 
     parser = argparse.ArgumentParser()
+    parser.add_argument("--version", help="Print the current version number", action="store_true")
     parser.add_argument("-f", "--csv_file", help="CSV file to read)")
     parser.add_argument("-v", "--verbose", help="Increase output verbosity", type=int)
     parser.add_argument("-d", "--display_plots", help="Display Plots", action="store_true")
@@ -3535,6 +3537,11 @@ if __name__ == '__main__':
                   
                                                 
     args = parser.parse_args()
+
+    if args.version:
+        print("Current version: ",
+                analyze_muse.ABCS_version.ABCS_version)
+        sys.exit(0)
 
     if args.verbose:
         print("verbose turned on")
