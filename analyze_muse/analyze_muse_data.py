@@ -2994,7 +2994,7 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
 #             print('generate_data_markers() - y_offset: ', y_offset)
                             
         axs.annotate(marker_text, xy=((index/Sampling_Rate), y_offset), 
-#                 xytext=((index/Sampling_Rate)+2, y_offset+1),
+                xytext=((index/Sampling_Rate)+2, y_offset+1),
                 bbox=dict(boxstyle="round", alpha=0.1), ha='right', va="center", rotation=33, size=8,
                 arrowprops=dict(arrowstyle='simple', color='blue', alpha=0.5,
                 connectionstyle="arc3, rad=0.03"))
