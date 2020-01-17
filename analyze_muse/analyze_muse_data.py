@@ -1057,41 +1057,26 @@ def get_data_description(muse_EEG_data):
 Auto reject that exceeds min/max limits.  
 
 '''
-def auto_reject_EEG_data(data):
+def auto_reject_EEG_data(data_df):
 
     if Verbosity > 0:
         print("auto_reject_EEG_data()")
 
 
-# TimeStamp,
-# Delta_TP9,Delta_AF7,Delta_AF8,Delta_TP10,
-# Theta_TP9,Theta_AF7,Theta_AF8,Theta_TP10,
-# Alpha_TP9,Alpha_AF7,Alpha_AF8,Alpha_TP10,
-# Beta_TP9,Beta_AF7,Beta_AF8,Beta_TP10,
-# Gamma_TP9,Gamma_AF7,Gamma_AF8,Gamma_TP10,
-# RAW_TP9,RAW_AF7,RAW_AF8,RAW_TP10,AUX_RIGHT,
-# Mellow,Concentration,
-# Accelerometer_X,Accelerometer_Y,Accelerometer_Z,
-# Gyro_X,Gyro_Y,Gyro_Z,
-# HeadBandOn,
-# HSI_TP9,HSI_AF7,HSI_AF8,HSI_TP10,
-# Battery,
-# Elements
-
     eeg_clip_padding = 50.
     pwr_clip_padding = 0.01
+
+#     new_df = data_df.copy()
+    new_df = data_df
     
-    new_df = data.loc[data['RAW_TP9'] <  (EEG_Dict['RAW_TP9']['75%'] + eeg_clip_padding)]
-    new_df = new_df.loc[new_df['RAW_TP9'] >  (EEG_Dict['RAW_TP9']['25%'] - eeg_clip_padding)]
-
-    new_df = new_df.loc[new_df['RAW_AF7'] <  (EEG_Dict['RAW_AF7']['75%'] + eeg_clip_padding)]
-    new_df = new_df.loc[new_df['RAW_AF7'] >  (EEG_Dict['RAW_AF7']['25%'] - eeg_clip_padding)]
-
-    new_df = new_df.loc[new_df['RAW_AF8'] <  (EEG_Dict['RAW_AF8']['75%'] + eeg_clip_padding)]
-    new_df = new_df.loc[new_df['RAW_AF8'] >  (EEG_Dict['RAW_AF8']['25%'] - eeg_clip_padding)]
-
-    new_df = new_df.loc[new_df['RAW_TP10'] <  (EEG_Dict['RAW_TP10']['75%'] + eeg_clip_padding)]
-    new_df = new_df.loc[new_df['RAW_TP10'] >  (EEG_Dict['RAW_TP10']['25%'] - eeg_clip_padding)]
+    new_df[new_df['RAW_TP9'] < (EEG_Dict['RAW_TP9']['75%'] + eeg_clip_padding)]
+    new_df[new_df['RAW_TP9'] > (EEG_Dict['RAW_TP9']['25%'] - eeg_clip_padding)]
+    new_df[new_df['RAW_AF7'] < (EEG_Dict['RAW_AF7']['75%'] + eeg_clip_padding)]
+    new_df[new_df['RAW_AF7'] > (EEG_Dict['RAW_AF7']['25%'] - eeg_clip_padding)]
+    new_df[new_df['RAW_AF8'] < (EEG_Dict['RAW_AF8']['75%'] + eeg_clip_padding)]
+    new_df[new_df['RAW_AF8'] > (EEG_Dict['RAW_AF8']['25%'] - eeg_clip_padding)]
+    new_df[new_df['RAW_TP10'] < (EEG_Dict['RAW_TP10']['75%'] + eeg_clip_padding)]
+    new_df[new_df['RAW_TP10'] > (EEG_Dict['RAW_TP10']['25%'] - eeg_clip_padding)]
 
 
     return new_df
@@ -3008,7 +2993,8 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
 #         if Verbosity > 2:
 #             print('generate_data_markers() - y_offset: ', y_offset)
                             
-        axs.annotate(marker_text, xy=((index/Sampling_Rate), y_offset), xytext=((index/Sampling_Rate)+2, y_offset+1),
+        axs.annotate(marker_text, xy=((index/Sampling_Rate), y_offset), 
+#                 xytext=((index/Sampling_Rate)+2, y_offset+1),
                 bbox=dict(boxstyle="round", alpha=0.1), ha='right', va="center", rotation=33, size=8,
                 arrowprops=dict(arrowstyle='simple', color='blue', alpha=0.5,
                 connectionstyle="arc3, rad=0.03"))
