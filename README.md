@@ -53,10 +53,13 @@ pip install --upgrade --force-reinstall pandas
 
 #### Usage:
 1) Change directory to where the data files are located (sometimes this makes it easier to locate files).  
+```
+$ cd /Volumes/Archive/muse_recordings/muse_monitor_recordings/   
+```
 2) Startup the application:  
 ```$ analyze_muse_data.py```
-3) Select the options and CSV file you want to process.
-4) Make plots!
+3) Select the options and CSV file you want to process.  
+4) Make plots!  
 
 --------------------------------------------------------------------
 
@@ -76,14 +79,15 @@ https://matplotlib.org/3.1.1/users/navigation_toolbar.html
 
 $ analyze_muse_data.py -h 
  
-usage: analyze_muse_data.py [-h] [-f CSV_FILE] [-v VERBOSE] [-d] [-b] [-dm]
-                            [-p] [-e] [-hdf5] [-ag] [-mc] [-s] [-c]
+usage: analyze_muse_data.py [-h] [--version] [-f CSV_FILE] [-v VERBOSE] [-d]
+                            [-b] [-dm] [-p] [-e] [-hdf5] [-ag] [-mc] [-s] [-c]
                             [--plot_style PLOT_STYLE] [-r] [-fd]
                             [-ft FILTER_TYPE] [-lc LOWCUT] [-hc HIGHCUT]
                             [-o FILTER_ORDER] [-db]
 
 optional arguments:
   -h, --help            show this help message and exit
+  --version             Print the current version number
   -f CSV_FILE, --csv_file CSV_FILE
                         CSV file to read)
   -v VERBOSE, --verbose VERBOSE
@@ -119,6 +123,11 @@ optional arguments:
   -db, --data_base      Send session data and statistics to database
 
   ~~~~
+
+To find the current version of the appliction:  
+```$ analyze_muse_data.py --version
+Current version:  1.1.17
+```
 
 ----------------------------------------------------------
 
