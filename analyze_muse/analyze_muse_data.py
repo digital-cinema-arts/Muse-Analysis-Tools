@@ -841,9 +841,66 @@ def read_eeg_data(fname, date_time_now):
 #             print('read_eeg_data(): File extension: %s' % kind.extension)
 #             print('read_eeg_data(): File MIME type: %s' % kind.mime)
 
+ 
+#     dtypes={'TimeStamp': 'str', 
+#             'Delta_TP9': 'float', 
+#             'Delta_AF7': 'float', 
+#             'Delta_AF8': 'float', 
+#             'Delta_TP10': 'float',
+#             'Theta_TP9': 'float', 
+#             'Theta_AF7': 'float', 
+#             'Theta_AF8': 'float', 
+#             'Theta_TP10': 'float',
+#             'Alpha_TP9': 'float', 
+#             'Alpha_AF7': 'float', 
+#             'Alpha_AF8': 'float', 
+#             'Alpha_TP10': 'float',
+#             'Beta_TP9': 'float', 
+#             'Beta_AF7': 'float', 
+#             'Beta_AF8': 'float', 
+#             'Beta_TP10': 'float',
+#             'Gamma_TP9': 'float', 
+#             'Gamma_AF7': 'float', 
+#             'Gamma_AF8': 'float', 
+#             'Gamma_TP10': 'float',
+#             'RAW_TP9': 'float', 
+#             'RAW_AF7': 'float', 
+#             'RAW_AF8': 'float', 
+#             'RAW_TP10': 'float',
+#             'Mellow': 'float', 
+#             'Concentration': 'float', 
+#             'Accelerometer_X': 'float', 
+#             'Accelerometer_Y': 'float', 
+#             'Accelerometer_Z': 'float', 
+#             'Gyro_X': 'float', 
+#             'Gyro_Y': 'float', 
+#             'Gyro_Z': 'float', 
+#             'HeadBandOn': 'float', 
+#             'HSI_TP9': 'float', 
+#             'HSI_AF7': 'float', 
+#             'HSI_AF8': 'float', 
+#             'HSI_TP10': 'float', 
+#             'Battery': 'float', 
+#             'Elements': 'str'
+#             }
 
+#     csv_data = pd.read_csv(fname, parse_dates=['TimeStamp'], 
+# #                     date_parser=pd.to_datetime, compression='infer')
+#                     date_parser=pd.to_datetime, dtype=dtypes, compression='infer')
+#     num_cols = len(csv_data.columns)
+    
+    dtypes={'TimeStamp': 'str', 
+            'Battery': 'float',
+            'Elements': 'str'
+            }
+
+#     csv_data = pd.read_csv(fname, parse_dates=['TimeStamp'], 
+#                     date_parser=pd.to_datetime, dtype=dtypes, compression='infer')    
+    
 # df = pd.read_csv('filename.tar.gz', compression='gzip', header=0, sep=',', quotechar='"')
-    muse_EEG_data = pd.read_csv(fname, compression='infer', verbose=Verbosity)
+    muse_EEG_data = pd.read_csv(fname,  parse_dates=['TimeStamp'], 
+                        date_parser=pd.to_datetime, dtype=dtypes, 
+                        compression='infer', verbose=Verbosity)
 
     num_cols = len(muse_EEG_data.columns)
 
@@ -857,7 +914,7 @@ def read_eeg_data(fname, date_time_now):
         print("read_eeg_data() - muse_EEG_data.keys(): ", muse_EEG_data.keys())   
     
     
-    pause_and_prompt(1, "Data successfuly read")
+    pause_and_prompt(0.5, "Data successfuly read")
 
     raw_df = pd.DataFrame(muse_EEG_data, 
             columns=['RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
@@ -1000,41 +1057,26 @@ def get_data_description(muse_EEG_data):
 Auto reject that exceeds min/max limits.  
 
 '''
-def auto_reject_EEG_data(data):
+def auto_reject_EEG_data(data_df):
 
     if Verbosity > 0:
         print("auto_reject_EEG_data()")
 
 
-# TimeStamp,
-# Delta_TP9,Delta_AF7,Delta_AF8,Delta_TP10,
-# Theta_TP9,Theta_AF7,Theta_AF8,Theta_TP10,
-# Alpha_TP9,Alpha_AF7,Alpha_AF8,Alpha_TP10,
-# Beta_TP9,Beta_AF7,Beta_AF8,Beta_TP10,
-# Gamma_TP9,Gamma_AF7,Gamma_AF8,Gamma_TP10,
-# RAW_TP9,RAW_AF7,RAW_AF8,RAW_TP10,AUX_RIGHT,
-# Mellow,Concentration,
-# Accelerometer_X,Accelerometer_Y,Accelerometer_Z,
-# Gyro_X,Gyro_Y,Gyro_Z,
-# HeadBandOn,
-# HSI_TP9,HSI_AF7,HSI_AF8,HSI_TP10,
-# Battery,
-# Elements
-
     eeg_clip_padding = 50.
     pwr_clip_padding = 0.01
+
+#     new_df = data_df.copy()
+    new_df = data_df
     
-    new_df = data.loc[data['RAW_TP9'] <  (EEG_Dict['RAW_TP9']['75%'] + eeg_clip_padding)]
-    new_df = new_df.loc[new_df['RAW_TP9'] >  (EEG_Dict['RAW_TP9']['25%'] - eeg_clip_padding)]
-
-    new_df = new_df.loc[new_df['RAW_AF7'] <  (EEG_Dict['RAW_AF7']['75%'] + eeg_clip_padding)]
-    new_df = new_df.loc[new_df['RAW_AF7'] >  (EEG_Dict['RAW_AF7']['25%'] - eeg_clip_padding)]
-
-    new_df = new_df.loc[new_df['RAW_AF8'] <  (EEG_Dict['RAW_AF8']['75%'] + eeg_clip_padding)]
-    new_df = new_df.loc[new_df['RAW_AF8'] >  (EEG_Dict['RAW_AF8']['25%'] - eeg_clip_padding)]
-
-    new_df = new_df.loc[new_df['RAW_TP10'] <  (EEG_Dict['RAW_TP10']['75%'] + eeg_clip_padding)]
-    new_df = new_df.loc[new_df['RAW_TP10'] >  (EEG_Dict['RAW_TP10']['25%'] - eeg_clip_padding)]
+    new_df[new_df['RAW_TP9'] < (EEG_Dict['RAW_TP9']['75%'] + eeg_clip_padding)]
+    new_df[new_df['RAW_TP9'] > (EEG_Dict['RAW_TP9']['25%'] - eeg_clip_padding)]
+    new_df[new_df['RAW_AF7'] < (EEG_Dict['RAW_AF7']['75%'] + eeg_clip_padding)]
+    new_df[new_df['RAW_AF7'] > (EEG_Dict['RAW_AF7']['25%'] - eeg_clip_padding)]
+    new_df[new_df['RAW_AF8'] < (EEG_Dict['RAW_AF8']['75%'] + eeg_clip_padding)]
+    new_df[new_df['RAW_AF8'] > (EEG_Dict['RAW_AF8']['25%'] - eeg_clip_padding)]
+    new_df[new_df['RAW_TP10'] < (EEG_Dict['RAW_TP10']['75%'] + eeg_clip_padding)]
+    new_df[new_df['RAW_TP10'] > (EEG_Dict['RAW_TP10']['25%'] - eeg_clip_padding)]
 
 
     return new_df
@@ -1635,7 +1677,7 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
     axs[0].set(title='AF7 - AF8', ylabel="Amp uV")      
     axs[0].set_ylim((af_min, af_max))
     if (gui_dict['checkBoxDataMarkers']):    
-        generate_data_markers(muse_EEG_data, axs[0], 'No Offset')
+        generate_data_markers(muse_EEG_data, axs[0], 'Coherence')
      
     axs[1].plot(x_series, tp_diff, alpha=0.8, marker='.', mec='xkcd:wine',
                 color=plot_color_scheme['RawTP9'], label='TP Diff')
@@ -1645,7 +1687,7 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
     axs[1].set_ylim((tp_min, tp_max))
     axs[1].set(title='TP9 - TP10', ylabel="Amp uV") 
     if (gui_dict['checkBoxDataMarkers']):    
-        generate_data_markers(muse_EEG_data, axs[1], 'No Offset')
+        generate_data_markers(muse_EEG_data, axs[1], 'Coherence')
 
 #     axs[0].grid(True)
 
@@ -2910,17 +2952,27 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
         data_df = pd.DataFrame(muse_EEG_data, columns=[col_select])
         new_df = data_df.fillna(0)
         
-    if Verbosity > 2:
+    if Verbosity > 3:
 #         print("generate_data_markers() - Elements.describe(): ", elements_df.describe())   
         print("generate_data_markers() - elements_df.count(): ", elements_df.count())
+        print("generate_data_markers() - elements_df.shape: ", elements_df.shape)
 
     elements_df['Elements'] = elements_df.Elements.astype(str)
+
+#     print("generate_data_markers() - after converting data type to str - elements_df.count(): ", elements_df.count())
+#     print("generate_data_markers() - after converting data type to str - elements_df.shape: ", elements_df.shape)
+
     elements_df = elements_df[~elements_df['Elements'].str.contains('nan')]
+
+#     print("generate_data_markers() - after culling data - elements_df.count(): ", elements_df.count())
+#     print("generate_data_markers() - after culling data - elements_df.shape: ", elements_df.shape)
+#     print("generate_data_markers() - after culling data - elements_df.['Elements']: ", elements_df['Elements'])
 
 
     for index, row in elements_df.iterrows():
         if Verbosity > 2:
-            print(row['TimeStamp'] + '  ' + row['Elements'])
+            print(row['TimeStamp'])
+            print(row['Elements'])
         
         if 'jaw' in row['Elements']:
             marker_text = 'J'
@@ -2933,14 +2985,17 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
                     
         if (col_select == 'Accelerometer_X') or (col_select == 'Gyro_X') or (col_select == 'No Offset'):
             y_offset = 0            
+        elif (col_select == 'Coherence'):
+            y_offset = 30            
         else:
             y_offset = np.max(new_df[index:index + 30])     
     
-        if Verbosity > 2:
-            print('generate_data_markers() - y_offset: ', y_offset)
+#         if Verbosity > 2:
+#             print('generate_data_markers() - y_offset: ', y_offset)
                             
-        axs.annotate(marker_text, xy=((index/Sampling_Rate), y_offset), xytext=((index/Sampling_Rate)+2, y_offset+1),
-                bbox=dict(boxstyle="round", alpha=0.1), ha='right', va="center", rotation=33,
+        axs.annotate(marker_text, xy=((index/Sampling_Rate), y_offset), 
+#                 xytext=((index/Sampling_Rate)+2, y_offset+1),
+                bbox=dict(boxstyle="round", alpha=0.1), ha='right', va="center", rotation=33, size=8,
                 arrowprops=dict(arrowstyle='simple', color='blue', alpha=0.5,
                 connectionstyle="arc3, rad=0.03"))
 
