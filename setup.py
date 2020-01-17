@@ -42,7 +42,7 @@ setup(
         "Operating System :: OS Independent",
         "Development Status :: 5 - Production/Stable",
         "Topic :: Utilities",
-        "License :: GNU Affero General Public License v3.0",
+#        "License :: GNU Affero General Public License v3.0",
     ],
     python_requires='>=3.6',
 
