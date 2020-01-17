@@ -27,15 +27,15 @@ This script will generate a number of charts from Muse headband EEG CSV data fil
 The project can be view here:
 https://pypi.org/project/Muse-Analysis-Tools/
 
-Using the 'pip' command:
+Using the 'pip' command:  
 ```$ pip install Muse-Analysis-Tools```
 
-Using the 'pip3' command to ensure you're installing the Python 3 packages:
+Using the 'pip3' command to ensure you're installing the Python 3 packages:  
 ```$ pip3 install Muse-Analysis-Tools```
 
 --------------------------------------------------------------------
 
-#### NOTE: This application requires Python version 3. To check which version of python you have installed enter this command:   
+##### NOTE: This application requires Python version 3. To check which version of python you have installed enter this command:   
 ```
 $ python --version
 Python 3.7.4
@@ -43,8 +43,16 @@ Python 3.7.4
 
 --------------------------------------------------------------------
 
+To fix an error with pandas on Linux that occasionally happens, force a reinstall with this command:
+
+```
+pip install --upgrade --force-reinstall pandas
+```
+
+--------------------------------------------------------------------
+
 #### Usage:
-1) Change directory to where the data files are located (option, sometimes makes it easier to locate files).  
+1) Change directory to where the data files are located (sometimes this makes it easier to locate files).  
 2) Startup the application:  
 ```$ analyze_muse_data.py```
 3) Select the options and CSV file you want to process.
@@ -59,15 +67,6 @@ Python 3.7.4
 
 For more information about the graphs interface (from matplotlib) please refer to this link:
 https://matplotlib.org/3.1.1/users/navigation_toolbar.html
-
---------------------------------------------------------------------
-
-The ".ABCS_parms.rc" runtime configuration file can be configured to define often used parameters or for batch processing.
-
-```
-{"First Name": "Debra", "Last Name": "Peri", "Data Dir": "/Volumes/Archive/muse_recordings/muse_monitor_recordings",
-"Data Base Location": "/Volumes/Archive/muse_recordings/muse_monitor_recordings", "Filter Data": 1, "Filter Type": 1, "Filter LowCut": 0.5, "Filter HighCut": 70.0}
-```
 
 --------------------------------------------------------------------
 
@@ -123,10 +122,11 @@ optional arguments:
 
 ----------------------------------------------------------
 
-To fix an error with pandas on Linux that occasionally happens, force a reinstall with this command:
+The ".ABCS_parms.rc" runtime configuration file can be configured to define often used parameters or for batch processing.
 
 ```
-pip install --upgrade --force-reinstall pandas
+{"First Name": "Debra", "Last Name": "Peri", "Data Dir": "/Volumes/Archive/muse_recordings/muse_monitor_recordings",
+"Data Base Location": "/Volumes/Archive/muse_recordings/muse_monitor_recordings", "Filter Data": 1, "Filter Type": 1, "Filter LowCut": 0.5, "Filter HighCut": 70.0}
 ```
 
 ---------------------------------------------------------------------
