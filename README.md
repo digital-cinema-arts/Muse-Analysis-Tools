@@ -23,7 +23,7 @@ This script will generate a number of charts from Muse headband EEG CSV data fil
 3) Run the setup.py to install the application:   
 ```$ python3 setup.py install```
 
-#### Install from the Python Python Package Index
+#### Install from the Python Package Index
 The project can be view here:
 https://pypi.org/project/Muse-Analysis-Tools/
 
