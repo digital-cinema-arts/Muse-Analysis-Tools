@@ -1535,6 +1535,279 @@ def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
 
 
 
+'''
+
+Plot all
+
+'''
+
+def plot_all(muse_EEG_data, data_fname, plot_fname, date_time_now, title, 
+                data_stats, analysis_parms, fig_num):
+
+    timestamps = pd.DataFrame(muse_EEG_data, columns=['TimeStamp'])    
+#     raw_df = pd.DataFrame(muse_EEG_data, 
+#                 columns=['TimeStamp', 'RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
+    tp9_df = pd.DataFrame(muse_EEG_data, columns=['RAW_TP9'])    
+    af7_df = pd.DataFrame(muse_EEG_data, columns=['RAW_AF7'])    
+    af8_df = pd.DataFrame(muse_EEG_data, columns=['RAW_AF8'])    
+    tp10_df = pd.DataFrame(muse_EEG_data, columns=['RAW_TP10'])    
+
+    delta_df = pd.DataFrame(muse_EEG_data, 
+        columns=['Delta_TP9', 'Delta_AF7', 'Delta_AF8', 'Delta_TP10'])    
+    theta_df = pd.DataFrame(muse_EEG_data, 
+        columns=['Theta_TP9', 'Theta_AF7', 'Theta_AF8', 'Theta_TP10'])    
+    alpha_df = pd.DataFrame(muse_EEG_data, 
+        columns=['Alpha_TP9', 'Alpha_AF7', 'Alpha_AF8', 'Alpha_TP10'])    
+    beta_df = pd.DataFrame(muse_EEG_data, 
+        columns=['Beta_TP9', 'Beta_AF7', 'Beta_AF8', 'Beta_TP10'])    
+    gamma_df = pd.DataFrame(muse_EEG_data, 
+        columns=['Gamma_TP9', 'Gamma_AF7', 'Gamma_AF8', 'Gamma_TP10'])    
+
+    plot_alpha = 0.95
+  
+    t_len = len(timestamps)
+    
+    period = (1.0/Sampling_Rate)
+    x_series = np.arange(0, t_len * period, period)
+ 
+#  figsize=FIGURE_SIZE
+    fig, axs = plt.subplots(nrows=9, num=fig_num, figsize=(8, 8), 
+                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True,
+#                     sharey=gui_dict['checkBoxVerticalLock'], 
+                        gridspec_kw={'hspace': 0.5}, tight_layout=False)
+       
+    plt.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
+    plt.rcParams.update(PLOT_PARAMS)          
+    plt_axes = plt.gca()
+
+    data_stats = (EEG_Dict['RAW_AF7']['25%'], EEG_Dict['RAW_AF7']['75%'],
+                EEG_Dict['RAW_AF8']['25%'], EEG_Dict['RAW_AF8']['75%'],
+                EEG_Dict['RAW_TP9']['25%'], EEG_Dict['RAW_TP9']['75%'],
+                EEG_Dict['RAW_TP10']['25%'], EEG_Dict['RAW_TP10']['75%'])
+
+    data_min = np.min((EEG_Dict['RAW_AF7']['25%'], data_stats[2], data_stats[4], data_stats[6]))
+    data_max = np.max((data_stats[1], data_stats[3], data_stats[5], data_stats[7]))
+
+    xmin, xmax, ymin, ymax = plt.axis()
+
+  
+    if Verbosity > 2:  
+        print('plot_all() data_stats: ', data_stats)
+        print('plot_all() data_min: ', data_min)
+        print('plot_all() data_max: ', data_max)
+
+
+    clip_padding = 100. 
+    y_limits = [data_min - clip_padding, data_max + clip_padding]
+    
+    axs[0].plot(x_series, tp9_df, alpha=1.0, marker='.', mec='xkcd:dark pink',
+            color=plot_color_scheme['RawTP9'], label='TP9')
+    axs[0].set(title='TP9', ylabel="Amp uV")      
+    axs[0].set_ylim((EEG_Dict['RAW_TP9']['25%'] - clip_padding), (EEG_Dict['RAW_TP9']['75%'] + clip_padding))
+#     axs[0].set_ylim(y_limits)
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[0], 'RAW_TP9')
+    
+    axs[1].plot(x_series, af7_df, alpha=1.0, marker='.', mec='xkcd:salmon',
+            color=plot_color_scheme['RawAF7'], label='AF7')
+    axs[1].set(title='AF7', ylabel="Amp uV") 
+    axs[1].set_ylim((EEG_Dict['RAW_AF7']['25%'] - clip_padding), (EEG_Dict['RAW_AF7']['75%'] + clip_padding))
+#     axs[1].set_ylim(y_limits)
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[1], 'RAW_AF7')
+
+    axs[2].plot(x_series, af8_df, alpha=1.0, marker='.', mec='xkcd:cerulean',
+            color=plot_color_scheme['RawAF8'], label='AF8')
+    axs[2].set(title='AF8', ylabel="Amp uV") 
+    axs[2].set_ylim((EEG_Dict['RAW_AF8']['25%'] - clip_padding), (EEG_Dict['RAW_AF8']['75%'] + clip_padding))
+#     axs[2].set_ylim(y_limits)
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[2], 'RAW_AF8')
+
+    axs[3].plot(x_series, tp10_df, alpha=1.0, marker='.', mec='xkcd:dark lilac',
+            color=plot_color_scheme['RawTP10'], label='TP10')
+    axs[3].set(title='TP10', ylabel="Amp uV") 
+    axs[3].set_ylim((EEG_Dict['RAW_TP10']['25%'] - clip_padding), (EEG_Dict['RAW_TP10']['75%'] + clip_padding))
+#     axs[3].set_ylim(y_limits)
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[3], 'RAW_TP10')
+
+
+
+    data_stats = calculate_power_stats(delta_df, theta_df, alpha_df, beta_df, gamma_df)
+#     print('plot_all_power_bands() data_stats ', data_stats)
+
+    data_min = np.min((data_stats['delta']['min'], data_stats['theta']['min'], 
+                        data_stats['alpha']['min'], data_stats['beta']['min'],
+                        data_stats['gamma']['min']))
+    data_max = np.max((data_stats['delta']['max'], data_stats['theta']['max'], 
+                        data_stats['alpha']['max'], data_stats['beta']['max'],
+                        data_stats['gamma']['max']))
+
+    clip_padding = 5. 
+    y_limits = [-clip_padding, data_max + clip_padding]
+
+#  plot_all_power_bands(delta_df.mean(axis=1), theta_df.mean(axis=1), 
+#             alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1)
+            
+    axs[4].xaxis.set_major_locator(ticker.AutoLocator())  
+    axs[4].xaxis.set_minor_locator(ticker.AutoMinorLocator())
+
+    axs[4].set(title="Gamma", ylabel="dB") 
+    axs[4].plot(x_series, gamma_df.mean(axis=1),  color=plot_color_scheme['Gamma'], marker='.', mec='xkcd:dark pink',
+                    alpha=plot_alpha, label='Gamma')
+    axs[4].legend(loc='upper right', prop={'size': 6})     
+    axs[4].grid(True)
+#     axs[0].hlines([-a, a], 0, T, linestyles='--')
+    axs[4].set_ylim(y_limits)
+
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[4], 'Gamma_TP10')
+                  
+    axs[5].set(title="Beta", ylabel="dB") 
+    l1 = axs[5].plot(x_series, beta_df.mean(axis=1),  color=plot_color_scheme['Beta'], 
+                    marker='.', mec='xkcd:dark teal',
+                    alpha=plot_alpha, label='Beta')
+    axs[5].legend(loc='upper right', prop={'size': 6})
+    axs[5].grid(True)
+#     axs[5].hlines([-a, a], 0, T, linestyles='--')
+    axs[5].set_ylim(y_limits)
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[5], 'Beta_TP10')
+
+    axs[6].set(title="Alpha", ylabel="dB") 
+    axs[6].plot(x_series, alpha_df.mean(axis=1),  color=plot_color_scheme['Alpha'], marker='.', mec='xkcd:dark brown',
+                    alpha=plot_alpha, label='Alpha')
+    axs[6].legend(loc='upper right', prop={'size': 6})
+    axs[6].grid(True)
+#     axs[6].hlines([-a, a], 0, T, linestyles='--')
+    axs[6].set_ylim(y_limits)
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[6], 'Alpha_TP10')
+
+    axs[7].set(title="Theta", ylabel="dB") 
+    axs[7].plot(x_series, theta_df.mean(axis=1),  color=plot_color_scheme['Theta'], marker='.', mec='xkcd:crimson',
+                alpha=plot_alpha, label='Theta')
+    axs[7].legend(loc='upper right', prop={'size': 6})
+    axs[7].grid(True)
+#     axs[7].hlines([-a, a], 0, T, linestyles='--')#     axs[7].set(title='Theta') 
+    axs[7].set_ylim(y_limits)
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[7], 'Theta_TP10')
+
+    axs[8].set(title="Delta", ylabel="dB") 
+    axs[8].plot(x_series, delta_df.mean(axis=1),  color=plot_color_scheme['Delta'], marker='.', mec='xkcd:wine',
+                alpha=plot_alpha, label='Delta')
+    axs[8].legend(loc='upper right', prop={'size': 6})
+    axs[8].grid(True)
+#     axs[8].hlines([-a, a], 0, T, linestyles='--')#     axs[8].set(title='Delta') 
+    axs[8].set_ylim(y_limits)
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[8], 'Delta_TP10')
+
+    axs[8].set(xlabel="Time (Seconds)") 
+
+     
+    plt.text(1.01, 12.05, 
+        'Mean: ' + "{:.3f}".format(EEG_Dict['RAW_TP9']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(EEG_Dict['RAW_TP9']['std']) + 
+        '\nMin: ' + "{:.3f}".format(EEG_Dict['RAW_TP9']['min']) +
+        '\nMax: ' + "{:.3f}".format(EEG_Dict['RAW_TP9']['max']), style='italic', 
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+
+    plt.text(1.01, 10.5, 
+        'Mean: ' + "{:.3f}".format(EEG_Dict['RAW_AF7']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(EEG_Dict['RAW_AF7']['std']) + 
+        '\nMin: ' + "{:.3f}".format(EEG_Dict['RAW_AF7']['min']) +
+        '\nMax: ' + "{:.3f}".format(EEG_Dict['RAW_AF7']['max']), style='italic', 
+        transform=plt_axes.transAxes,
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+
+    plt.text(1.01, 8.95, 
+        'Mean: ' + "{:.3f}".format(EEG_Dict['RAW_AF8']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(EEG_Dict['RAW_AF8']['std']) + 
+        '\nMin: ' + "{:.3f}".format(EEG_Dict['RAW_AF8']['min']) +
+        '\nMax: ' + "{:.3f}".format(EEG_Dict['RAW_AF8']['max']), style='italic', 
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+
+    plt.text(1.01, 7.50, 
+        'Mean: ' + "{:.3f}".format(EEG_Dict['RAW_TP10']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(EEG_Dict['RAW_TP10']['std']) + 
+        '\nMin: ' + "{:.3f}".format(EEG_Dict['RAW_TP10']['min']) +
+        '\nMax: ' + "{:.3f}".format(EEG_Dict['RAW_TP10']['max']), style='italic', 
+        transform=plt_axes.transAxes,
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+ 
+ 
+    plt.text(1.01, 6., 
+        'Mean: ' + "{:.3f}".format(data_stats['gamma']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(data_stats['gamma']['std']) + 
+        '\nMin: ' + "{:.3f}".format(data_stats['gamma']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['gamma']['max']), style='italic', 
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+
+    plt.text(1.01, 4.55, 
+        'Mean: ' + "{:.3f}".format(data_stats['beta']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(data_stats['beta']['std']) +
+        '\nMin: ' + "{:.3f}".format(data_stats['beta']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['beta']['max']), style='italic', 
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+        
+    plt.text(1.01, 3.05, 
+        'Mean: ' + "{:.3f}".format(data_stats['alpha']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(data_stats['alpha']['std']) +
+        '\nMin: ' + "{:.3f}".format(data_stats['alpha']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['alpha']['max']), style='italic', 
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+        
+    plt.text(1.01, 1.45, 
+        'Mean: ' + "{:.3f}".format(data_stats['theta']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(data_stats['theta']['std']) +
+        '\nMin: ' + "{:.3f}".format(data_stats['theta']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['theta']['max']), style='italic', 
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+        
+    plt.text(1.01, 0.1, 
+        'Mean: ' + "{:.3f}".format(data_stats['delta']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(data_stats['delta']['std']) + 
+        '\nMin: ' + "{:.3f}".format(data_stats['delta']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['delta']['max']), style='italic', 
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+
+    for tmp_ax in axs:
+            tmp_ax.grid(True)
+            tmp_ax.legend(loc='upper right')
+
+    plt.text(0.175, 13.2, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+            transform=plt_axes.transAxes, style='italic', horizontalalignment='right',
+            bbox={'facecolor':'blue', 'alpha':0.1, 'pad': 1})
+
+
+    create_analysis_parms_text(0.8, 13.2, plt_axes, analysis_parms)    
+    basename = os.path.basename(data_fname)
+    create_file_date_text(-0.1, -1.1, -0.1, -0.65, plt_axes, basename, date_time_now)
+   
+    plt.savefig(plot_fname, dpi=300)
+   
+    if (gui_dict['checkBoxInteractive']):
+        plt.show()
+  
+    plt.close()
+
+    if Verbosity > 0:
+        print("Finished writing sensor data plot ")
+        print(plot_fname)
+    
+
+
+
 
 '''
 
@@ -2970,7 +3243,7 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
 
 
     for index, row in elements_df.iterrows():
-        if Verbosity > 2:
+        if Verbosity > 4:
             print(row['TimeStamp'])
             print(row['Elements'])
         
@@ -3159,7 +3432,12 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
 
     if (not gui_dict['checkBoxPlotMarkers']):    
         PLOT_PARAMS['lines.markersize'] = 0.0005
-        
+ 
+    plot_all(muse_EEG_data, data_fname, 
+                out_dirname + '/plots/22-ABCS_eeg_raw_single_' + date_time_now + '.png',
+                date_time_now,  "Raw EEG", data_stats, analysis_parms, 99)
+
+       
     if (gui_dict['checkBoxEEG']):
 
         # TODO don't plot this one for now ...
