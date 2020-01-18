@@ -9,8 +9,6 @@ with open("./analyze_muse/ABCS_version.py", "r") as fh:
     this_version = fh.read()
     this_version =  this_version[14:len(this_version)-2]
 
-# ABCS_version='1.1.9'
-
 print("\n") 
 print("Building Version: ", this_version)
 print("find_packages: ", find_packages())
@@ -20,11 +18,9 @@ print("\n")
  
 setup(
     name="Muse-Analysis-Tools",
-#     version="1.1.3",
     version=this_version.rstrip(),
 
     author="debra_peri",
-#    author="Debra Grace Peri",
     author_email="debragraceperi@gmail.com",
 
     description="This package contains code for graphing Muse EEG data",
@@ -74,5 +70,3 @@ setup(
    },
 
 )
-
-
