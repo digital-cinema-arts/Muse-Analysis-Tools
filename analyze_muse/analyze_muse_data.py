@@ -157,17 +157,13 @@ class The_GUI(QDialog):
         super(The_GUI, self).__init__(parent)
 
         self.originalPalette = QApplication.palette()
-        self.splitter = QSplitter(Qt.Horizontal)
-
-#         print("keys: ", QStyleFactory.keys())
-        
+        self.splitter = QSplitter(Qt.Horizontal)        
         self.createTopLeftGroupBox()
         self.createTopRightGroupBox()
 #         self.createBottomLeftTabWidget()
 #         self.createBottomLeftTabWidget()
 
         self.createBottomLeftGroupBox()
-
         self.createBottomRightGroupBox()
 #         self.createProgressBar()
 
@@ -189,7 +185,6 @@ class The_GUI(QDialog):
         mainLayout.setColumnStretch(1, 1)
         self.setLayout(mainLayout)
 
-
         self.left = 40
         self.top = 100
         self.width = 640
@@ -201,11 +196,6 @@ class The_GUI(QDialog):
         
         self.first_name = first_name
         self.last_name = last_name
-        
-#         print("The_GUI(): first_name ", first_name)
-#         print("The_GUI(): last_name ", last_name)
-#         print("The_GUI(): self.first_name ", self.first_name)
-#         print("The_GUI(): self.last_name ", self.last_name)
                
         self.setWindowTitle("Algorithmic Biofeedback Control System Plotting Tools")
         
@@ -229,10 +219,10 @@ class The_GUI(QDialog):
     def file_button_clicked(self):
         self.openFileNameDialog()
     
-# 	
-#     def hovered():
-#        print ("hovering")
-# 
+	
+    def hovered():
+       print ("hovering")
+
 # 
 #     def clicked():
 #        print ("clicked")
@@ -318,7 +308,7 @@ class The_GUI(QDialog):
 
     def createTopLeftGroupBox(self):
         self.topLeftGroupBox = QGroupBox("Select Options")
-        self.topLeftGroupBox.setStyleSheet("color: black; background-color: #F0F0F8;")
+        self.topLeftGroupBox.setStyleSheet("color: black; background-color: #F0F0F8; selection-color: cyan;selection-background-color: black;")
  
 # setStyleSheet("color: black;"
 #                         "background-color: yellow;"
@@ -330,79 +320,98 @@ class The_GUI(QDialog):
         self.checkBoxInteractive = QCheckBox("Display Interactive Plots")
         self.checkBoxInteractive.setChecked(args.display_plots)
         self.checkBoxInteractive.setEnabled(True)
+        self.checkBoxInteractive.setToolTip('Display plots in an interactive window')
 
         self.checkBoxEEG = QCheckBox("Create EEG Plots")
         self.checkBoxEEG.setChecked(args.eeg)
         self.checkBoxEEG.setEnabled(True)
+        self.checkBoxEEG.setToolTip('Create the EEG plots: raw data in a single plot, smoothed data in a single window')
         
         self.checkBoxCoherence = QCheckBox("Create Coherence Plots")
         self.checkBoxCoherence.setChecked(args.coherence_plots)
         self.checkBoxCoherence.setEnabled(True)
+        self.checkBoxCoherence.setToolTip('Create plots visualizing the differences in sensors (AF7- AF8 & (TP9-TP10)')
         
         self.checkBoxPowerBands = QCheckBox("Create Power Bands Plots")
         self.checkBoxPowerBands.setChecked(args.power)
         self.checkBoxPowerBands.setEnabled(True)
+        self.checkBoxPowerBands.setToolTip('Create plots for the standard 5 frequency bands')
          
         self.checkBoxEEG_PowerBands = QCheckBox("Create EEG/Power Combined Plot")
         self.checkBoxEEG_PowerBands.setChecked(args.eeg_power)
         self.checkBoxEEG_PowerBands.setEnabled(True)
+        self.checkBoxEEG_PowerBands.setToolTip('Create a single plot with bith EEG and frequency power bands')
         
         self.checkBoxMellowConcentration = QCheckBox("Create Mellow/Concentration Plots")
         self.checkBoxMellowConcentration.setChecked(args.mellow_concentration)
         self.checkBoxMellowConcentration.setEnabled(True)
+        self.checkBoxMellowConcentration.setToolTip('Create a plot for the "Mellow & Concentration" data.\nEnable Mind Monitor\'s experimental setttings to create this data.')
 
         self.checkBoxAccelGyro = QCheckBox("Create Accleration/Gyro Plots")
         self.checkBoxAccelGyro.setChecked(args.accel_gyro)
         self.checkBoxAccelGyro.setEnabled(True)
+        self.checkBoxAccelGyro.setToolTip('Create a plot for the acceleration and gyro data')
 
         self.checkBox3D = QCheckBox("Create 3D Plots")
         self.checkBox3D.setChecked(False)
         self.checkBox3D.setEnabled(False)
+        self.checkBox3D.setToolTip('Create a 3D plot')
 
         self.checkBoxFilter = QCheckBox("Filter Data")
         self.checkBoxFilter.setChecked(args.data_filtering)
         self.checkBoxFilter.setEnabled(True)
+        self.checkBoxFilter.setToolTip('Filter the EEG & Frequency Bands data with the default filter.\nCommand line options are available for different filter types and parameters')
 
         self.checkBoxResample = QCheckBox("Resample Data")
         self.checkBoxResample.setChecked(False)
         self.checkBoxResample.setEnabled(False)
+        self.checkBoxResample.setToolTip('Resample data for lower sample rates')
 
         self.checkBoxMuseDirect = QCheckBox("Include Muse Direct Plots")
         self.checkBoxMuseDirect.setChecked(False)
         self.checkBoxMuseDirect.setEnabled(False)
+        self.checkBoxMuseDirect.setToolTip('Plot Muse Direct data')
 
         self.checkBoxStatistical = QCheckBox("Include Statistical Plots")
         self.checkBoxStatistical.setChecked(args.stats_plots)
         self.checkBoxStatistical.setEnabled(True)
+        self.checkBoxStatistical.setToolTip('Create mean/median plots for the frequency band data')
 
         self.checkBoxAutoReject = QCheckBox("Auto-Reject EEG Data")
         self.checkBoxAutoReject.setChecked(args.auto_reject_data)
         self.checkBoxAutoReject.setEnabled(True)
+        self.checkBoxAutoReject.setToolTip('Reject data that are out of bounds of normal ranges.\nClipping values can be set with a commnd line option')
 
         self.checkBoxDB = QCheckBox("Send Results to Database")
         self.checkBoxDB.setChecked(args.data_base)
         self.checkBoxDB.setEnabled(True)
+        self.checkBoxDB.setToolTip('Send EEG and Freuency statistical info to a SQLite database.')
 
         self.checkBoxHFDF5 = QCheckBox("Write HDF5 File")
         self.checkBoxHFDF5.setChecked(args.write_hdf5_file)
         self.checkBoxHFDF5.setEnabled(True)
+        self.checkBoxHFDF5.setToolTip('Write the EEG, Frequency Bands, Accelerometer/Gyro\nand statistical info to an HDF5 file.')
   
         self.plotColorsComboBox = QComboBox()
         self.plotColorsComboBox.addItems(['ABCS Colors', 'Mind Monitor Colors'])
         self.plotColorsLabel = QtWidgets.QLabel(self)
         self.plotColorsLabel.setText('Set Plot Color Scheme')
+        self.plotColorsComboBox.setToolTip('Set the plot lines colors. The ABCS color scheme follows a rainbow/prism range.\nMind Monitor colors are included for users of the Mind Monitor online graphing tool')
 
         self.checkBoxVerticalLock = QCheckBox("Y Axis Lock")
         self.checkBoxVerticalLock.setChecked(True)
         self.checkBoxVerticalLock.setEnabled(True)
+        self.checkBoxVerticalLock.setToolTip('Lock the Y axis so the all graphis will scale together.\nTurn this off to have indvidual control of the Y axis for each sub-plot')
 
         self.checkBoxPlotMarkers = QCheckBox("Add Plot Markers")
         self.checkBoxPlotMarkers.setChecked(args.plot_markers)
         self.checkBoxPlotMarkers.setEnabled(True)
+        self.checkBoxPlotMarkers.setToolTip('Add markers at each data point along the line of a plot')
   
         self.checkBoxDataMarkers = QCheckBox("Add Data Markers")
         self.checkBoxDataMarkers.setChecked(args.data_markers)
         self.checkBoxDataMarkers.setEnabled(True)
+        self.checkBoxDataMarkers.setToolTip('Add markers contained in the "Elements" column of the CSV file.')
   
         layout.addWidget(self.checkBoxInteractive)
         layout.addWidget(self.checkBoxEEG)
@@ -493,8 +502,10 @@ class The_GUI(QDialog):
         self.im = self.im.scaled(256, 256, Qt.KeepAspectRatio, Qt.FastTransformation)
         self.label = QtWidgets.QLabel()
         self.label.setPixmap(self.im)
+        
+        self.label.setToolTip('May all beings everywhere be happy and free\nLokah Samastah Sukhino Bhavantu')
+                
         layout.addWidget(self.label)
-
         layout.addStretch(1)
         self.bottomRightGroupBox.setLayout(layout)    
 
@@ -508,11 +519,13 @@ class The_GUI(QDialog):
         self.filePushButton.clicked.connect(self.file_button_clicked)
         self.filePushButton.setStyleSheet("color: black; background-color: #b69bc2;")
 #         filePushButton.setDefault(False)
+        self.filePushButton.setToolTip('Select the CSV file you would to use to make plots.')
 
         self.plotPushButton = QPushButton("Create Plots")
         self.plotPushButton.setDefault(True)
         self.plotPushButton.setStyleSheet("color: black; background-color: #9bb4c2;")
         self.plotPushButton.clicked.connect(self.plot_button_clicked)
+        self.plotPushButton.setToolTip('Create the plots.')
 
         self.verbosityComboBox = QComboBox()
         self.verbosityComboBox.addItems(['Quiet', 'Informative', 'Verbose', 'Debug'])
@@ -971,21 +984,21 @@ def read_eeg_data(fname, date_time_now):
 #             print(row['TimeStamp'])
 #             print(row['Elements'])
 
-# 
-#     for temp_df in (raw_df, delta_df, theta_df, alpha_df, beta_df, gamma_df):
-# #         if args.verbose:
-# #             print("verbose turned on")
-# 
-#         if Verbosity > 2:
-#             print("read_eeg_data(): Sensor data description", temp_df.describe())
-# #         data_str = temp_df.mean()
-#         data_str = temp_df.describe()
-# #         print("type", type(data_str))
-# #         print("data_str.index", data_str.index)
-#         EEG_Dict.update(data_str.to_dict())
-# #         print("EEG_Dict: ", EEG_Dict)
-# #         print("data_str.to_dict()", data_str.to_dict())
-#     
+
+    for temp_df in (raw_df, delta_df, theta_df, alpha_df, beta_df, gamma_df):
+#         if args.verbose:
+#             print("verbose turned on")
+
+        if Verbosity > 2:
+            print("read_eeg_data(): Sensor data description", temp_df.describe())
+#         data_str = temp_df.mean()
+        data_str = temp_df.describe()
+#         print("type", type(data_str))
+#         print("data_str.index", data_str.index)
+        EEG_Dict.update(data_str.to_dict())
+#         print("EEG_Dict: ", EEG_Dict)
+#         print("data_str.to_dict()", data_str.to_dict())
+    
 
 
     sample_length = len(raw_df['RAW_AF7'])
@@ -1073,7 +1086,8 @@ def auto_reject_EEG_data(data_df):
         print("auto_reject_EEG_data()")
 
 
-    eeg_clip_padding = 50.
+    eeg_clip_padding = args.eeg_clip
+#     eeg_clip_padding = 50.
     pwr_clip_padding = 0.01
 
 #     new_df = data_df.copy()
@@ -1937,7 +1951,7 @@ def plot_coherence_scatter(x, y, a, b, title, data_fname, plot_fname, date_time_
     plt.close()
 
     if Verbosity > 0:
-        print("Finished writing EEG EF7 & EF8 Integrated Data - Coherence plot")
+        print("Finished writing EEG EF7 & EF8 Coherence Scatter plot")
         print(plot_fname)
 
 
@@ -2602,7 +2616,7 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
     axs[0].xaxis.set_minor_locator(ticker.AutoMinorLocator())
 
 
-# TODO Need figure out a better way to iterate through the 4 data sets    
+# TODO Need to figure out a better way to iterate through the 4 data sets    
 #     loop_cntr = 0 
 #     markers = ('o', 's', '^', 'D')
 #     marker_size = 1.5
@@ -3280,6 +3294,7 @@ Generate data markers
 
 '''
 
+
 def generate_data_markers(muse_EEG_data, axs, col_select):
 
     if Verbosity > 2:
@@ -3344,10 +3359,7 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
             y_offset = np.max(new_df[index:index + 10])  
             y_offset_txt = y_offset + 5.0   
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 8d9cbfa2f655f299589aa2b73e9d95ac7eaf2a38
         else:
             y_offset = np.max(new_df[index:index + 10])  
             y_offset_txt = y_offset + 10   
@@ -3993,6 +4005,7 @@ if __name__ == '__main__':
 #     parser.add_argument("-ps", "--power_spectrum", help="Analyze Spectrum", action="store_true")
 
     parser.add_argument("-r", "--auto_reject_data", help="Auto Reject EEG Data", action="store_true")
+    parser.add_argument("-eegc", "--eeg_clip", help="Cliping for Auto Reject EEG Data", type=float)
     parser.add_argument("-fd", "--data_filtering", help="Filter EEG Data", action="store_true")
     parser.add_argument("-ft", "--filter_type", 
                         help="Filter Type 0=default 1=low pass, 2=bandpass", type=int)
@@ -4067,6 +4080,13 @@ if __name__ == '__main__':
             print(args.auto_reject_data)
     else:
         args.auto_reject_data = False
+
+    if args.eeg_clip:
+        if Verbosity > 0:
+            print("eeg_clip:")
+            print(args.eeg_clip)
+    else:
+        args.eeg_clip = 100.
 
     if args.data_filtering:
         if Verbosity > 0:
