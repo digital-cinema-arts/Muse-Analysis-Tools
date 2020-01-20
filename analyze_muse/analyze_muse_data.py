@@ -13,7 +13,7 @@ import numpy as np
 from scipy import fftpack, interpolate
 import scipy.signal as signal
 from scipy import integrate, signal
-from scipy.signal import butter, lfilter
+from scipy.signal import butter, lfilter, freqz
 import math
 import bitstring
 import pandas as pd
@@ -58,6 +58,7 @@ import analyze_muse.ABCS_version
 # Globals
 # Integrate_Step_Size = 4
 muse_EEG_data = []
+muse_marker_data = []
 EEG_Dict ={}
 eeg_stats = []
 CVS_fname = ""
@@ -257,10 +258,11 @@ class The_GUI(QDialog):
         plot_EEG = self.checkBoxEEG.isChecked()
         coherence = self.checkBoxCoherence.isChecked()
         power_bands = self.checkBoxPowerBands.isChecked()
+        eeg_power = self.checkBoxEEG_PowerBands.isChecked()        
         mellow_concentrate = self.checkBoxMellowConcentration.isChecked()
         accel_gyro = self.checkBoxAccelGyro.isChecked()
         plot_3D = self.checkBox3D.isChecked()
-        filter_data = self.checkBoxFilter.isChecked()      
+        data_filtering = self.checkBoxFilter.isChecked()      
         statistical_plots = self.checkBoxStatistical.isChecked()
         muse_direct = self.checkBoxMuseDirect.isChecked()
         verbosity = self.verbosityComboBox.currentText()
@@ -281,10 +283,11 @@ class The_GUI(QDialog):
                 "checkBoxEEG": plot_EEG,
                 "checkBoxCoherence": coherence,
                 "checkBoxPowerBands": power_bands,
+                "checkBoxEEG_PowerBands": eeg_power,           
                 "checkBoxMellowConcentration": mellow_concentrate,
                 "checkBoxAccelGyro": accel_gyro,
                 "checkBox3D": plot_3D,
-                "checkBoxFilter": filter_data,                
+                "checkBoxFilter": data_filtering,                
                 "checkBoxStatistical": statistical_plots,
                 "checkBoxMuseDirect": muse_direct,
                 "verbosityComboBox": verbosity,
@@ -333,7 +336,7 @@ class The_GUI(QDialog):
         self.checkBoxInteractive.setEnabled(True)
 
         self.checkBoxEEG = QCheckBox("Create EEG Plots")
-        self.checkBoxEEG.setChecked(True)
+        self.checkBoxEEG.setChecked(args.eeg)
         self.checkBoxEEG.setEnabled(True)
         
         self.checkBoxCoherence = QCheckBox("Create Coherence Plots")
@@ -341,8 +344,12 @@ class The_GUI(QDialog):
         self.checkBoxCoherence.setEnabled(True)
         
         self.checkBoxPowerBands = QCheckBox("Create Power Bands Plots")
-        self.checkBoxPowerBands.setChecked(True)
+        self.checkBoxPowerBands.setChecked(args.power)
         self.checkBoxPowerBands.setEnabled(True)
+         
+        self.checkBoxEEG_PowerBands = QCheckBox("Create EEG/Power Combined Plot")
+        self.checkBoxEEG_PowerBands.setChecked(args.eeg_power)
+        self.checkBoxEEG_PowerBands.setEnabled(True)
         
         self.checkBoxMellowConcentration = QCheckBox("Create Mellow/Concentration Plots")
         self.checkBoxMellowConcentration.setChecked(args.mellow_concentration)
@@ -357,7 +364,7 @@ class The_GUI(QDialog):
         self.checkBox3D.setEnabled(False)
 
         self.checkBoxFilter = QCheckBox("Filter Data")
-        self.checkBoxFilter.setChecked(args.filter_data)
+        self.checkBoxFilter.setChecked(args.data_filtering)
         self.checkBoxFilter.setEnabled(True)
 
         self.checkBoxResample = QCheckBox("Resample Data")
@@ -394,7 +401,7 @@ class The_GUI(QDialog):
         self.checkBoxVerticalLock.setEnabled(True)
 
         self.checkBoxPlotMarkers = QCheckBox("Add Plot Markers")
-        self.checkBoxPlotMarkers.setChecked(False)
+        self.checkBoxPlotMarkers.setChecked(args.plot_markers)
         self.checkBoxPlotMarkers.setEnabled(True)
   
         self.checkBoxDataMarkers = QCheckBox("Add Data Markers")
@@ -405,6 +412,7 @@ class The_GUI(QDialog):
         layout.addWidget(self.checkBoxEEG)
         layout.addWidget(self.checkBoxCoherence)
         layout.addWidget(self.checkBoxPowerBands)
+        layout.addWidget(self.checkBoxEEG_PowerBands)       
         layout.addWidget(self.checkBoxMellowConcentration)
         layout.addWidget(self.checkBoxAccelGyro)
 #         layout.addWidget(self.checkBox3D)
@@ -897,10 +905,17 @@ def read_eeg_data(fname, date_time_now):
 #     csv_data = pd.read_csv(fname, parse_dates=['TimeStamp'], 
 #                     date_parser=pd.to_datetime, dtype=dtypes, compression='infer')    
     
+    if Verbosity > 1:
+        csv_verbosity = 1
+    if Verbosity > 3:
+        csv_verbosity = 2
+    else:
+        csv_verbosity = 0
+        
 # df = pd.read_csv('filename.tar.gz', compression='gzip', header=0, sep=',', quotechar='"')
     muse_EEG_data = pd.read_csv(fname,  parse_dates=['TimeStamp'], 
                         date_parser=pd.to_datetime, dtype=dtypes, 
-                        compression='infer', verbose=Verbosity)
+                        compression='infer', verbose=csv_verbosity)
 
     num_cols = len(muse_EEG_data.columns)
 
@@ -952,10 +967,9 @@ def read_eeg_data(fname, date_time_now):
         print("read_eeg_data() - elements_df.count(): ", elements_df.count())
 
 
- # TODO: Insert markers 
-    
+    global muse_marker_data        
     elements_df['Elements'] = elements_df.Elements.astype(str)
-
+    muse_marker_data = elements_df.copy()
 #     for index, row in elements_df.iterrows():
 #         if row['Elements'] != 'nan':
 #             print(row['TimeStamp'])
@@ -1213,15 +1227,23 @@ def filter_all_data(muse_EEG_data):
     if Verbosity > 0:
         print('filter_all_data() called')
 
+    print('filter_all_data() - muse_EEG_data.shape: ', muse_EEG_data.shape)
+    print("filter_all_data() - muse_EEG_data['RAW_TP9'].describe: ", muse_EEG_data['RAW_TP9'].describe())
+
     smooth_sz = 1
     
     # Default filter
 #     if False:
     if Filter_Type == 0:
+
         muse_EEG_data['RAW_TP9'] = filter_data(muse_EEG_data['RAW_TP9'])
+        print("filter_all_data() - muse_EEG_data['RAW_TP9'].describe: ", muse_EEG_data['RAW_TP9'].describe())
         muse_EEG_data['RAW_AF7'] = filter_data(muse_EEG_data['RAW_AF7'])
+        print("filter_all_data() - muse_EEG_data['RAW_AF7'].describe: ", muse_EEG_data['RAW_AF7'].describe())
         muse_EEG_data['RAW_AF8'] = filter_data(muse_EEG_data['RAW_AF8'])
+        print("filter_all_data() - muse_EEG_data['RAW_AF8'].describe: ", muse_EEG_data['RAW_AF8'].describe())
         muse_EEG_data['RAW_TP10'] = filter_data(muse_EEG_data['RAW_TP10'])
+        print("filter_all_data() - muse_EEG_data['RAW_TP10'].describe: ", muse_EEG_data['RAW_TP10'].describe())
 
         if Verbosity > 2:
             print('filter_all_data() finished filtering raw data')
@@ -1254,6 +1276,7 @@ def filter_all_data(muse_EEG_data):
         muse_EEG_data['Beta_AF7'] = filter_data(muse_EEG_data['Beta_AF7'])
         muse_EEG_data['Beta_AF8'] = filter_data(muse_EEG_data['Beta_AF8'])
         muse_EEG_data['Beta_TP10'] = filter_data(muse_EEG_data['Beta_TP10'])
+
 
         if Verbosity > 2:
             print('filter_all_data() finished filtering beta data')
@@ -1458,6 +1481,8 @@ def filter_all_data(muse_EEG_data):
 #         if Verbosity > 2:
 #             print('filter_all_data() finished filtering accel & gyro data')
 
+    print('filter_all_data() - muse_EEG_data.shape: ', muse_EEG_data.shape)
+    print("filter_all_data() - muse_EEG_data['RAW_TP9'].describe: ", muse_EEG_data['RAW_TP9'].describe())
 
     return(muse_EEG_data)
 
@@ -1466,11 +1491,18 @@ def filter_all_data(muse_EEG_data):
 
 def filter_data(data_in):
 
+#     print('filter_data() - type(data_in)', type(data_in))
+
 #     filtered_data = butter_lowpass_filter(data_in100.0, Sampling_Rate)
+    data_in = np.array(data_in)
+#     print('filter_data()')
+#     print('filter_data() - type(data_in)', type(data_in))
+#     print('filter_data() - data_in.shape: ', data_in.shape)
+#     print("filter_data() - data_in.describe(): ", data_in.describe())
 
 # TODO: FInd a simple/faster/better lowpass filter 
 
-    b, a = butter_lowpass(50.0, Sampling_Rate, order=3)
+    b, a = butter_lowpass(Filter_Highcut, Sampling_Rate, order=Filter_Order)
     filtered_data = lfilter(b, a, data_in)
 
 
@@ -1478,13 +1510,13 @@ def filter_data(data_in):
 #     Wn = 0.05
 #     B, A = signal.butter(N, Wn, output='ba')
 #     filtered_data = signal.filtfilt(B,A, data_in)
+    
+#     print('filter_data()')
+#     print('filter_data() - type(data_in)', type(data_in))
+# 
+#     print('filter_data() - filtered_data.shape: ', filtered_data.shape)
+#     print("filter_data() - filtered_data.describe(): ", pd.DataFrame(filtered_data).describe())
 
-# 
-#     fc = 300;
-#     fs = 1000;
-# 
-#     [b,a] = butter(6,fc/(fs/2));
-#     freqz(b,a)
 
     return filtered_data
 
@@ -1503,10 +1535,17 @@ def butter_lowpass(cutoff, fs, order=5):
     return b, a
 
 
-def butter_lowpass_filter(data, cutoff, fs, order=5):
+def butter_lowpass_filter(data_in, cutoff, fs, order=5):
+#     print("butter_lowpass_filter(): ", cutoff, fs, order)
+
     b, a = butter_lowpass(cutoff, fs, order=order)
-    y = lfilter(b, a, data)
+    y = lfilter(b, a, data_in)
     
+#     print('butter_lowpass_filter()')
+#     print('butter_lowpass_filter() - y.shape: ', y.shape)
+#     print("butter_lowpass_filter() - y.describe(): ", pd.DataFrame(y).describe())
+
+
     return y
     
 
@@ -1526,12 +1565,321 @@ def butter_bandpass(lowcut, highcut, fs, order=5):
     return b, a
 
 
-def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
-#     print("butter_bandpass_filter: ", lowcut, highcut, fs, order)
+def butter_bandpass_filter(data_in, lowcut, highcut, fs, order=5):
+#     print('butter_bandpass_filter()')
+
+    data_to_filter = np.array(data_in)    
+    
+#     print("butter_bandpass_filter(): ", lowcut, highcut, fs, order)
+
+#     print('butter_bandpass_filter() - data_in.shape: ', data_to_filter.shape)
+#     print("butter_bandpass_filter() - data_in.describe(): ", data_in.describe())
+
+#
+
     b, a = butter_bandpass(lowcut, highcut, fs, order=order)
-    y = lfilter(b, a, data)
+    y = lfilter(b, a, data_to_filter)
+
+#     print('butter_bandpass_filter()')
+#     print('butter_bandpass_filter() - y.shape: ', y.shape)
+#     print("butter_bandpass_filter() - y.describe(): ", pd.DataFrame(y).describe())
+
+
     
     return y
+
+
+
+'''
+
+Plot all
+
+'''
+
+def plot_all(muse_EEG_data, data_fname, plot_fname, date_time_now, title, 
+                data_stats, analysis_parms, fig_num):
+
+    timestamps = pd.DataFrame(muse_EEG_data, columns=['TimeStamp'])    
+#     raw_df = pd.DataFrame(muse_EEG_data, 
+#                 columns=['TimeStamp', 'RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
+    tp9_df = pd.DataFrame(muse_EEG_data, columns=['RAW_TP9'])    
+    af7_df = pd.DataFrame(muse_EEG_data, columns=['RAW_AF7'])    
+    af8_df = pd.DataFrame(muse_EEG_data, columns=['RAW_AF8'])    
+    tp10_df = pd.DataFrame(muse_EEG_data, columns=['RAW_TP10'])    
+
+#     delta_df = pd.DataFrame(muse_EEG_data, 
+#         columns=['Delta_TP9'])    
+    delta_df = pd.DataFrame(muse_EEG_data, 
+        columns=['Delta_TP9', 'Delta_AF7', 'Delta_AF8', 'Delta_TP10'])    
+    theta_df = pd.DataFrame(muse_EEG_data, 
+        columns=['Theta_TP9', 'Theta_AF7', 'Theta_AF8', 'Theta_TP10'])    
+    alpha_df = pd.DataFrame(muse_EEG_data, 
+        columns=['Alpha_TP9', 'Alpha_AF7', 'Alpha_AF8', 'Alpha_TP10'])    
+    beta_df = pd.DataFrame(muse_EEG_data, 
+        columns=['Beta_TP9', 'Beta_AF7', 'Beta_AF8', 'Beta_TP10'])    
+    gamma_df = pd.DataFrame(muse_EEG_data, 
+        columns=['Gamma_TP9', 'Gamma_AF7', 'Gamma_AF8', 'Gamma_TP10'])    
+
+    plot_alpha = 0.95
+  
+    t_len = len(timestamps)
+#     print('plot_all() timestamps.shape: ', timestamps.shape)
+#     print('plot_all() t_len: ', t_len)
+    
+    
+    period = (1.0/Sampling_Rate)
+    x_series = np.arange(0, t_len * period, period)
+
+#     print('plot_all() x_series.shape: ', x_series.shape)
+#     print('plot_all() pd.DataFrame(x_series).count(): ', pd.DataFrame(x_series).count())
+#     print('plot_all() delta_df.shape: ', delta_df.shape)
+#     print('plot_all() delta_df.count(): ', delta_df.count())
+# 
+#     print('plot_all() theta_df.shape: ', theta_df.shape)
+#     print('plot_all() theta_df.count(): ', theta_df.count())
+#     print('plot_all() alpha_df.shape: ', alpha_df.shape)
+#     print('plot_all() alpha_df.count(): ', alpha_df.count())
+#     print('plot_all() beta_df.shape: ', beta_df.shape)
+#     print('plot_all() beta_df.count(): ', beta_df.count())
+#     print('plot_all() gamma_df.shape: ', gamma_df.shape)
+#     print('plot_all() gamma_df.count(): ', gamma_df.count())
+ 
+ 
+#  figsize=FIGURE_SIZE
+    fig, axs = plt.subplots(nrows=9, num=fig_num, figsize=(8, 8), 
+                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True,
+#                     sharey=gui_dict['checkBoxVerticalLock'], 
+                        gridspec_kw={'hspace': 0.5}, tight_layout=False)
+       
+    plt.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
+    plt.rcParams.update(PLOT_PARAMS)          
+    plt_axes = plt.gca()
+
+    data_stats = (EEG_Dict['RAW_AF7']['25%'], EEG_Dict['RAW_AF7']['75%'],
+                EEG_Dict['RAW_AF8']['25%'], EEG_Dict['RAW_AF8']['75%'],
+                EEG_Dict['RAW_TP9']['25%'], EEG_Dict['RAW_TP9']['75%'],
+                EEG_Dict['RAW_TP10']['25%'], EEG_Dict['RAW_TP10']['75%'])
+
+    data_min = np.min((EEG_Dict['RAW_AF7']['25%'], data_stats[2], data_stats[4], data_stats[6]))
+    data_max = np.max((data_stats[1], data_stats[3], data_stats[5], data_stats[7]))
+
+    xmin, xmax, ymin, ymax = plt.axis()
+
+  
+    if Verbosity > 2:  
+        print('plot_all() data_stats: ', data_stats)
+        print('plot_all() data_min: ', data_min)
+        print('plot_all() data_max: ', data_max)
+
+
+    clip_padding = 100. 
+    y_limits = [data_min - clip_padding, data_max + clip_padding]
+    
+    axs[0].plot(x_series, tp9_df, alpha=1.0, marker='.', mec='xkcd:dark pink',
+            color=plot_color_scheme['RawTP9'], label='TP9')
+    axs[0].set(title='TP9', ylabel="Amp uV")      
+    axs[0].set_ylim((EEG_Dict['RAW_TP9']['25%'] - clip_padding), (EEG_Dict['RAW_TP9']['75%'] + clip_padding))
+#     axs[0].set_ylim(y_limits)
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[0], 'RAW_TP9')
+    
+    axs[1].plot(x_series, af7_df, alpha=1.0, marker='.', mec='xkcd:salmon',
+            color=plot_color_scheme['RawAF7'], label='AF7')
+    axs[1].set(title='AF7', ylabel="Amp uV") 
+    axs[1].set_ylim((EEG_Dict['RAW_AF7']['25%'] - clip_padding), (EEG_Dict['RAW_AF7']['75%'] + clip_padding))
+#     axs[1].set_ylim(y_limits)
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[1], 'RAW_AF7')
+
+    axs[2].plot(x_series, af8_df, alpha=1.0, marker='.', mec='xkcd:cerulean',
+            color=plot_color_scheme['RawAF8'], label='AF8')
+    axs[2].set(title='AF8', ylabel="Amp uV") 
+    axs[2].set_ylim((EEG_Dict['RAW_AF8']['25%'] - clip_padding), (EEG_Dict['RAW_AF8']['75%'] + clip_padding))
+#     axs[2].set_ylim(y_limits)
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[2], 'RAW_AF8')
+
+    axs[3].plot(x_series, tp10_df, alpha=1.0, marker='.', mec='xkcd:dark lilac',
+            color=plot_color_scheme['RawTP10'], label='TP10')
+    axs[3].set(title='TP10', ylabel="Amp uV") 
+    axs[3].set_ylim((EEG_Dict['RAW_TP10']['25%'] - clip_padding), (EEG_Dict['RAW_TP10']['75%'] + clip_padding))
+#     axs[3].set_ylim(y_limits)
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[3], 'RAW_TP10')
+
+
+
+    data_stats = calculate_power_stats(delta_df, theta_df, alpha_df, beta_df, gamma_df)
+#     print('plot_all_power_bands() data_stats ', data_stats)
+
+    data_min = np.min((data_stats['delta']['min'], data_stats['theta']['min'], 
+                        data_stats['alpha']['min'], data_stats['beta']['min'],
+                        data_stats['gamma']['min']))
+    data_max = np.max((data_stats['delta']['max'], data_stats['theta']['max'], 
+                        data_stats['alpha']['max'], data_stats['beta']['max'],
+                        data_stats['gamma']['max']))
+
+    clip_padding = 5. 
+    y_limits = [-clip_padding, data_max + clip_padding]
+
+#  plot_all_power_bands(delta_df.mean(axis=1), theta_df.mean(axis=1), 
+#             alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1)
+            
+    axs[4].xaxis.set_major_locator(ticker.AutoLocator())  
+    axs[4].xaxis.set_minor_locator(ticker.AutoMinorLocator())
+
+    axs[4].set(title="Gamma", ylabel="dB") 
+    axs[4].plot(x_series, gamma_df.mean(axis=1),  color=plot_color_scheme['Gamma'], marker='.', mec='xkcd:dark pink',
+                    alpha=plot_alpha, label='Gamma')
+    axs[4].legend(loc='upper right', prop={'size': 6})     
+    axs[4].grid(True)
+#     axs[0].hlines([-a, a], 0, T, linestyles='--')
+    axs[4].set_ylim(y_limits)
+
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[4], 'Gamma_TP10')
+                  
+    axs[5].set(title="Beta", ylabel="dB") 
+    l1 = axs[5].plot(x_series, beta_df.mean(axis=1),  color=plot_color_scheme['Beta'], 
+                    marker='.', mec='xkcd:dark teal',
+                    alpha=plot_alpha, label='Beta')
+    axs[5].legend(loc='upper right', prop={'size': 6})
+    axs[5].grid(True)
+#     axs[5].hlines([-a, a], 0, T, linestyles='--')
+    axs[5].set_ylim(y_limits)
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[5], 'Beta_TP10')
+
+    axs[6].set(title="Alpha", ylabel="dB") 
+    axs[6].plot(x_series, alpha_df.mean(axis=1),  color=plot_color_scheme['Alpha'], marker='.', mec='xkcd:dark brown',
+                    alpha=plot_alpha, label='Alpha')
+    axs[6].legend(loc='upper right', prop={'size': 6})
+    axs[6].grid(True)
+#     axs[6].hlines([-a, a], 0, T, linestyles='--')
+    axs[6].set_ylim(y_limits)
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[6], 'Alpha_TP10')
+
+    axs[7].set(title="Theta", ylabel="dB") 
+    axs[7].plot(x_series, theta_df.mean(axis=1),  color=plot_color_scheme['Theta'], marker='.', mec='xkcd:crimson',
+                alpha=plot_alpha, label='Theta')
+    axs[7].legend(loc='upper right', prop={'size': 6})
+    axs[7].grid(True)
+#     axs[7].hlines([-a, a], 0, T, linestyles='--')#     axs[7].set(title='Theta') 
+    axs[7].set_ylim(y_limits)
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[7], 'Theta_TP10')
+
+    axs[8].set(title="Delta", ylabel="dB") 
+    axs[8].plot(x_series, delta_df.mean(axis=1),  color=plot_color_scheme['Delta'], marker='.', mec='xkcd:wine',
+                alpha=plot_alpha, label='Delta')
+    axs[8].legend(loc='upper right', prop={'size': 6})
+    axs[8].grid(True)
+#     axs[8].hlines([-a, a], 0, T, linestyles='--')#     axs[8].set(title='Delta') 
+    axs[8].set_ylim(y_limits)
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs[8], 'Delta_TP10')
+
+    axs[8].set(xlabel="Time (Seconds)") 
+
+     
+    plt.text(1.01, 12.05, 
+        'Mean: ' + "{:.3f}".format(EEG_Dict['RAW_TP9']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(EEG_Dict['RAW_TP9']['std']) + 
+        '\nMin: ' + "{:.3f}".format(EEG_Dict['RAW_TP9']['min']) +
+        '\nMax: ' + "{:.3f}".format(EEG_Dict['RAW_TP9']['max']), style='italic', 
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+
+    plt.text(1.01, 10.5, 
+        'Mean: ' + "{:.3f}".format(EEG_Dict['RAW_AF7']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(EEG_Dict['RAW_AF7']['std']) + 
+        '\nMin: ' + "{:.3f}".format(EEG_Dict['RAW_AF7']['min']) +
+        '\nMax: ' + "{:.3f}".format(EEG_Dict['RAW_AF7']['max']), style='italic', 
+        transform=plt_axes.transAxes,
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+
+    plt.text(1.01, 8.95, 
+        'Mean: ' + "{:.3f}".format(EEG_Dict['RAW_AF8']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(EEG_Dict['RAW_AF8']['std']) + 
+        '\nMin: ' + "{:.3f}".format(EEG_Dict['RAW_AF8']['min']) +
+        '\nMax: ' + "{:.3f}".format(EEG_Dict['RAW_AF8']['max']), style='italic', 
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+
+    plt.text(1.01, 7.50, 
+        'Mean: ' + "{:.3f}".format(EEG_Dict['RAW_TP10']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(EEG_Dict['RAW_TP10']['std']) + 
+        '\nMin: ' + "{:.3f}".format(EEG_Dict['RAW_TP10']['min']) +
+        '\nMax: ' + "{:.3f}".format(EEG_Dict['RAW_TP10']['max']), style='italic', 
+        transform=plt_axes.transAxes,
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+ 
+ 
+    plt.text(1.01, 6., 
+        'Mean: ' + "{:.3f}".format(data_stats['gamma']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(data_stats['gamma']['std']) + 
+        '\nMin: ' + "{:.3f}".format(data_stats['gamma']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['gamma']['max']), style='italic', 
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+
+    plt.text(1.01, 4.55, 
+        'Mean: ' + "{:.3f}".format(data_stats['beta']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(data_stats['beta']['std']) +
+        '\nMin: ' + "{:.3f}".format(data_stats['beta']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['beta']['max']), style='italic', 
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+        
+    plt.text(1.01, 3.05, 
+        'Mean: ' + "{:.3f}".format(data_stats['alpha']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(data_stats['alpha']['std']) +
+        '\nMin: ' + "{:.3f}".format(data_stats['alpha']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['alpha']['max']), style='italic', 
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+        
+    plt.text(1.01, 1.45, 
+        'Mean: ' + "{:.3f}".format(data_stats['theta']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(data_stats['theta']['std']) +
+        '\nMin: ' + "{:.3f}".format(data_stats['theta']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['theta']['max']), style='italic', 
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+        
+    plt.text(1.01, 0.1, 
+        'Mean: ' + "{:.3f}".format(data_stats['delta']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(data_stats['delta']['std']) + 
+        '\nMin: ' + "{:.3f}".format(data_stats['delta']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['delta']['max']), style='italic', 
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+
+    for tmp_ax in axs:
+            tmp_ax.grid(True)
+            tmp_ax.legend(loc='upper right')
+
+    plt.text(0.175, 13.2, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+            transform=plt_axes.transAxes, style='italic', horizontalalignment='right',
+            bbox={'facecolor':'blue', 'alpha':0.1, 'pad': 1})
+
+
+    create_analysis_parms_text(0.8, 13.2, plt_axes, analysis_parms)    
+    basename = os.path.basename(data_fname)
+    create_file_date_text(-0.1, -1.1, -0.1, -0.65, plt_axes, basename, date_time_now)
+   
+    plt.savefig(plot_fname, dpi=300)
+   
+    if (gui_dict['checkBoxInteractive']):
+        plt.show()
+  
+    plt.close()
+
+    if Verbosity > 0:
+        print("Finished writing sensor data plot ")
+        print(plot_fname)
+    
 
 
 
@@ -1608,7 +1956,7 @@ Plot the coherence data
 
 '''
 
-def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, date_time_now, 
+def plot_coherence_data(tp9, af7, af8, tp10, data_fname, plot_fname, date_time_now, 
                         title, data_stats, analysis_parms, fig_num):
 
     global session_dict
@@ -1645,7 +1993,7 @@ def plot_coherence_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname,
         print("af_min: ", af_min)
 
   
-    t_len = len(timestamps)
+    t_len = len(tp9)
     
     period = (1.0/Sampling_Rate)
     x_series = np.arange(0, t_len * period, period)
@@ -1748,7 +2096,7 @@ Plot the sensor data
 
 '''
 
-def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, date_time_now, 
+def plot_sensor_data(tp9, af7, af8, tp10, data_fname, plot_fname, date_time_now, 
                         title, data_stats, analysis_parms, fig_num):
 
     global muse_EEG_data    
@@ -1761,7 +2109,7 @@ def plot_sensor_data(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, da
     print('\nplot_sensor_data() called: data_stats', data_stats)
     print("\n")
   
-    t_len = len(timestamps)
+    t_len = len(tp9)
     
     period = (1.0/Sampling_Rate)
     x_series = np.arange(0, t_len * period, period)
@@ -1937,7 +2285,7 @@ Plot the sensor data as a single plot
 
 '''
 
-def plot_sensor_data_single(timestamps, tp9, af7, af8, tp10, data_fname, plot_fname, date_time_now, 
+def plot_sensor_data_single(tp9, af7, af8, tp10, data_fname, plot_fname, date_time_now, 
                         title, data_stats, analysis_parms, fig_num):
 
     global session_dict
@@ -1947,7 +2295,7 @@ def plot_sensor_data_single(timestamps, tp9, af7, af8, tp10, data_fname, plot_fn
         print('plot_sensor_data_single() called')
 #     print('plot_sensor_data_single() data_stats: ', data_stats)
    
-    t_len = len(timestamps)
+    t_len = len(tp9)
     
     period = (1.0/Sampling_Rate)
     x_series = np.arange(0, t_len * period, period)
@@ -2946,7 +3294,11 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
     if Verbosity > 2:
         print("generate_data_markers() called")
 
-    elements_df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp', 'Elements'])
+#     elements_df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp', 'Elements'])
+
+    global muse_marker_data        
+    elements_df = muse_marker_data
+
 
     if not ((col_select == 'Accelerometer_X') or (col_select == 'Gyro_X') or (col_select == 'No Offset')):
         data_df = pd.DataFrame(muse_EEG_data, columns=[col_select])
@@ -2970,7 +3322,7 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
 
 
     for index, row in elements_df.iterrows():
-        if Verbosity > 2:
+        if Verbosity > 4:
             print(row['TimeStamp'])
             print(row['Elements'])
         
@@ -2980,6 +3332,8 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
         elif 'blink' in row['Elements']:
 #             marker_text = 'B'
             continue 
+        elif '/Marker' in row['Elements']:
+            marker_text = row['Elements'][8:]
         else:
             marker_text = row['Elements']
                     
@@ -2988,13 +3342,13 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
         elif (col_select == 'Coherence'):
             y_offset = 30            
         else:
-            y_offset = np.max(new_df[index:index + 30])     
+            y_offset = np.max(new_df[index:index + 10])     
     
 #         if Verbosity > 2:
 #             print('generate_data_markers() - y_offset: ', y_offset)
                             
         axs.annotate(marker_text, xy=((index/Sampling_Rate), y_offset), 
-                xytext=((index/Sampling_Rate)+2, y_offset+1),
+                xytext=((index/Sampling_Rate)+2, y_offset+10),
                 bbox=dict(boxstyle="round", alpha=0.1), ha='right', va="center", rotation=33, size=8,
                 arrowprops=dict(arrowstyle='simple', color='blue', alpha=0.5,
                 connectionstyle="arc3, rad=0.03"))
@@ -3034,7 +3388,7 @@ Make labels for the analysis parameters
 
 def create_analysis_parms_text(x, y, plt_axes, analysis_parms):
 
-    if (gui_dict['checkBoxFilter'] or args.filter_data):
+    if (gui_dict['checkBoxFilter']):
 
         if Filter_Type == 0:
             filter_type_name = 'Default'
@@ -3159,30 +3513,47 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
 
     if (not gui_dict['checkBoxPlotMarkers']):    
         PLOT_PARAMS['lines.markersize'] = 0.0005
-        
+
+    print("muse_EEG_data.describe(): ", muse_EEG_data.describe())
+    print("muse_EEG_data.columns: ", muse_EEG_data.columns)
+    print("muse_EEG_data.count(): ", muse_EEG_data.count())
+    
+#     csv_data = pd.DataFrame(muse_EEG_data, columns=['RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
+
+#     plot_sensor_data(muse_EEG_data['RAW_TP9'], muse_EEG_data['RAW_AF7'], 
+#         muse_EEG_data['RAW_AF8'], muse_EEG_data['RAW_TP10'], data_fname, 
+#         out_dirname + '/plots/29-ABCS_eeg_raw_' + date_time_now + '.png',
+#         date_time_now,  "Raw EEG", data_stats, analysis_parms, 29)
+
+
+    if (gui_dict['checkBoxEEG_PowerBands']):
+        plot_all(muse_EEG_data, data_fname, 
+                    out_dirname + '/plots/22-ABCS_all_' + date_time_now + '.png',
+                    date_time_now,  "EEG Raw & Power Bands", data_stats, analysis_parms, 99)
+       
     if (gui_dict['checkBoxEEG']):
 
         # TODO don't plot this one for now ...
         if False: 
-            plot_sensor_data_single(df['TimeStamp'], df['RAW_TP9'], df['RAW_AF7'], 
+            plot_sensor_data_single(df['RAW_TP9'], df['RAW_AF7'], 
                 df['RAW_AF8'], df['RAW_TP10'], data_fname, 
                 out_dirname + '/plots/22-ABCS_eeg_raw_single_' + date_time_now + '.png',
                 date_time_now,  "Raw EEG", data_stats, analysis_parms, 22)
 
-        plot_sensor_data(df['TimeStamp'], df['RAW_TP9'], df['RAW_AF7'], 
+        plot_sensor_data(df['RAW_TP9'], df['RAW_AF7'], 
             df['RAW_AF8'], df['RAW_TP10'], data_fname, 
             out_dirname + '/plots/20-ABCS_eeg_raw_' + date_time_now + '.png',
             date_time_now,  "Raw EEG", data_stats, analysis_parms, 20)
     
         smooth_sz = 25
-        plot_sensor_data_single(df['TimeStamp'], smooth_data(df['RAW_TP9'], smooth_sz), 
+        plot_sensor_data_single(smooth_data(df['RAW_TP9'], smooth_sz), 
             smooth_data(df['RAW_AF7'], smooth_sz), 
             smooth_data(df['RAW_AF8'], smooth_sz), 
             smooth_data(df['RAW_TP10'], smooth_sz), data_fname, 
             out_dirname + '/plots/25-ABCS_eeg_smoothed_single_' + date_time_now + '.png',
             date_time_now, "Smoothed EEG", data_stats, analysis_parms, 25)
 
-        plot_sensor_data(df['TimeStamp'], smooth_data(df['RAW_TP9'], smooth_sz), 
+        plot_sensor_data(smooth_data(df['RAW_TP9'], smooth_sz), 
             smooth_data(df['RAW_AF7'], smooth_sz), 
             smooth_data(df['RAW_AF8'], smooth_sz), 
             smooth_data(df['RAW_TP10'], smooth_sz), data_fname, 
@@ -3205,7 +3576,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
 
         # TODO don't plot this one for now ...
         if False:
-            plot_sensor_data(df['TimeStamp'], df['RAW_TP9'], 
+            plot_sensor_data(df['RAW_TP9'], 
                 smooth_data(df['RAW_AF7'], smooth_sz), 
                 smooth_data(df['RAW_AF8'], smooth_sz), 
                 smooth_data(df['RAW_TP10'], smooth_sz), data_fname, 
@@ -3220,7 +3591,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
              out_dirname + '/plots/10-ABCS_eeg_raw_coherence_data_' + date_time_now + '.png', 
              date_time_now, analysis_parms, 10)
 
-        plot_coherence_data(df['TimeStamp'], df['RAW_TP9'], df['RAW_AF7'], 
+        plot_coherence_data(df['RAW_TP9'], df['RAW_AF7'], 
             df['RAW_AF8'], df['RAW_TP10'], data_fname, 
             out_dirname + '/plots/12-ABCS_eeg_coherence_' + date_time_now + '.png',
             date_time_now,  "EEG Coherence", data_stats, analysis_parms, 12)
@@ -3245,7 +3616,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
 
 
 
-    if (gui_dict['checkBoxPowerBands'] or args.power):
+    if (gui_dict['checkBoxPowerBands']):
 
         delta_df = pd.DataFrame(muse_EEG_data, 
             columns=['Delta_TP9', 'Delta_AF7', 'Delta_AF8', 'Delta_TP10'])    
@@ -3395,7 +3766,11 @@ def main(date_time_now):
     global last_name
     global data_dir
     global db_location
-
+    global Filter_Highcut
+    global Filter_LowCut
+    global Filter_Order
+    global Filter_Type
+    
     if Verbosity > 1:
         print("main() - analyze_muse.ABCS_version.ABCS_version: ",
                 analyze_muse.ABCS_version.ABCS_version)
@@ -3416,6 +3791,11 @@ def main(date_time_now):
         first_name = rc_obj['First Name']
         last_name = rc_obj['Last Name']
         data_dir = rc_obj['Data Dir']
+        Filter_Highcut = rc_obj['Filter HighCut']
+        Filter_LowCut = rc_obj['Filter LowCut']
+        Filter_Order = rc_obj['Filter Order']
+        Filter_Type = rc_obj['Filter Type']
+
         # Location of sqllite dababase file
         db_location = rc_obj['Data Base Location']
 
@@ -3453,16 +3833,91 @@ def main(date_time_now):
 #         print("main() - EEG_Dict: ", EEG_Dict)
 #         print("\n")
 
+    print("Data:\n")    
+#     print("muse_EEG_data.describe(): ", muse_EEG_data.describe())
+    print("muse_EEG_data.columns: ", muse_EEG_data.columns)
+    print("muse_EEG_data.count(): ", muse_EEG_data.count())
+    print("\n")    
+
+
+# TimeStamp,
+# Delta_TP9,Delta_AF7,Delta_AF8,Delta_TP10,
+# Theta_TP9,Theta_AF7,Theta_AF8,Theta_TP10,
+# Alpha_TP9,Alpha_AF7,Alpha_AF8,Alpha_TP10,
+# Beta_TP9,Beta_AF7,Beta_AF8,Beta_TP10,
+# Gamma_TP9,Gamma_AF7,Gamma_AF8,Gamma_TP10,
+# RAW_TP9,RAW_AF7,RAW_AF8,RAW_TP10,AUX_RIGHT,
+# Mellow,Concentration,
+# Accelerometer_X,Accelerometer_Y,Accelerometer_Z,
+# Gyro_X,Gyro_Y,Gyro_Z,
+# HeadBandOn,
+# HSI_TP9,HSI_AF7,HSI_AF8,HSI_TP10,
+# Battery,
+# Elements
+
+#     print("before culling - muse_EEG_data.describe(): ", muse_EEG_data.describe())
+    print("Before culling\n")    
+    print("before culling - muse_EEG_data.columns: ", muse_EEG_data.columns)
+    print("before culling - muse_EEG_data.count(): ", muse_EEG_data.count())
+
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['RAW_TP9'].isnull()]
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['RAW_AF7'].isnull()]
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['RAW_AF8'].isnull()]
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['RAW_TP10'].isnull()]
+
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Delta_TP9'].isnull()]
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Delta_AF7'].isnull()]
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Delta_AF8'].isnull()]
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Delta_TP10'].isnull()]
+
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Theta_TP9'].isnull()]
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Theta_AF7'].isnull()]
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Theta_AF8'].isnull()]
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Theta_TP10'].isnull()]
+
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Alpha_TP9'].isnull()]
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Alpha_AF7'].isnull()]
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Alpha_AF8'].isnull()]
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Alpha_TP10'].isnull()]
+
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Beta_TP9'].isnull()]
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Beta_AF7'].isnull()]
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Beta_AF8'].isnull()]
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Beta_TP10'].isnull()]
+ 
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Delta_TP9'].isnull()]
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Delta_AF7'].isnull()]
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Delta_AF8'].isnull()]
+    muse_EEG_data = muse_EEG_data[~muse_EEG_data['Delta_TP10'].isnull()]
+
+#     muse_EEG_data = muse_EEG_data[muse_EEG_data['Elements']]
+
+#     muse_EEG_data = muse_EEG_data[~muse_EEG_data['Elements'].isna()]
+
+
+    print("After culling\n")    
+#     print("muse_EEG_data.describe(): ", muse_EEG_data.describe())
+    print("muse_EEG_data.columns: ", muse_EEG_data.columns)
+    print("muse_EEG_data.count(): ", muse_EEG_data.count())
+    print("\n")    
+
 
     # Perform auto-reject if user has selected it
-#     if (gui_dict['checkBoxAutoReject'] or args.auto_reject_data): 
     if (gui_dict['checkBoxAutoReject']): 
         if Verbosity > 2:
             print("main() - Calling auto_reject_EEG_data()")
         muse_EEG_data = auto_reject_EEG_data(muse_EEG_data)
 
+#     print("After auto-reject\n")    
+#     print("muse_EEG_data.describe(): ", muse_EEG_data.describe())
+#     print("muse_EEG_data.columns: ", muse_EEG_data.columns)
+#     print("muse_EEG_data.count(): ", muse_EEG_data.count())
+#     print("\n")    
+
+
+
     # Perform filtering if user has selected it
-    if (gui_dict['checkBoxFilter'] or args.filter_data):
+    if (gui_dict['checkBoxFilter']):
         muse_EEG_data = filter_all_data(muse_EEG_data)
         # If filtering, recompute description data
         get_data_description(muse_EEG_data)
@@ -3470,6 +3925,13 @@ def main(date_time_now):
 #         if Verbosity > 2:
 #             print("main() - EEG_Dict after filtering: ", EEG_Dict)
 #             print("\n")
+
+    print("After filtering\n")    
+#     print("muse_EEG_data.describe(): ", muse_EEG_data.describe())
+    print("muse_EEG_data.columns: ", muse_EEG_data.columns)
+    print("muse_EEG_data.count(): ", muse_EEG_data.count())
+    print("\n")    
+
 
 
     # If the user wants an HDF5 file written of the data 
@@ -3506,8 +3968,10 @@ if __name__ == '__main__':
     parser.add_argument("-d", "--display_plots", help="Display Plots", action="store_true")
     parser.add_argument("-b", "--batch", help="Batch Mode", action="store_true")
     parser.add_argument("-dm", "--data_markers", help="Add Data Markers", action="store_true")
-    parser.add_argument("-p", "--power", help="Plot Power Bands", action="store_true")
+    parser.add_argument("-pm", "--plot_markers", help="Add Plot Markers", action="store_true")    
     parser.add_argument("-e", "--eeg", help="Plot EEG Data", action="store_true")
+    parser.add_argument("-p", "--power", help="Plot Power Bands", action="store_true")
+    parser.add_argument("-ep", "--eeg_power", help="Plot EEG & Power Data Combined", action="store_true")
     parser.add_argument("-hdf5", "--write_hdf5_file", help="Write output data into HDF5 file", action="store_true")
     parser.add_argument("-ag", "--accel_gyro", help="Plot Acceleration and Gyro Data", action="store_true")
     parser.add_argument("-mc", "--mellow_concentration", 
@@ -3524,7 +3988,7 @@ if __name__ == '__main__':
 #     parser.add_argument("-ps", "--power_spectrum", help="Analyze Spectrum", action="store_true")
 
     parser.add_argument("-r", "--auto_reject_data", help="Auto Reject EEG Data", action="store_true")
-    parser.add_argument("-fd", "--filter_data", help="Filter EEG Data", action="store_true")
+    parser.add_argument("-fd", "--data_filtering", help="Filter EEG Data", action="store_true")
     parser.add_argument("-ft", "--filter_type", 
                         help="Filter Type 0=default 1=low pass, 2=bandpass", type=int)
     parser.add_argument("-lc", "--lowcut", help="Filter Low Cuttoff Frequency",  type=float)
@@ -3560,16 +4024,30 @@ if __name__ == '__main__':
     if args.plot_style:
         if Verbosity > 0:
                 print("plot_style:")
-        print(args.plot_style)
+                print(args.plot_style)
     else:
         args.plot_style = 0
 
     if args.data_markers:
         if Verbosity > 0:
                 print("data_markers:")
-        print(args.data_markers)
+                print(args.data_markers)
     else:
         args.data_markers = False
+
+    if args.plot_markers:
+        if Verbosity > 0:
+                print("plot_markers:")
+                print(args.plot_markers)
+    else:
+        args.plot_markers = False
+
+    if args.eeg_power:
+        if Verbosity > 0:
+                print("eeg_power:")
+                print(args.eeg_power)
+    else:
+        args.eeg_power = False
 
     if args.batch:
         if Verbosity > 0:
@@ -3585,10 +4063,10 @@ if __name__ == '__main__':
     else:
         args.auto_reject_data = False
 
-    if args.filter_data:
+    if args.data_filtering:
         if Verbosity > 0:
-            print("filter_data:")
-            print(args.filter_data)
+            print("data_filtering:")
+            print(args.data_filtering)
 
     if args.filter_type:
         if Verbosity > 0:
