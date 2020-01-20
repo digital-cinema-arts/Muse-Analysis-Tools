@@ -126,7 +126,7 @@ optional arguments:
 
 To find the current version of the application:  
 ```$ analyze_muse_data.py --version
-Current version:  1.1.17
+Current version:  1.1.20
 ```
 
 ----------------------------------------------------------
