@@ -15,15 +15,11 @@ import scipy.signal as signal
 from scipy import integrate, signal
 from scipy.signal import butter, lfilter, freqz
 import math
-import bitstring
 import pandas as pd
 import os
 from time import time, sleep, strftime, gmtime
 import sys
-# import csv
 import argparse
-# import filetype
-# from tqdm import tqdm
 # from progress.bar import Bar, IncrementalBar
 import json
 from pathlib import Path
