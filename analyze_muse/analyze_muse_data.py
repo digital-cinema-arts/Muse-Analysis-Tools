@@ -1223,8 +1223,8 @@ def filter_all_data(muse_EEG_data):
     if Verbosity > 0:
         print('filter_all_data() called')
 
-    print('filter_all_data() - muse_EEG_data.shape: ', muse_EEG_data.shape)
-    print("filter_all_data() - muse_EEG_data['RAW_TP9'].describe: ", muse_EEG_data['RAW_TP9'].describe())
+#     print('filter_all_data() - muse_EEG_data.shape: ', muse_EEG_data.shape)
+#     print("filter_all_data() - muse_EEG_data['RAW_TP9'].describe: ", muse_EEG_data['RAW_TP9'].describe())
 
     smooth_sz = 1
     
@@ -1477,8 +1477,8 @@ def filter_all_data(muse_EEG_data):
 #         if Verbosity > 2:
 #             print('filter_all_data() finished filtering accel & gyro data')
 
-    print('filter_all_data() - muse_EEG_data.shape: ', muse_EEG_data.shape)
-    print("filter_all_data() - muse_EEG_data['RAW_TP9'].describe: ", muse_EEG_data['RAW_TP9'].describe())
+#     print('filter_all_data() - muse_EEG_data.shape: ', muse_EEG_data.shape)
+#     print("filter_all_data() - muse_EEG_data['RAW_TP9'].describe: ", muse_EEG_data['RAW_TP9'].describe())
 
     return(muse_EEG_data)
 
@@ -2102,8 +2102,8 @@ def plot_sensor_data(tp9, af7, af8, tp10, data_fname, plot_fname, date_time_now,
         print('plot_sensor_data() called')
 
 
-    print('\nplot_sensor_data() called: data_stats', data_stats)
-    print("\n")
+#     print('\nplot_sensor_data() called: data_stats', data_stats)
+#     print("\n")
   
     t_len = len(tp9)
     
@@ -3510,9 +3510,9 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
     if (not gui_dict['checkBoxPlotMarkers']):    
         PLOT_PARAMS['lines.markersize'] = 0.0005
 
-    print("muse_EEG_data.describe(): ", muse_EEG_data.describe())
-    print("muse_EEG_data.columns: ", muse_EEG_data.columns)
-    print("muse_EEG_data.count(): ", muse_EEG_data.count())
+#     print("muse_EEG_data.describe(): ", muse_EEG_data.describe())
+#     print("muse_EEG_data.columns: ", muse_EEG_data.columns)
+#     print("muse_EEG_data.count(): ", muse_EEG_data.count())
     
 #     csv_data = pd.DataFrame(muse_EEG_data, columns=['RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
 
@@ -3829,11 +3829,11 @@ def main(date_time_now):
 #         print("main() - EEG_Dict: ", EEG_Dict)
 #         print("\n")
 
-    print("Data:\n")    
-#     print("muse_EEG_data.describe(): ", muse_EEG_data.describe())
-    print("muse_EEG_data.columns: ", muse_EEG_data.columns)
-    print("muse_EEG_data.count(): ", muse_EEG_data.count())
-    print("\n")    
+#     print("Data:\n")    
+# #     print("muse_EEG_data.describe(): ", muse_EEG_data.describe())
+#     print("muse_EEG_data.columns: ", muse_EEG_data.columns)
+#     print("muse_EEG_data.count(): ", muse_EEG_data.count())
+#     print("\n")    
 
 
 # TimeStamp,
@@ -3852,9 +3852,9 @@ def main(date_time_now):
 # Elements
 
 #     print("before culling - muse_EEG_data.describe(): ", muse_EEG_data.describe())
-    print("Before culling\n")    
-    print("before culling - muse_EEG_data.columns: ", muse_EEG_data.columns)
-    print("before culling - muse_EEG_data.count(): ", muse_EEG_data.count())
+#     print("Before culling\n")    
+#     print("before culling - muse_EEG_data.columns: ", muse_EEG_data.columns)
+#     print("before culling - muse_EEG_data.count(): ", muse_EEG_data.count())
 
     muse_EEG_data = muse_EEG_data[~muse_EEG_data['RAW_TP9'].isnull()]
     muse_EEG_data = muse_EEG_data[~muse_EEG_data['RAW_AF7'].isnull()]
@@ -3891,11 +3891,11 @@ def main(date_time_now):
 #     muse_EEG_data = muse_EEG_data[~muse_EEG_data['Elements'].isna()]
 
 
-    print("After culling\n")    
-#     print("muse_EEG_data.describe(): ", muse_EEG_data.describe())
-    print("muse_EEG_data.columns: ", muse_EEG_data.columns)
-    print("muse_EEG_data.count(): ", muse_EEG_data.count())
-    print("\n")    
+#     print("After culling\n")    
+# #     print("muse_EEG_data.describe(): ", muse_EEG_data.describe())
+#     print("muse_EEG_data.columns: ", muse_EEG_data.columns)
+#     print("muse_EEG_data.count(): ", muse_EEG_data.count())
+#     print("\n")    
 
 
     # Perform auto-reject if user has selected it
@@ -3922,11 +3922,11 @@ def main(date_time_now):
 #             print("main() - EEG_Dict after filtering: ", EEG_Dict)
 #             print("\n")
 
-    print("After filtering\n")    
-#     print("muse_EEG_data.describe(): ", muse_EEG_data.describe())
-    print("muse_EEG_data.columns: ", muse_EEG_data.columns)
-    print("muse_EEG_data.count(): ", muse_EEG_data.count())
-    print("\n")    
+#     print("After filtering\n")    
+# #     print("muse_EEG_data.describe(): ", muse_EEG_data.describe())
+#     print("muse_EEG_data.columns: ", muse_EEG_data.columns)
+#     print("muse_EEG_data.count(): ", muse_EEG_data.count())
+#     print("\n")    
 
 
 
@@ -4055,7 +4055,7 @@ if __name__ == '__main__':
     if args.auto_reject_data:
         if Verbosity > 0:
             print("auto_reject_data:")
-        print(args.auto_reject_data)
+            print(args.auto_reject_data)
     else:
         args.auto_reject_data = False
 
