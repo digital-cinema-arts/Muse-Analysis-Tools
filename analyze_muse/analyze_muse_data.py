@@ -971,21 +971,21 @@ def read_eeg_data(fname, date_time_now):
 #             print(row['TimeStamp'])
 #             print(row['Elements'])
 
-# 
-#     for temp_df in (raw_df, delta_df, theta_df, alpha_df, beta_df, gamma_df):
-# #         if args.verbose:
-# #             print("verbose turned on")
-# 
-#         if Verbosity > 2:
-#             print("read_eeg_data(): Sensor data description", temp_df.describe())
-# #         data_str = temp_df.mean()
-#         data_str = temp_df.describe()
-# #         print("type", type(data_str))
-# #         print("data_str.index", data_str.index)
-#         EEG_Dict.update(data_str.to_dict())
-# #         print("EEG_Dict: ", EEG_Dict)
-# #         print("data_str.to_dict()", data_str.to_dict())
-#     
+
+    for temp_df in (raw_df, delta_df, theta_df, alpha_df, beta_df, gamma_df):
+#         if args.verbose:
+#             print("verbose turned on")
+
+        if Verbosity > 2:
+            print("read_eeg_data(): Sensor data description", temp_df.describe())
+#         data_str = temp_df.mean()
+        data_str = temp_df.describe()
+#         print("type", type(data_str))
+#         print("data_str.index", data_str.index)
+        EEG_Dict.update(data_str.to_dict())
+#         print("EEG_Dict: ", EEG_Dict)
+#         print("data_str.to_dict()", data_str.to_dict())
+    
 
 
     sample_length = len(raw_df['RAW_AF7'])
@@ -1937,7 +1937,7 @@ def plot_coherence_scatter(x, y, a, b, title, data_fname, plot_fname, date_time_
     plt.close()
 
     if Verbosity > 0:
-        print("Finished writing EEG EF7 & EF8 Integrated Data - Coherence plot")
+        print("Finished writing EEG EF7 & EF8 Coherence Scatter plot")
         print(plot_fname)
 
 
@@ -3280,6 +3280,7 @@ Generate data markers
 
 '''
 
+
 def generate_data_markers(muse_EEG_data, axs, col_select):
 
     if Verbosity > 2:
@@ -3343,6 +3344,7 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
         elif (col_select == 'Gyro_X'):
             y_offset = np.max(new_df[index:index + 10])  
             y_offset_txt = y_offset + 5.0   
+
 
         else:
             y_offset = np.max(new_df[index:index + 10])  
