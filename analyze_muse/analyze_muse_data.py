@@ -3291,7 +3291,7 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
     elements_df = muse_marker_data
 
 
-    if not ((col_select == 'Gyro_X') or (col_select == 'No Offset')):
+    if not (col_select == 'No Offset'):
 #     if not ((col_select == 'Accelerometer_X') or (col_select == 'Gyro_X') or (col_select == 'No Offset')):
         data_df = pd.DataFrame(muse_EEG_data, columns=[col_select])
         new_df = data_df.fillna(0)
@@ -3329,18 +3329,27 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
         else:
             marker_text = row['Elements']
                     
-#         if (col_select == 'Gyro_X') or (col_select == 'No Offset'):
-        if (col_select == 'Accelerometer_X') or (col_select == 'Gyro_X') or (col_select == 'No Offset'):
+        if (col_select == 'No Offset'):
+#         if (col_select == 'Accelerometer_X') or (col_select == 'Gyro_X') or (col_select == 'No Offset'):
             y_offset = 0.   
             y_offset_txt = 0.1
         elif (col_select == 'Coherence'):
-            y_offset = 30 
+            y_offset = 10
             y_offset_txt = 2           
+        elif (col_select == 'Accelerometer_X'):
+            y_offset = np.max(new_df[index:index + 10])  
+            y_offset_txt = y_offset + 0.1   
+
+        elif (col_select == 'Gyro_X'):
+            y_offset = np.max(new_df[index:index + 10])  
+            y_offset_txt = y_offset + 5.0   
+
+
         else:
             y_offset = np.max(new_df[index:index + 10])  
-            y_offset_txt = 10   
+            y_offset_txt = y_offset + 10   
     
-        if Verbosity > 4:
+        if Verbosity > 5:
             print('generate_data_markers() - y_offset: ', y_offset, col_select)
                             
         axs.annotate(marker_text, xy=((index/Sampling_Rate), y_offset), 
