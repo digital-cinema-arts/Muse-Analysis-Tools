@@ -3344,7 +3344,10 @@ def generate_data_markers(muse_EEG_data, axs, col_select):
             y_offset = np.max(new_df[index:index + 10])  
             y_offset_txt = y_offset + 5.0   
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8d9cbfa2f655f299589aa2b73e9d95ac7eaf2a38
         else:
             y_offset = np.max(new_df[index:index + 10])  
             y_offset_txt = y_offset + 10   
