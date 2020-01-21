@@ -423,8 +423,8 @@ class The_GUI(QDialog):
         layout.addWidget(self.checkBoxInteractive)
         layout.addWidget(self.checkBoxEEG)
         layout.addWidget(self.checkBoxCoherence)
-        layout.addWidget(self.checkBoxPowerBands)
         layout.addWidget(self.checkBoxEEG_PowerBands)       
+        layout.addWidget(self.checkBoxPowerBands)
         layout.addWidget(self.checkBoxMellowConcentration)
         layout.addWidget(self.checkBoxAccelGyro)
 #         layout.addWidget(self.checkBox3D)
@@ -2582,6 +2582,146 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
 
 
 
+'''
+
+Plot all the power bands in a single plot
+
+'''
+
+def plot_all_power_bands_single(delta, theta, alpha, beta, gamma,
+                lowcut, highcut, fs, point_sz, title, 
+                data_fname, plot_fname, date_time_now, analysis_parms, fig_num):
+
+    plot_alpha = 0.75
+
+    if Verbosity > 0:
+        print('plot_all_power_bands_single() called')
+
+    data_stats = calculate_power_stats(delta, theta, alpha, beta, gamma)
+    data_min = np.min((data_stats['delta']['min'], data_stats['theta']['min'], 
+                        data_stats['alpha']['min'], data_stats['beta']['min'], data_stats['gamma']['min']))
+    data_max = np.max((data_stats['delta']['max'], data_stats['theta']['max'], 
+                        data_stats['alpha']['max'], data_stats['beta']['max'], data_stats['gamma']['max']))
+
+    if Verbosity > 0:
+        print('plot_all_power_bands_single() data_stats: ', data_stats)
+
+    fig, axs = plt.subplots(nrows=1, num=fig_num, figsize=FIGURE_SIZE, 
+                    dpi=PLOT_DPI, facecolor='w', edgecolor='k', sharex=True, 
+                    sharey=gui_dict['checkBoxVerticalLock'], 
+                    gridspec_kw={'hspace': 0.25}, tight_layout=False)
+
+    fig.suptitle('Algorithmic Biofeedback Control System', fontsize=12, fontweight='bold')
+
+    plt_axes = plt.gca()
+    xmin, xmax, ymin, ymax = plt.axis()
+    plt.rcParams.update(PLOT_PARAMS)
+
+    t_len = len(delta)
+    period = (1.0/Sampling_Rate)
+    x_series = np.arange(0, t_len * period, period)
+
+    plt.title(title)
+    plt.ylabel("dB")
+    
+    axs.xaxis.set_major_locator(ticker.AutoLocator())  
+    axs.xaxis.set_minor_locator(ticker.AutoMinorLocator())
+
+    l0 = axs.plot(x_series, gamma, color=plot_color_scheme['Gamma'], marker='.', mec='xkcd:dark pink',
+                    alpha=plot_alpha, label='Gamma')
+#     if (gui_dict['checkBoxDataMarkers']):    
+#         generate_data_markers(muse_EEG_data, axs, 'Gamma_TP10')
+                  
+    l1 = axs.plot(x_series, beta, color=plot_color_scheme['Beta'], marker='.', mec='xkcd:dark teal',
+                    alpha=plot_alpha, label='Beta')
+#     if (gui_dict['checkBoxDataMarkers']):    
+#         generate_data_markers(muse_EEG_data, axs, 'Beta_TP10')
+
+    l2 = axs.plot(x_series, alpha, color=plot_color_scheme['Alpha'], marker='.', mec='xkcd:dark brown',
+                    alpha=plot_alpha, label='Alpha')
+#     if (gui_dict['checkBoxDataMarkers']):    
+#         generate_data_markers(muse_EEG_data, axs, 'Alpha_TP10')
+
+    l3 = axs.plot(x_series, theta, color=plot_color_scheme['Theta'], marker='.', mec='xkcd:crimson',
+                alpha=plot_alpha, label='Theta')
+#     if (gui_dict['checkBoxDataMarkers']):    
+#         generate_data_markers(muse_EEG_data, axs, 'Theta_TP10')
+
+    l4 = axs.plot(x_series, delta, color=plot_color_scheme['Delta'], marker='.', mec='xkcd:wine',
+                alpha=plot_alpha, label='Delta')
+    if (gui_dict['checkBoxDataMarkers']):    
+        generate_data_markers(muse_EEG_data, axs, 'Delta_TP10')
+
+    axs.set(xlabel="Time (Seconds)") 
+    axs.legend(loc='upper right', prop={'size': 6})     
+    axs.grid(True)
+
+    plt.text(1.01, 5.5, 
+        'Mean: ' + "{:.3f}".format(data_stats['gamma']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(data_stats['gamma']['std']) + 
+        '\nMin: ' + "{:.3f}".format(data_stats['gamma']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['gamma']['max']), style='italic', 
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+
+    plt.text(1.01, 4.25, 
+        'Mean: ' + "{:.3f}".format(data_stats['beta']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(data_stats['beta']['std']) +
+        '\nMin: ' + "{:.3f}".format(data_stats['beta']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['beta']['max']), style='italic', 
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+        
+    plt.text(1.01, 3.0, 
+        'Mean: ' + "{:.3f}".format(data_stats['alpha']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(data_stats['alpha']['std']) +
+        '\nMin: ' + "{:.3f}".format(data_stats['alpha']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['alpha']['max']), style='italic', 
+        
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+        
+    plt.text(1.01, 1.75, 
+        'Mean: ' + "{:.3f}".format(data_stats['theta']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(data_stats['theta']['std']) +
+        '\nMin: ' + "{:.3f}".format(data_stats['theta']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['theta']['max']), style='italic', 
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+        
+    plt.text(1.01, 0.5, 
+        'Mean: ' + "{:.3f}".format(data_stats['delta']['mean']) + 
+        '\nStd: ' + "{:.3f}".format(data_stats['delta']['std']) + 
+        '\nMin: ' + "{:.3f}".format(data_stats['delta']['min']) +
+        '\nMax: ' + "{:.3f}".format(data_stats['delta']['max']), style='italic', 
+        transform=plt_axes.transAxes, 
+        bbox={'facecolor': 'blue', 'alpha': 0.05, 'pad': 1})
+
+    plt.text(0.175, 1.1, 'Session Date: ' + session_dict['Session_Data']['session_date'], 
+            transform=plt_axes.transAxes, style='italic', horizontalalignment='right',
+            bbox={'facecolor':'blue', 'alpha':0.1, 'pad': 1})
+
+    create_analysis_parms_text(0.8, 1.1, plt_axes, analysis_parms)    
+    basename = os.path.basename(data_fname)
+    create_file_date_text(-0.1, -0.65, -0.1, -0.4, plt_axes, basename, date_time_now)
+
+    plt.savefig(plot_fname, dpi=300)
+
+    if (gui_dict['checkBoxInteractive']):
+        plt.show()
+
+    plt.close()
+
+    if Verbosity > 0:
+        print("Finished writing " + title + " data plot ")
+        print(plot_fname)
+
+
+    return True
+
+
+
+
 
 '''
 
@@ -3695,6 +3835,12 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
                 out_dirname + '/plots/31.1-ABCS_power_smooth_mean_' + date_time_now + '.png',
                 date_time_now, analysis_parms, 31)
 
+            plot_all_power_bands_single(sm_delta_df, sm_theta_df, sm_alpha_df, sm_beta_df, sm_gamma_df,
+                Filter_Lowcut, Filter_Highcut, Sampling_Rate, point_sz,
+                'Power Bands (Mean Average - Smoothed)', data_fname,
+                out_dirname + '/plots/31.1-ABCS_power_smooth_mean_' + date_time_now + '.png',
+                date_time_now, analysis_parms, 31)
+
         else:
             plot_all_power_bands(delta_df.mean(axis=1), theta_df.mean(axis=1), 
                 alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
@@ -3702,6 +3848,15 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
                 'Power Bands (Mean Average)', data_fname,
                 out_dirname + '/plots/31-ABCS_power_mean_' + date_time_now + '.png',
                 date_time_now, analysis_parms, 31)
+
+            plot_all_power_bands_single(delta_df.mean(axis=1), theta_df.mean(axis=1), 
+                alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
+                Filter_Lowcut, Filter_Highcut, Sampling_Rate, point_sz,
+                'Power Bands (Mean Average)', data_fname,
+                out_dirname + '/plots/31-ABCS_power_mean_' + date_time_now + '.png',
+                date_time_now, analysis_parms, 31)
+
+
 
 
         if (gui_dict['checkBoxStatistical']):
@@ -3790,18 +3945,24 @@ def initialize_GUI_vars(date_time_now):
             "checkBoxEEG": True,
             "checkBoxCoherence": False,
             "checkBoxPowerBands": True,
+            "checkBoxEEG_PowerBands": True,           
             "checkBoxMellowConcentration": False,
             "checkBoxAccelGyro": False,
             "checkBox3D": False,
             "checkBoxFilter": True,                
+            "checkBoxSmoothData": True,                              
             "checkBoxStatistical": False,
             "checkBoxMuseDirect": False,
             "verbosityComboBox": 0,
             "checkBoxAutoReject": True,
             "checkBoxDB": False,
             "checkBoxHFDF5": False,
+            "checkBoxVerticalLock": True,
+            "checkBoxPlotMarkers": True,
+            "checkBoxDataMarkers": False,
             "plotColorsComboBox": 0,               
             "Mood": 0})
+
 
     if Verbosity > 2:
         print("initialize_GUI_vars() - gui_dict: ", gui_dict)
@@ -4041,7 +4202,7 @@ if __name__ == '__main__':
     parser.add_argument("-hdf5", "--write_hdf5_file", help="Write output data into HDF5 file", action="store_true")
     parser.add_argument("-ag", "--accel_gyro", help="Plot Acceleration and Gyro Data", action="store_true")
     parser.add_argument("-mc", "--mellow_concentration", 
-                                help="Plot Mellow and Concentratio Data (Only For Mind Monitor Data)", 
+                                help="Plot Mellow and Concentration Data (Only For Mind Monitor Data)", 
                                 action="store_true")
     parser.add_argument("-s", "--stats_plots", help="Plot Statistcal Data", action="store_true")
     parser.add_argument("-c", "--coherence_plots", help="Plot Coherence Data", action="store_true")
