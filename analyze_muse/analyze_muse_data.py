@@ -249,6 +249,7 @@ class The_GUI(QDialog):
         accel_gyro = self.checkBoxAccelGyro.isChecked()
         plot_3D = self.checkBox3D.isChecked()
         data_filtering = self.checkBoxFilter.isChecked()      
+        data_smoothing = self.checkBoxSmoothData.isChecked()      
         statistical_plots = self.checkBoxStatistical.isChecked()
         muse_direct = self.checkBoxMuseDirect.isChecked()
         verbosity = self.verbosityComboBox.currentText()
@@ -273,7 +274,8 @@ class The_GUI(QDialog):
                 "checkBoxMellowConcentration": mellow_concentrate,
                 "checkBoxAccelGyro": accel_gyro,
                 "checkBox3D": plot_3D,
-                "checkBoxFilter": data_filtering,                
+                "checkBoxFilter": data_filtering,  
+                "checkBoxSmoothData": data_smoothing,                              
                 "checkBoxStatistical": statistical_plots,
                 "checkBoxMuseDirect": muse_direct,
                 "verbosityComboBox": verbosity,
@@ -362,6 +364,11 @@ class The_GUI(QDialog):
         self.checkBoxFilter.setEnabled(True)
         self.checkBoxFilter.setToolTip('Filter the EEG & Frequency Bands data with the default filter.\nCommand line options are available for different filter types and parameters')
 
+        self.checkBoxSmoothData = QCheckBox("Smooth Data")
+        self.checkBoxSmoothData.setChecked(args.smooth_window)
+        self.checkBoxSmoothData.setEnabled(True)
+        self.checkBoxSmoothData.setToolTip('Smooth the EEG & Frequency Bands data\nCommand line options are available for smoothing parameters')
+
         self.checkBoxResample = QCheckBox("Resample Data")
         self.checkBoxResample.setChecked(False)
         self.checkBoxResample.setEnabled(False)
@@ -424,6 +431,8 @@ class The_GUI(QDialog):
         layout.addWidget(self.checkBoxStatistical)
 #         layout.addWidget(self.checkBoxMuseDirect)
         layout.addWidget(self.checkBoxFilter)
+        layout.addWidget(self.checkBoxSmoothData)
+     
 #         layout.addWidget(self.checkBoxResample)
         layout.addWidget(self.checkBoxAutoReject)
         layout.addWidget(self.checkBoxDB)
@@ -1224,6 +1233,11 @@ Tail-rolling average transform
 
 '''
 def smooth_data(data_in, win):
+
+    if Verbosity > 2:
+        print('smooth_data() called')
+        print('smooth_data() win: ', win)
+
     rolling = data_in.rolling(window=win)
     smoothed_data = rolling.mean()
 
@@ -1240,7 +1254,7 @@ def filter_all_data(muse_EEG_data):
 #     print('filter_all_data() - muse_EEG_data.shape: ', muse_EEG_data.shape)
 #     print("filter_all_data() - muse_EEG_data['RAW_TP9'].describe: ", muse_EEG_data['RAW_TP9'].describe())
 
-    smooth_sz = 1
+#     smooth_sz = 1
     
     # Default filter
 #     if False:
@@ -3472,17 +3486,17 @@ Plot the data!
 def generate_plots(muse_EEG_data, data_fname, date_time_now):
 
     if Verbosity > 0:
-        print("Generating plots ", date_time_now)
+        print("generate_plots() - Generating plots ", date_time_now)
 
     ensure_dir(out_dirname + "/plots/")
 
     df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp', 'RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
 
     if Verbosity > 1:
-        print("Sampling_Rate: ", Sampling_Rate)
-        print("Filter_Lowcut: ", Filter_Lowcut)
-        print("Filter_Highcut: ", Filter_Highcut)
-        print("Filter_Order: ", Filter_Order)
+        print("generate_plots() - Sampling_Rate: ", Sampling_Rate)
+        print("generate_plots() - Filter_Lowcut: ", Filter_Lowcut)
+        print("generate_plots() - Filter_Highcut: ", Filter_Highcut)
+        print("generate_plots() - Filter_Order: ", Filter_Order)
 
 
     sample_length = len(df['TimeStamp'])
@@ -3490,9 +3504,9 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
     sample_time_min = sample_time_sec/60.0
 
     if Verbosity > 1:
-        print("sample_length: ", sample_length)
-        print("sample_time_sec: ", sample_time_sec)
-        print("sample_time_min: ", sample_time_min)
+        print("generate_plots() - sample_length: ", sample_length)
+        print("generate_plots() - sample_time_sec: ", sample_time_sec)
+        print("generate_plots() - sample_time_min: ", sample_time_min)
         print("\n")
 
     
@@ -3530,6 +3544,8 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
     else:
         plot_color_scheme = MM_Colors
     
+    # set smooting window to 2 seconds
+    smooth_sz = int(Sampling_Rate) * int(args.smooth_window)
 
     if (not gui_dict['checkBoxPlotMarkers']):    
         PLOT_PARAMS['lines.markersize'] = 0.0005
@@ -3565,18 +3581,25 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
             out_dirname + '/plots/20-ABCS_eeg_raw_' + date_time_now + '.png',
             date_time_now,  "Raw EEG", data_stats, analysis_parms, 20)
     
-        smooth_sz = 25
-        plot_sensor_data_single(smooth_data(df['RAW_TP9'], smooth_sz), 
-            smooth_data(df['RAW_AF7'], smooth_sz), 
-            smooth_data(df['RAW_AF8'], smooth_sz), 
-            smooth_data(df['RAW_TP10'], smooth_sz), data_fname, 
+        if Verbosity > 4:
+            print("generate_plots() - Calling smooth_data() before calling plot_sensor_data_single()")
+        
+        plot_sensor_data_single(
+            smooth_data(df['RAW_TP9'].copy(), smooth_sz), 
+            smooth_data(df['RAW_AF7'].copy(), smooth_sz), 
+            smooth_data(df['RAW_AF8'].copy(), smooth_sz), 
+            smooth_data(df['RAW_TP10'].copy(), smooth_sz), data_fname, 
             out_dirname + '/plots/25-ABCS_eeg_smoothed_single_' + date_time_now + '.png',
             date_time_now, "Smoothed EEG", data_stats, analysis_parms, 25)
 
-        plot_sensor_data(smooth_data(df['RAW_TP9'], smooth_sz), 
-            smooth_data(df['RAW_AF7'], smooth_sz), 
-            smooth_data(df['RAW_AF8'], smooth_sz), 
-            smooth_data(df['RAW_TP10'], smooth_sz), data_fname, 
+        if Verbosity > 4:
+            print("generate_plots() - Calling smooth_data() before calling plot_sensor_data()")
+
+        plot_sensor_data(
+            smooth_data(df['RAW_TP9'].copy(), smooth_sz), 
+            smooth_data(df['RAW_AF7'].copy(), smooth_sz), 
+            smooth_data(df['RAW_AF8'].copy(), smooth_sz), 
+            smooth_data(df['RAW_TP10'].copy(), smooth_sz), data_fname, 
             out_dirname + '/plots/21-ABCS_eeg_smoothed_' + date_time_now + '.png',
             date_time_now, "Smoothed EEG", data_stats, analysis_parms, 21)
 
@@ -3606,15 +3629,38 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
                 
     if (gui_dict['checkBoxCoherence']):
 
-        plot_coherence_scatter(df['RAW_AF7'], df['RAW_AF8'], df['RAW_TP9'], df['RAW_TP10'],
-            "Raw Data - Coherence", data_fname,
-             out_dirname + '/plots/10-ABCS_eeg_raw_coherence_data_' + date_time_now + '.png', 
-             date_time_now, analysis_parms, 10)
+        if (gui_dict['checkBoxSmoothData']):
 
-        plot_coherence_data(df['RAW_TP9'], df['RAW_AF7'], 
-            df['RAW_AF8'], df['RAW_TP10'], data_fname, 
-            out_dirname + '/plots/12-ABCS_eeg_coherence_' + date_time_now + '.png',
-            date_time_now,  "EEG Coherence", data_stats, analysis_parms, 12)
+            plot_coherence_scatter(
+                smooth_data(df['RAW_AF7'].copy(), smooth_sz),
+                smooth_data(df['RAW_AF8'].copy(), smooth_sz), 
+                smooth_data(df['RAW_TP9'].copy(), smooth_sz), 
+                smooth_data(df['RAW_TP10'].copy(), smooth_sz),
+#             plot_coherence_scatter(df['RAW_AF7'], df['RAW_AF8'], df['RAW_TP9'], df['RAW_TP10'],
+                "Raw Data - Coherence", data_fname,
+                 out_dirname + '/plots/10-ABCS_eeg_raw_coherence_data_' + date_time_now + '.png', 
+                 date_time_now, analysis_parms, 10)
+
+            plot_coherence_data(
+                smooth_data(df['RAW_AF7'].copy(), smooth_sz),
+                smooth_data(df['RAW_AF8'].copy(), smooth_sz), 
+                smooth_data(df['RAW_TP9'].copy(), smooth_sz), 
+                smooth_data(df['RAW_TP10'].copy(), smooth_sz),
+               data_fname, 
+                out_dirname + '/plots/12-ABCS_eeg_coherence_' + date_time_now + '.png',
+                date_time_now,  "EEG Coherence", data_stats, analysis_parms, 12)
+    
+        else:
+        
+            plot_coherence_scatter(df['RAW_AF7'], df['RAW_AF8'], df['RAW_TP9'], df['RAW_TP10'],
+                "Raw Data - Coherence", data_fname,
+                 out_dirname + '/plots/10-ABCS_eeg_raw_coherence_data_' + date_time_now + '.png', 
+                 date_time_now, analysis_parms, 10)
+
+            plot_coherence_data(df['RAW_TP9'], df['RAW_AF7'], 
+                df['RAW_AF8'], df['RAW_TP10'], data_fname, 
+                out_dirname + '/plots/12-ABCS_eeg_coherence_' + date_time_now + '.png',
+                date_time_now,  "EEG Coherence", data_stats, analysis_parms, 12)
     
 
 
@@ -3649,6 +3695,26 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
         gamma_df = pd.DataFrame(muse_EEG_data, 
             columns=['Gamma_TP9', 'Gamma_AF7', 'Gamma_AF8', 'Gamma_TP10'])    
 
+
+
+#         if (gui_dict['checkBoxSmoothData']):
+# 
+#             plot_coherence_scattersmooth_data(df['RAW_AF7'].copy(), 
+#                 smooth_data(df['RAW_AF8'].copy(), 
+#                 smooth_data(df['RAW_TP9'].copy(), 
+#                 smooth_data(df['RAW_TP10'].copy(),
+
+#         if (gui_dict['checkBoxSmoothData']):
+# 
+# #             delta_df['Delta_TP9'] = smooth_data(delta_df['Delta_TP9'], smooth_sz),
+# #             delta_df['Delta_AF7'] = smooth_data(delta_df['Delta_AF7'], smooth_sz),
+# #             delta_df['Delta_AF8'] = smooth_data(delta_df['Delta_AF8'], smooth_sz),
+# #             delta_df['Delta_TP10'] = smooth_data(delta_df['Delta_TP10'], smooth_sz),
+#             delta_df = smooth_data(delta_df, smooth_sz),
+#             theta_df = smooth_data(theta_df, smooth_sz),
+#             alpha_df = smooth_data(alpha_df, smooth_sz),
+#             beta_df = smooth_data(beta_df, smooth_sz),
+#             gamma_df = smooth_data(gamma_df, smooth_sz),
 
         plot_sensor_power_bands(delta_df, theta_df, 
             alpha_df, beta_df, gamma_df,
@@ -4004,6 +4070,8 @@ if __name__ == '__main__':
 #     parser.add_argument("-s", "--step_size", help="Integration Step Size", type=int)
 #     parser.add_argument("-ps", "--power_spectrum", help="Analyze Spectrum", action="store_true")
 
+    parser.add_argument("-sm", "--smooth_data", help="Smooth EEG Data", action="store_true")
+    parser.add_argument("-sw", "--smooth_window", help="Smoothing Window (Seconds)", type=int)
     parser.add_argument("-r", "--auto_reject_data", help="Auto Reject EEG Data", action="store_true")
     parser.add_argument("-eegc", "--eeg_clip", help="Cliping for Auto Reject EEG Data", type=float)
     parser.add_argument("-fd", "--data_filtering", help="Filter EEG Data", action="store_true")
@@ -4073,6 +4141,20 @@ if __name__ == '__main__':
         print(args.batch)
         BatchMode = True
         args.display_plots = False
+
+    if args.smooth_data:
+        if Verbosity > 0:
+            print("smooth_data:")
+            print(args.smooth_data)
+    else:
+        args.smooth_data = False
+
+    if args.smooth_window:
+        if Verbosity > 0:
+            print("smooth_window:")
+            print(args.smooth_window)
+    else:
+        args.smooth_window = 1
 
     if args.auto_reject_data:
         if Verbosity > 0:
