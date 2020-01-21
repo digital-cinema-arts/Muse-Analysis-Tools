@@ -1,1 +1,1 @@
-ABCS_version='1.1.23'
+ABCS_version='1.1.24'
