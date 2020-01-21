@@ -1241,6 +1241,9 @@ def smooth_data(data_in, win):
     rolling = data_in.rolling(window=win)
     smoothed_data = rolling.mean()
 
+#     print('smooth_data() type(smoothed_data): ', type(smoothed_data))
+#     print('smooth_data() finished')
+
     return smoothed_data
 
 
@@ -1736,7 +1739,6 @@ def plot_all(muse_EEG_data, data_fname, plot_fname, date_time_now, title,
 
 
     data_stats = calculate_power_stats(delta_df, theta_df, alpha_df, beta_df, gamma_df)
-#     print('plot_all_power_bands() data_stats ', data_stats)
 
     data_min = np.min((data_stats['delta']['min'], data_stats['theta']['min'], 
                         data_stats['alpha']['min'], data_stats['beta']['min'],
@@ -1747,9 +1749,6 @@ def plot_all(muse_EEG_data, data_fname, plot_fname, date_time_now, title,
 
     clip_padding = 5. 
     y_limits = [-clip_padding, data_max + clip_padding]
-
-#  plot_all_power_bands(delta_df.mean(axis=1), theta_df.mean(axis=1), 
-#             alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1)
             
     axs[4].xaxis.set_major_locator(ticker.AutoLocator())  
     axs[4].xaxis.set_minor_locator(ticker.AutoMinorLocator())
@@ -2445,6 +2444,9 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
                         data_stats['alpha']['min'], data_stats['beta']['min'], data_stats['gamma']['min']))
     data_max = np.max((data_stats['delta']['max'], data_stats['theta']['max'], 
                         data_stats['alpha']['max'], data_stats['beta']['max'], data_stats['gamma']['max']))
+
+    if Verbosity > 0:
+        print('plot_all_power_bands() data_stats: ', data_stats)
 
 
     fig, axs = plt.subplots(nrows=5, num=fig_num, figsize=FIGURE_SIZE, 
@@ -3229,7 +3231,9 @@ Calculate stats for power data
 
 def calculate_power_stats(delta, theta, alpha, beta, gamma):
 
-# TODO This whole function can be removed, it's redundant
+    if Verbosity > 1:  
+        print("plot_all_power_bands() called")
+
 
     # Run the stats of the incoming data which is specific to each call to this function
     gamma_mean = np.mean(np.nan_to_num(gamma))
@@ -3294,7 +3298,8 @@ def calculate_power_stats(delta, theta, alpha, beta, gamma):
 
 
     if Verbosity > 2:  
-        print("data_stats: ", data_stats)
+        print("plot_all_power_bands() - data_stats: ", data_stats)
+
 
 
     return data_stats
@@ -3723,33 +3728,79 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
             out_dirname + '/plots/30-ABCS_all_sensors_power_raw_' + date_time_now + '.png',
             date_time_now, analysis_parms, 30)
 
-        plot_all_power_bands(delta_df.mean(axis=1), theta_df.mean(axis=1), 
-            alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
-            Filter_Lowcut, Filter_Highcut, Sampling_Rate, point_sz,
-            'Power Bands (Mean Average)', data_fname,
-            out_dirname + '/plots/31-ABCS_power_mean_' + date_time_now + '.png',
-            date_time_now, analysis_parms, 31)
+
+        if (gui_dict['checkBoxSmoothData']):
+
+#             print("generate_plots() - delta_df.describe(): ", delta_df.describe())
+
+ 
+            sm_delta_df = pd.DataFrame(smooth_data(delta_df.mean(axis=1).copy(), smooth_sz))
+            sm_theta_df = pd.DataFrame(smooth_data(theta_df.mean(axis=1).copy(), smooth_sz))
+            sm_alpha_df = pd.DataFrame(smooth_data(alpha_df.mean(axis=1).copy(), smooth_sz))
+            sm_beta_df = pd.DataFrame(smooth_data(beta_df.mean(axis=1).copy(), smooth_sz))
+            sm_gamma_df = pd.DataFrame(smooth_data(gamma_df.mean(axis=1).copy(), smooth_sz))
+
+#             print("generate_plots() - type(delta_df): ", type(delta_df))
+#             print("generate_plots() - delta_df.describe(): ", pd.DataFrame(delta_df).describe())
+
+
+            plot_all_power_bands(sm_delta_df, sm_theta_df, sm_alpha_df, sm_beta_df, sm_gamma_df,
+                Filter_Lowcut, Filter_Highcut, Sampling_Rate, point_sz,
+                'Power Bands (Mean Average - Smoothed)', data_fname,
+                out_dirname + '/plots/31.1-ABCS_power_smooth_mean_' + date_time_now + '.png',
+                date_time_now, analysis_parms, 31)
+
+        else:
+            plot_all_power_bands(delta_df.mean(axis=1), theta_df.mean(axis=1), 
+                alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
+                Filter_Lowcut, Filter_Highcut, Sampling_Rate, point_sz,
+                'Power Bands (Mean Average)', data_fname,
+                out_dirname + '/plots/31-ABCS_power_mean_' + date_time_now + '.png',
+                date_time_now, analysis_parms, 31)
+
+
 
 
         if (gui_dict['checkBoxStatistical']):
 
-            plot_combined_power_bands(delta_df.mean(axis=1), theta_df.mean(axis=1), 
-                alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
-                delta_df.median(axis=1), theta_df.median(axis=1), 
-                alpha_df.median(axis=1), beta_df.median(axis=1), gamma_df.median(axis=1),
-                Filter_Lowcut, Filter_Highcut, Sampling_Rate, 
-                point_sz,'Power Bands Mean & Median', data_fname,
-                out_dirname + '/plots/32-ABCS_power_bands_median_mean' + 
-                date_time_now + '.png', date_time_now, analysis_parms, 32)
+            if (gui_dict['checkBoxSmoothData']):
 
-            plot_combined_power_bands(delta_df, theta_df, 
-                        alpha_df, beta_df, gamma_df,
-                        delta_df.mean(axis=1), theta_df.mean(axis=1), 
-                        alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
-                        Filter_Lowcut, Filter_Highcut, Sampling_Rate, 
-                        point_sz,'Power Bands Mean & Raw', data_fname,
-                         out_dirname + '/plots/33-ABCS_power_bands_raw_mean' + 
-                         date_time_now + '.png', date_time_now, analysis_parms, 33)
+                plot_combined_power_bands(sm_delta_df.mean(axis=1), sm_theta_df.mean(axis=1), 
+                    sm_alpha_df.mean(axis=1), sm_beta_df.mean(axis=1), sm_gamma_df.mean(axis=1),
+                    sm_delta_df.median(axis=1), sm_theta_df.median(axis=1), 
+                    sm_alpha_df.median(axis=1), sm_beta_df.median(axis=1), sm_gamma_df.median(axis=1),
+                    Filter_Lowcut, Filter_Highcut, Sampling_Rate, 
+                    point_sz,'Power Bands Mean & Median', data_fname,
+                    out_dirname + '/plots/32-ABCS_power_bands_median_mean' + 
+                    date_time_now + '.png', date_time_now, analysis_parms, 32)
+
+                plot_combined_power_bands(delta_df, theta_df, 
+                            alpha_df, beta_df, gamma_df,
+                            sm_delta_df.mean(axis=1), sm_theta_df.mean(axis=1), 
+                            sm_alpha_df.mean(axis=1), sm_beta_df.mean(axis=1), sm_gamma_df.mean(axis=1),
+                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, 
+                            point_sz,'Power Bands Mean (Smoothed) & Raw', data_fname,
+                             out_dirname + '/plots/33-ABCS_power_bands_raw_mean' + 
+                             date_time_now + '.png', date_time_now, analysis_parms, 33)
+
+            else:            
+                plot_combined_power_bands(delta_df.mean(axis=1), theta_df.mean(axis=1), 
+                    alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
+                    delta_df.median(axis=1), theta_df.median(axis=1), 
+                    alpha_df.median(axis=1), beta_df.median(axis=1), gamma_df.median(axis=1),
+                    Filter_Lowcut, Filter_Highcut, Sampling_Rate, 
+                    point_sz,'Power Bands Mean & Median', data_fname,
+                    out_dirname + '/plots/32-ABCS_power_bands_median_mean' + 
+                    date_time_now + '.png', date_time_now, analysis_parms, 32)
+
+                plot_combined_power_bands(delta_df, theta_df, 
+                            alpha_df, beta_df, gamma_df,
+                            delta_df.mean(axis=1), theta_df.mean(axis=1), 
+                            alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
+                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, 
+                            point_sz,'Power Bands Mean & Raw', data_fname,
+                             out_dirname + '/plots/33-ABCS_power_bands_raw_mean' + 
+                             date_time_now + '.png', date_time_now, analysis_parms, 33)
 
 
 
