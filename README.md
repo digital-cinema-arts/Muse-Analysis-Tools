@@ -80,8 +80,9 @@ https://matplotlib.org/3.1.1/users/navigation_toolbar.html
 $ analyze_muse_data.py -h 
  
 usage: analyze_muse_data.py [-h] [--version] [-f CSV_FILE] [-v VERBOSE] [-d]
-                            [-b] [-dm] [-p] [-e] [-hdf5] [-ag] [-mc] [-s] [-c]
-                            [--plot_style PLOT_STYLE] [-r] [-fd]
+                            [-b] [-dm] [-pm] [-e] [-p] [-ep] [-hdf5] [-ag]
+                            [-mc] [-s] [-c] [--plot_style PLOT_STYLE] [-sm]
+                            [-sw SMOOTH_WINDOW] [-r] [-eegc EEG_CLIP] [-fd]
                             [-ft FILTER_TYPE] [-lc LOWCUT] [-hc HIGHCUT]
                             [-o FILTER_ORDER] [-db]
 
@@ -95,8 +96,10 @@ optional arguments:
   -d, --display_plots   Display Plots
   -b, --batch           Batch Mode
   -dm, --data_markers   Add Data Markers
-  -p, --power           Plot Power Bands
+  -pm, --plot_markers   Add Plot Markers
   -e, --eeg             Plot EEG Data
+  -p, --power           Plot Power Bands
+  -ep, --eeg_power      Plot EEG & Power Data Combined
   -hdf5, --write_hdf5_file
                         Write output data into HDF5 file
   -ag, --accel_gyro     Plot Acceleration and Gyro Data
@@ -109,9 +112,15 @@ optional arguments:
   --plot_style PLOT_STYLE
                         Plot Syle: 1=seaborn, 2=seaborn-pastel, 3=seaborn-
                         ticks, 4=fast, 5=bmh
+  -sm, --smooth_data    Smooth EEG Data
+  -sw SMOOTH_WINDOW, --smooth_window SMOOTH_WINDOW
+                        Smoothing Window (Seconds)
   -r, --auto_reject_data
                         Auto Reject EEG Data
-  -fd, --filter_data    Filter EEG Data
+  -eegc EEG_CLIP, --eeg_clip EEG_CLIP
+                        Cliping for Auto Reject EEG Data
+  -fd, --data_filtering
+                        Filter EEG Data
   -ft FILTER_TYPE, --filter_type FILTER_TYPE
                         Filter Type 0=default 1=low pass, 2=bandpass
   -lc LOWCUT, --lowcut LOWCUT
@@ -121,7 +130,7 @@ optional arguments:
   -o FILTER_ORDER, --filter_order FILTER_ORDER
                         Filter Order
   -db, --data_base      Send session data and statistics to database
-
+  
   ~~~~
 
 To find the current version of the application:  
