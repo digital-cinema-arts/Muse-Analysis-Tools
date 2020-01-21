@@ -130,7 +130,7 @@ optional arguments:
   -o FILTER_ORDER, --filter_order FILTER_ORDER
                         Filter Order
   -db, --data_base      Send session data and statistics to database
-
+  
   ~~~~
 
 To find the current version of the application:  
