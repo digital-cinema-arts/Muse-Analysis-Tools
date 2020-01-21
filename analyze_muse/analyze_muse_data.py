@@ -1241,6 +1241,9 @@ def smooth_data(data_in, win):
     rolling = data_in.rolling(window=win)
     smoothed_data = rolling.mean()
 
+#     print('smooth_data() type(smoothed_data): ', type(smoothed_data))
+#     print('smooth_data() finished')
+
     return smoothed_data
 
 
@@ -1736,7 +1739,6 @@ def plot_all(muse_EEG_data, data_fname, plot_fname, date_time_now, title,
 
 
     data_stats = calculate_power_stats(delta_df, theta_df, alpha_df, beta_df, gamma_df)
-#     print('plot_all_power_bands() data_stats ', data_stats)
 
     data_min = np.min((data_stats['delta']['min'], data_stats['theta']['min'], 
                         data_stats['alpha']['min'], data_stats['beta']['min'],
@@ -1747,9 +1749,6 @@ def plot_all(muse_EEG_data, data_fname, plot_fname, date_time_now, title,
 
     clip_padding = 5. 
     y_limits = [-clip_padding, data_max + clip_padding]
-
-#  plot_all_power_bands(delta_df.mean(axis=1), theta_df.mean(axis=1), 
-#             alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1)
             
     axs[4].xaxis.set_major_locator(ticker.AutoLocator())  
     axs[4].xaxis.set_minor_locator(ticker.AutoMinorLocator())
@@ -2445,6 +2444,9 @@ def plot_all_power_bands(delta, theta, alpha, beta, gamma,
                         data_stats['alpha']['min'], data_stats['beta']['min'], data_stats['gamma']['min']))
     data_max = np.max((data_stats['delta']['max'], data_stats['theta']['max'], 
                         data_stats['alpha']['max'], data_stats['beta']['max'], data_stats['gamma']['max']))
+
+    if Verbosity > 0:
+        print('plot_all_power_bands() data_stats: ', data_stats)
 
 
     fig, axs = plt.subplots(nrows=5, num=fig_num, figsize=FIGURE_SIZE, 
@@ -3229,7 +3231,9 @@ Calculate stats for power data
 
 def calculate_power_stats(delta, theta, alpha, beta, gamma):
 
-# TODO This whole function can be removed, it's redundant
+    if Verbosity > 1:  
+        print("plot_all_power_bands() called")
+
 
     # Run the stats of the incoming data which is specific to each call to this function
     gamma_mean = np.mean(np.nan_to_num(gamma))
@@ -3294,7 +3298,8 @@ def calculate_power_stats(delta, theta, alpha, beta, gamma):
 
 
     if Verbosity > 2:  
-        print("data_stats: ", data_stats)
+        print("plot_all_power_bands() - data_stats: ", data_stats)
+
 
 
     return data_stats
@@ -3550,22 +3555,12 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
     if (not gui_dict['checkBoxPlotMarkers']):    
         PLOT_PARAMS['lines.markersize'] = 0.0005
 
-#     print("muse_EEG_data.describe(): ", muse_EEG_data.describe())
-#     print("muse_EEG_data.columns: ", muse_EEG_data.columns)
-#     print("muse_EEG_data.count(): ", muse_EEG_data.count())
-    
-#     csv_data = pd.DataFrame(muse_EEG_data, columns=['RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
-
-#     plot_sensor_data(muse_EEG_data['RAW_TP9'], muse_EEG_data['RAW_AF7'], 
-#         muse_EEG_data['RAW_AF8'], muse_EEG_data['RAW_TP10'], data_fname, 
-#         out_dirname + '/plots/29-ABCS_eeg_raw_' + date_time_now + '.png',
-#         date_time_now,  "Raw EEG", data_stats, analysis_parms, 29)
-
 
     if (gui_dict['checkBoxEEG_PowerBands']):
         plot_all(muse_EEG_data, data_fname, 
                     out_dirname + '/plots/22-ABCS_all_' + date_time_now + '.png',
                     date_time_now,  "EEG Raw & Power Bands", data_stats, analysis_parms, 99)
+  
        
     if (gui_dict['checkBoxEEG']):
 
@@ -3616,21 +3611,9 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
 # f1 = interpolate.interp1d(x1, y1, kind='cubic')
 # xnew1 = np.arange(0, num_points - 1, 0.2)
 # ynew1 = f1(xnew1)  
-
-        # TODO don't plot this one for now ...
-        if False:
-            plot_sensor_data(df['RAW_TP9'], 
-                smooth_data(df['RAW_AF7'], smooth_sz), 
-                smooth_data(df['RAW_AF8'], smooth_sz), 
-                smooth_data(df['RAW_TP10'], smooth_sz), data_fname, 
-                out_dirname + '/plots/21-ABCS_eeg_smoothed_' + date_time_now + '.png',
-                date_time_now, "Interpolated EEG", data_stats, analysis_parms, 21)
-
                 
     if (gui_dict['checkBoxCoherence']):
-
         if (gui_dict['checkBoxSmoothData']):
-
             plot_coherence_scatter(
                 smooth_data(df['RAW_AF7'].copy(), smooth_sz),
                 smooth_data(df['RAW_AF8'].copy(), smooth_sz), 
@@ -3650,8 +3633,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
                 out_dirname + '/plots/12-ABCS_eeg_coherence_' + date_time_now + '.png',
                 date_time_now,  "EEG Coherence", data_stats, analysis_parms, 12)
     
-        else:
-        
+        else:       
             plot_coherence_scatter(df['RAW_AF7'], df['RAW_AF8'], df['RAW_TP9'], df['RAW_TP10'],
                 "Raw Data - Coherence", data_fname,
                  out_dirname + '/plots/10-ABCS_eeg_raw_coherence_data_' + date_time_now + '.png', 
@@ -3662,8 +3644,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
                 out_dirname + '/plots/12-ABCS_eeg_coherence_' + date_time_now + '.png',
                 date_time_now,  "EEG Coherence", data_stats, analysis_parms, 12)
     
-
-
+    
     if False:
 #         if args.plot_3D:
 
@@ -3681,9 +3662,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
 
 
 
-
     if (gui_dict['checkBoxPowerBands']):
-
         delta_df = pd.DataFrame(muse_EEG_data, 
             columns=['Delta_TP9', 'Delta_AF7', 'Delta_AF8', 'Delta_TP10'])    
         theta_df = pd.DataFrame(muse_EEG_data, 
@@ -3695,27 +3674,6 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
         gamma_df = pd.DataFrame(muse_EEG_data, 
             columns=['Gamma_TP9', 'Gamma_AF7', 'Gamma_AF8', 'Gamma_TP10'])    
 
-
-
-#         if (gui_dict['checkBoxSmoothData']):
-# 
-#             plot_coherence_scattersmooth_data(df['RAW_AF7'].copy(), 
-#                 smooth_data(df['RAW_AF8'].copy(), 
-#                 smooth_data(df['RAW_TP9'].copy(), 
-#                 smooth_data(df['RAW_TP10'].copy(),
-
-#         if (gui_dict['checkBoxSmoothData']):
-# 
-# #             delta_df['Delta_TP9'] = smooth_data(delta_df['Delta_TP9'], smooth_sz),
-# #             delta_df['Delta_AF7'] = smooth_data(delta_df['Delta_AF7'], smooth_sz),
-# #             delta_df['Delta_AF8'] = smooth_data(delta_df['Delta_AF8'], smooth_sz),
-# #             delta_df['Delta_TP10'] = smooth_data(delta_df['Delta_TP10'], smooth_sz),
-#             delta_df = smooth_data(delta_df, smooth_sz),
-#             theta_df = smooth_data(theta_df, smooth_sz),
-#             alpha_df = smooth_data(alpha_df, smooth_sz),
-#             beta_df = smooth_data(beta_df, smooth_sz),
-#             gamma_df = smooth_data(gamma_df, smooth_sz),
-
         plot_sensor_power_bands(delta_df, theta_df, 
             alpha_df, beta_df, gamma_df,
             Filter_Lowcut, Filter_Highcut, Sampling_Rate, point_sz,
@@ -3723,34 +3681,67 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
             out_dirname + '/plots/30-ABCS_all_sensors_power_raw_' + date_time_now + '.png',
             date_time_now, analysis_parms, 30)
 
-        plot_all_power_bands(delta_df.mean(axis=1), theta_df.mean(axis=1), 
-            alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
-            Filter_Lowcut, Filter_Highcut, Sampling_Rate, point_sz,
-            'Power Bands (Mean Average)', data_fname,
-            out_dirname + '/plots/31-ABCS_power_mean_' + date_time_now + '.png',
-            date_time_now, analysis_parms, 31)
+
+        if (gui_dict['checkBoxSmoothData']):
+            sm_delta_df = pd.DataFrame(smooth_data(delta_df.mean(axis=1).copy(), smooth_sz))
+            sm_theta_df = pd.DataFrame(smooth_data(theta_df.mean(axis=1).copy(), smooth_sz))
+            sm_alpha_df = pd.DataFrame(smooth_data(alpha_df.mean(axis=1).copy(), smooth_sz))
+            sm_beta_df = pd.DataFrame(smooth_data(beta_df.mean(axis=1).copy(), smooth_sz))
+            sm_gamma_df = pd.DataFrame(smooth_data(gamma_df.mean(axis=1).copy(), smooth_sz))
+
+            plot_all_power_bands(sm_delta_df, sm_theta_df, sm_alpha_df, sm_beta_df, sm_gamma_df,
+                Filter_Lowcut, Filter_Highcut, Sampling_Rate, point_sz,
+                'Power Bands (Mean Average - Smoothed)', data_fname,
+                out_dirname + '/plots/31.1-ABCS_power_smooth_mean_' + date_time_now + '.png',
+                date_time_now, analysis_parms, 31)
+
+        else:
+            plot_all_power_bands(delta_df.mean(axis=1), theta_df.mean(axis=1), 
+                alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
+                Filter_Lowcut, Filter_Highcut, Sampling_Rate, point_sz,
+                'Power Bands (Mean Average)', data_fname,
+                out_dirname + '/plots/31-ABCS_power_mean_' + date_time_now + '.png',
+                date_time_now, analysis_parms, 31)
 
 
         if (gui_dict['checkBoxStatistical']):
+            if (gui_dict['checkBoxSmoothData']):
+                plot_combined_power_bands(sm_delta_df.mean(axis=1), sm_theta_df.mean(axis=1), 
+                    sm_alpha_df.mean(axis=1), sm_beta_df.mean(axis=1), sm_gamma_df.mean(axis=1),
+                    sm_delta_df.median(axis=1), sm_theta_df.median(axis=1), 
+                    sm_alpha_df.median(axis=1), sm_beta_df.median(axis=1), sm_gamma_df.median(axis=1),
+                    Filter_Lowcut, Filter_Highcut, Sampling_Rate, 
+                    point_sz,'Power Bands Mean & Median', data_fname,
+                    out_dirname + '/plots/32-ABCS_power_bands_median_mean' + 
+                    date_time_now + '.png', date_time_now, analysis_parms, 32)
 
-            plot_combined_power_bands(delta_df.mean(axis=1), theta_df.mean(axis=1), 
-                alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
-                delta_df.median(axis=1), theta_df.median(axis=1), 
-                alpha_df.median(axis=1), beta_df.median(axis=1), gamma_df.median(axis=1),
-                Filter_Lowcut, Filter_Highcut, Sampling_Rate, 
-                point_sz,'Power Bands Mean & Median', data_fname,
-                out_dirname + '/plots/32-ABCS_power_bands_median_mean' + 
-                date_time_now + '.png', date_time_now, analysis_parms, 32)
+                plot_combined_power_bands(delta_df, theta_df, 
+                            alpha_df, beta_df, gamma_df,
+                            sm_delta_df.mean(axis=1), sm_theta_df.mean(axis=1), 
+                            sm_alpha_df.mean(axis=1), sm_beta_df.mean(axis=1), sm_gamma_df.mean(axis=1),
+                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, 
+                            point_sz,'Power Bands Mean (Smoothed) & Raw', data_fname,
+                             out_dirname + '/plots/33-ABCS_power_bands_raw_mean' + 
+                             date_time_now + '.png', date_time_now, analysis_parms, 33)
 
-            plot_combined_power_bands(delta_df, theta_df, 
-                        alpha_df, beta_df, gamma_df,
-                        delta_df.mean(axis=1), theta_df.mean(axis=1), 
-                        alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
-                        Filter_Lowcut, Filter_Highcut, Sampling_Rate, 
-                        point_sz,'Power Bands Mean & Raw', data_fname,
-                         out_dirname + '/plots/33-ABCS_power_bands_raw_mean' + 
-                         date_time_now + '.png', date_time_now, analysis_parms, 33)
+            else:            
+                plot_combined_power_bands(delta_df.mean(axis=1), theta_df.mean(axis=1), 
+                    alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
+                    delta_df.median(axis=1), theta_df.median(axis=1), 
+                    alpha_df.median(axis=1), beta_df.median(axis=1), gamma_df.median(axis=1),
+                    Filter_Lowcut, Filter_Highcut, Sampling_Rate, 
+                    point_sz,'Power Bands Mean & Median', data_fname,
+                    out_dirname + '/plots/32-ABCS_power_bands_median_mean' + 
+                    date_time_now + '.png', date_time_now, analysis_parms, 32)
 
+                plot_combined_power_bands(delta_df, theta_df, 
+                            alpha_df, beta_df, gamma_df,
+                            delta_df.mean(axis=1), theta_df.mean(axis=1), 
+                            alpha_df.mean(axis=1), beta_df.mean(axis=1), gamma_df.mean(axis=1),
+                            Filter_Lowcut, Filter_Highcut, Sampling_Rate, 
+                            point_sz,'Power Bands Mean & Raw', data_fname,
+                             out_dirname + '/plots/33-ABCS_power_bands_raw_mean' + 
+                             date_time_now + '.png', date_time_now, analysis_parms, 33)
 
 
     if (gui_dict['checkBoxAccelGyro']):
@@ -3765,16 +3756,10 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
 
 
     if (gui_dict['checkBoxMellowConcentration']):
-            
         mc_df = pd.DataFrame(muse_EEG_data, columns=['Mellow', 'Concentration'])    
-#         print("generate_plots() -  muse_EEG_data.keys(): ", muse_EEG_data.keys())
 
 
         if 'Mellow' in muse_EEG_data.keys(): 
-#             print("Mellow Present, ", end =" ") 
-#             print("value =", muse_EEG_data['Mellow']) 
-            
-#         if len(mc_df['Mellow']) > 1:
         
             plot_mellow_concentration(mc_df['Mellow'], mc_df['Concentration'], 
                          Filter_Lowcut, Filter_Highcut, Sampling_Rate, point_sz,
@@ -3783,8 +3768,6 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
                          date_time_now, analysis_parms, 50)
 
         else: 
-#             print("Mellow  Not present") 
-#         else:
             print("generate_plots() -  ********* ")
             print("generate_plots() -  Mellow/Concentration not in data file!")
             print("generate_plots() -  ********* ")
