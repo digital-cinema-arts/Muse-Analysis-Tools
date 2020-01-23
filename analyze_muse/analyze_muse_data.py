@@ -3941,25 +3941,25 @@ def initialize_GUI_vars(date_time_now):
 
     gui_dict.update({'firstName': "",'lastName': "",
             "session_notes": "",
-            "checkBoxInteractive": False,
-            "checkBoxEEG": True,
-            "checkBoxCoherence": False,
-            "checkBoxPowerBands": True,
-            "checkBoxEEG_PowerBands": True,           
-            "checkBoxMellowConcentration": False,
-            "checkBoxAccelGyro": False,
-            "checkBox3D": False,
-            "checkBoxFilter": True,                
-            "checkBoxSmoothData": True,                              
-            "checkBoxStatistical": False,
-            "checkBoxMuseDirect": False,
-            "verbosityComboBox": 0,
-            "checkBoxAutoReject": True,
-            "checkBoxDB": False,
-            "checkBoxHFDF5": False,
+            "checkBoxInteractive": args.display_plots,
+            "checkBoxEEG": args.eeg,
+            "checkBoxCoherence": args.coherence_plots,
+            "checkBoxPowerBands": args.power,
+            "checkBoxEEG_PowerBands": args.eeg_power,           
+            "checkBoxMellowConcentration": args.mellow_concentration,
+            "checkBoxAccelGyro": args.accel_gyro,
+#             "checkBox3D": args.plot_3D,
+            "checkBoxFilter": args.data_filtering,                
+            "checkBoxSmoothData": args.smooth_data,                              
+            "checkBoxStatistical": args.stats_plots,
+#             "checkBoxMuseDirect": args.,
+            "verbosityComboBox": args.verbose,
+            "checkBoxAutoReject": args.auto_reject_data,
+            "checkBoxDB": args.data_base,
+            "checkBoxHFDF5": args.write_hdf5_file,
             "checkBoxVerticalLock": True,
-            "checkBoxPlotMarkers": True,
-            "checkBoxDataMarkers": False,
+            "checkBoxPlotMarkers": args.plot_markers,
+            "checkBoxDataMarkers": args.data_markers,
             "plotColorsComboBox": 0,               
             "Mood": 0})
 
@@ -3971,6 +3971,8 @@ def initialize_GUI_vars(date_time_now):
 
     return True
                 
+
+
 
 '''
 
