@@ -421,14 +421,14 @@ class The_GUI(QDialog):
         self.checkBoxDataMarkers.setToolTip('Add markers contained in the "Elements" column of the CSV file.')
   
         layout.addWidget(self.checkBoxInteractive)
+        layout.addWidget(self.checkBoxEEG_PowerBands)       
         layout.addWidget(self.checkBoxEEG)
         layout.addWidget(self.checkBoxCoherence)
-        layout.addWidget(self.checkBoxEEG_PowerBands)       
         layout.addWidget(self.checkBoxPowerBands)
+        layout.addWidget(self.checkBoxStatistical)
         layout.addWidget(self.checkBoxMellowConcentration)
         layout.addWidget(self.checkBoxAccelGyro)
 #         layout.addWidget(self.checkBox3D)
-        layout.addWidget(self.checkBoxStatistical)
 #         layout.addWidget(self.checkBoxMuseDirect)
         layout.addWidget(self.checkBoxFilter)
         layout.addWidget(self.checkBoxSmoothData)
@@ -1120,21 +1120,27 @@ def check_file_type(fname):
 
     if time_diff_seconds == 0:
         Sampling_Rate = 256 
-        print("check_file_type() - Constant: ", Sampling_Rate)  
+        if Verbosity > 2:
+            print("check_file_type() - Constant: ", Sampling_Rate)  
     elif time_diff_seconds > 1:
         Sampling_Rate = 2 
-        print("check_file_type() - 0.5 Sec: ", Sampling_Rate)   
+        if Verbosity > 2:
+            print("check_file_type() - 0.5 Sec: ", Sampling_Rate)   
     elif time_diff_seconds > 2:
         Sampling_Rate = 1 
-        print("check_file_type() - 1 Sec: ", Sampling_Rate)   
+        if Verbosity > 2:
+            print("check_file_type() - 1 Sec: ", Sampling_Rate)   
     elif time_diff_seconds > 5:
         Sampling_Rate = 0.5 
-        print("check_file_type() - 2 Sec: ", Sampling_Rate)   
+        if Verbosity > 2:
+            print("check_file_type() - 2 Sec: ", Sampling_Rate)   
     elif time_diff_seconds > 30:
         Sampling_Rate = 1/60. 
-        print("check_file_type() - 1 Min: ", Sampling_Rate)   
+        if Verbosity > 2:
+            print("check_file_type() - 1 Min: ", Sampling_Rate)   
     else:
-        print("check_file_type() - CONFUSED ")   
+        if Verbosity > 2:
+            print("check_file_type() - CONFUSED ")   
 
 
     if Sampling_Rate != 256:
@@ -1142,28 +1148,6 @@ def check_file_type(fname):
 
 #     Sampling_Rate = 256 
 
-
-
-#     if (time_diff9 - time_diff0) < pd.Timedelta('P0DT0H0M0.000000001S'):
-#         print("check_file_type() - Constant")   
-#     elif (time_diff9 - time_diff0) < pd.Timedelta('P0DT0H0M0.01S'):
-#         print("check_file_type() - 0.5 Sec")   
-#     elif (time_diff9 - time_diff0) < pd.Timedelta('P0DT0H0M0.1S'):
-#         print("check_file_type() - 1 Sec")   
-#     elif (time_diff9 - time_diff0) < pd.Timedelta('P0DT0H0M1'):
-#         print("check_file_type() - 2 Sec")   
-#     elif (time_diff9 - time_diff0) < pd.Timedelta('P0DT0H0M5'):
-#         print("check_file_type() - 1 Min")   
-#     else:
-#         print("check_file_type() - CONFUSED ")   
-
-
-    
-#     print("check_file_type() - pd.Timedelta('P0DT0H0M0.000000001S'): ", pd.Timedelta('P0DT0H0M0.000000001S'))   
-#     print("check_file_type() - pd.Timedelta('P0DT0H0M0.000001S'): ", pd.Timedelta('P0DT0H0M0.000001S'))   
-#     print("check_file_type() - pd.Timedelta('P0DT0H0M0.001S'): ", pd.Timedelta('P0DT0H0M0.001S'))   
-#     print("check_file_type() - pd.Timedelta('P0DT0H0M0.01S'): ", pd.Timedelta('P0DT0H0M0.1S'))   
-      
       
     if Verbosity > 1:
         pause_and_prompt(.1, "Data successfuly checked")
