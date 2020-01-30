@@ -10,7 +10,6 @@ do
  	echo "Processing file: " 
  	echo $f
 
-
     	analyze_muse_data.py --batch -p -e -s -c -ag \
                 --mellow_concentration --data_base --auto_reject_data -sm -sw 2 \
                 --data_filtering --filter_type 1 --highcut 50.0 --lowcut 0.5 --filter_order 8  \
@@ -84,5 +83,3 @@ done
 #                        Filter Order
 #  -db, --data_base      Send session data and statistics to database
 #
-#
-
