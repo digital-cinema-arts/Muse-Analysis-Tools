@@ -421,14 +421,14 @@ class The_GUI(QDialog):
         self.checkBoxDataMarkers.setToolTip('Add markers contained in the "Elements" column of the CSV file.')
   
         layout.addWidget(self.checkBoxInteractive)
+        layout.addWidget(self.checkBoxEEG_PowerBands)       
         layout.addWidget(self.checkBoxEEG)
         layout.addWidget(self.checkBoxCoherence)
-        layout.addWidget(self.checkBoxEEG_PowerBands)       
         layout.addWidget(self.checkBoxPowerBands)
+        layout.addWidget(self.checkBoxStatistical)
         layout.addWidget(self.checkBoxMellowConcentration)
         layout.addWidget(self.checkBoxAccelGyro)
 #         layout.addWidget(self.checkBox3D)
-        layout.addWidget(self.checkBoxStatistical)
 #         layout.addWidget(self.checkBoxMuseDirect)
         layout.addWidget(self.checkBoxFilter)
         layout.addWidget(self.checkBoxSmoothData)
@@ -930,6 +930,11 @@ def read_eeg_data(fname, date_time_now):
     else:
         csv_verbosity = 0
         
+        
+    check_file_type(fname)
+
+
+
 # df = pd.read_csv('filename.tar.gz', compression='gzip', header=0, sep=',', quotechar='"')
     muse_EEG_data = pd.read_csv(fname,  parse_dates=['TimeStamp'], 
                         date_parser=pd.to_datetime, dtype=dtypes, 
@@ -947,7 +952,8 @@ def read_eeg_data(fname, date_time_now):
         print("read_eeg_data() - muse_EEG_data.keys(): ", muse_EEG_data.keys())   
     
     
-    pause_and_prompt(0.5, "Data successfuly read")
+    if Verbosity > 1:
+        pause_and_prompt(0.5, "Data successfuly read")
 
     raw_df = pd.DataFrame(muse_EEG_data, 
             columns=['RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])    
@@ -1045,6 +1051,112 @@ def read_eeg_data(fname, date_time_now):
 
 
 
+
+
+def check_file_type(fname):
+
+    global Sampling_Rate
+    global gui_dict     
+
+    dtypes={'TimeStamp': 'str', 
+            'Battery': 'float',
+            'Elements': 'str'
+            }
+
+#     csv_data = pd.read_csv(fname, parse_dates=['TimeStamp'], 
+#                     date_parser=pd.to_datetime, dtype=dtypes, compression='infer')    
+    
+    if Verbosity > 1:
+        csv_verbosity = 1
+    if Verbosity > 3:
+        csv_verbosity = 2
+    else:
+        csv_verbosity = 0
+        
+# df = pd.read_csv('filename.tar.gz', compression='gzip', header=0, sep=',', quotechar='"')
+    muse_EEG_data = pd.read_csv(fname,  parse_dates=['TimeStamp'], 
+                        date_parser=pd.to_datetime, dtype=dtypes, 
+                        compression='infer', verbose=csv_verbosity, nrows=100)
+
+    num_cols = len(muse_EEG_data.columns)
+
+    time_df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp'])    
+
+
+#     time_diff = dt.datetime(2011, 1, 1, 3, 5) - pd.Timedelta('P0DT0H0M0.000000123S')
+
+    time_diff0 = time_df['TimeStamp'][0] - pd.Timedelta('P0DT0H0M0.000000001S')
+#     print("check_file_type() - time_diff: ", time_diff0)   
+
+
+    time_diff9 = time_df['TimeStamp'][99] - pd.Timedelta('P0DT0H0M0.000000001S')
+    
+    time_diff_seconds = (time_diff9 - time_diff0).seconds
+    time_diff_microseconds = (time_diff9 - time_diff0).microseconds
+    time_diff_nanoseconds = (time_diff9 - time_diff0).nanoseconds
+
+#     print("check_file_type() - time_diff difference: ", time_diff9 - time_diff0)   
+# #     print("check_file_type() - time_diff difference days: ", (time_diff9 - time_diff0).days)   
+#     print("check_file_type() - time_diff difference seconds: ", (time_diff9 - time_diff0).seconds)   
+#     print("check_file_type() - time_diff difference microseconds: ", (time_diff9 - time_diff0).microseconds)   
+#     print("check_file_type() - time_diff difference nanoseconds: ", (time_diff9 - time_diff0).nanoseconds)   
+
+#     print("check_file_type() - time_diff difference: ", (time_diff9 - time_diff0).seconds)   
+
+#     print("check_file_type() - time_diff difference: ", type(time_diff9 - time_diff0))   
+#     print("check_file_type() - time_diff difference: ", type(time_diff0))   
+#     print("check_file_type() - time_diff difference: ", type(time_diff9))   
+
+#     print("check_file_type() - time_diff9  hour: ", time_diff9.hour)   
+#     print("check_file_type() - time_diff9  minute: ", time_diff9.minute)   
+#     print("check_file_type() - time_diff9  second: ", time_diff9.second)   
+#     print("check_file_type() - time_diff9  microsecond: ", time_diff9.microsecond)   
+#     print("check_file_type() - time_diff9  nanosecond: ", time_diff9.nanosecond)   
+#     print("check_file_type() - time_diff9  time(): ", time_diff9.time())   
+#     print("check_file_type() - time_diff9  date(): ", time_diff9.date())   
+
+	
+
+
+    if time_diff_seconds == 0:
+        Sampling_Rate = 256 
+        if Verbosity > 2:
+            print("check_file_type() - Constant: ", Sampling_Rate)  
+    elif time_diff_seconds > 1:
+        Sampling_Rate = 2 
+        if Verbosity > 2:
+            print("check_file_type() - 0.5 Sec: ", Sampling_Rate)   
+    elif time_diff_seconds > 2:
+        Sampling_Rate = 1 
+        if Verbosity > 2:
+            print("check_file_type() - 1 Sec: ", Sampling_Rate)   
+    elif time_diff_seconds > 5:
+        Sampling_Rate = 0.5 
+        if Verbosity > 2:
+            print("check_file_type() - 2 Sec: ", Sampling_Rate)   
+    elif time_diff_seconds > 30:
+        Sampling_Rate = 1/60. 
+        if Verbosity > 2:
+            print("check_file_type() - 1 Min: ", Sampling_Rate)   
+    else:
+        if Verbosity > 2:
+            print("check_file_type() - CONFUSED ")   
+
+
+    if Sampling_Rate != 256:
+        gui_dict['checkBoxFilter'] = False
+
+#     Sampling_Rate = 256 
+
+      
+    if Verbosity > 1:
+        pause_and_prompt(.1, "Data successfuly checked")
+
+
+    return 
+        
+    
+    
 
 
 def get_data_description(muse_EEG_data):
@@ -1251,8 +1363,17 @@ def smooth_data(data_in, win):
 
 def filter_all_data(muse_EEG_data):
 
+    global Sampling_Rate
+
     if Verbosity > 0:
         print('filter_all_data() called')
+
+
+#     if Sampling_Rate != 256:
+#         print('filter_all_data() Sampling rate too low for filtering')
+#         return(muse_EEG_data)
+
+    
 
 #     print('filter_all_data() - muse_EEG_data.shape: ', muse_EEG_data.shape)
 #     print("filter_all_data() - muse_EEG_data['RAW_TP9'].describe: ", muse_EEG_data['RAW_TP9'].describe())
@@ -1518,6 +1639,10 @@ def filter_all_data(muse_EEG_data):
 
 def filter_data(data_in):
 
+    global session_dict
+    global muse_EEG_data
+    global Sampling_Rate
+
 #     print('filter_data() - type(data_in)', type(data_in))
 
 #     filtered_data = butter_lowpass_filter(data_in100.0, Sampling_Rate)
@@ -1625,6 +1750,10 @@ Plot all
 
 def plot_all(muse_EEG_data, data_fname, plot_fname, date_time_now, title, 
                 data_stats, analysis_parms, fig_num):
+
+    global session_dict
+    global Sampling_Rate
+
     if Verbosity > 0:
         print('plot_all() called')
 
@@ -1986,6 +2115,7 @@ def plot_coherence_data(tp9, af7, af8, tp10, data_fname, plot_fname, date_time_n
 
     global session_dict
     global muse_EEG_data
+    global Sampling_Rate
     
     if Verbosity > 0:
         print('plot_coherence_data() called')
@@ -2126,6 +2256,7 @@ def plot_sensor_data(tp9, af7, af8, tp10, data_fname, plot_fname, date_time_now,
 
     global muse_EEG_data    
     global session_dict
+    global Sampling_Rate
     
     if Verbosity > 0:
         print('plot_sensor_data() called')
@@ -2315,6 +2446,7 @@ def plot_sensor_data_single(tp9, af7, af8, tp10, data_fname, plot_fname, date_ti
 
     global session_dict
     global muse_EEG_data
+    global Sampling_Rate
     
     if Verbosity > 0:
         print('plot_sensor_data_single() called')
@@ -2431,6 +2563,10 @@ Plot all the power bands
 def plot_all_power_bands(delta, theta, alpha, beta, gamma,
                 lowcut, highcut, fs, point_sz, title, 
                 data_fname, plot_fname, date_time_now, analysis_parms, fig_num):
+
+    global session_dict
+    global muse_EEG_data
+    global Sampling_Rate
 
     plot_alpha = 0.95
 
@@ -2592,6 +2728,10 @@ def plot_all_power_bands_single(delta, theta, alpha, beta, gamma,
                 lowcut, highcut, fs, point_sz, title, 
                 data_fname, plot_fname, date_time_now, analysis_parms, fig_num):
 
+    global session_dict
+    global muse_EEG_data
+    global Sampling_Rate
+
     plot_alpha = 0.75
 
     if Verbosity > 0:
@@ -2735,6 +2875,7 @@ def plot_sensor_power_bands(delta, theta, alpha, beta, gamma,
 
     global session_dict
     global muse_EEG_data
+    global Sampling_Rate
 
     plot_alpha = 0.8
 
@@ -2951,6 +3092,7 @@ def plot_combined_power_bands(delta_raw, theta_raw, alpha_raw, beta_raw, gamma_r
 
     global session_dict
     global muse_EEG_data
+    global Sampling_Rate
 
     if Verbosity > 0:
         print('plot_combined_power_bands() called')
@@ -3123,6 +3265,7 @@ def plot_mellow_concentration(mellow, concentration,
 
     global session_dict
     global muse_EEG_data
+    global Sampling_Rate
 
     plot_alpha = 0.9
 
@@ -3247,6 +3390,7 @@ def plot_accel_gryo_data(acc_gyro_df, title, data_fname, plot_fname, date_time_n
 
     global session_dict
     global muse_EEG_data
+    global Sampling_Rate
 
     if Verbosity > 0:
         print('plot_accel_gryo_data() called')
@@ -3456,6 +3600,9 @@ Generate data markers
 
 def generate_data_markers(muse_EEG_data, axs, col_select):
 
+    global session_dict
+    global Sampling_Rate
+
     if Verbosity > 2:
         print("generate_data_markers() called")
 
@@ -3578,7 +3725,8 @@ def create_analysis_parms_text(x, y, plt_axes, analysis_parms):
 
         text_string = 'Sample Time: ' + "{:.2f}".format(analysis_parms['sample_time_min']) +  \
             ' (minutes) ' + "{:.2f}".format(analysis_parms['sample_time_sec']) + " (seconds)" +   \
-            '\nSample Length: ' + "{:d}".format(analysis_parms['sample_length']) +    \
+             '\nSample Rate: ' + "{:.2f}".format(Sampling_Rate) +  \
+            '  Sample Length: ' + "{:d}".format(analysis_parms['sample_length']) +    \
                 '\nFilter Type: ' + filter_type_name +  \
                 '  Filter Order: ' + "{:.1f}".format(analysis_parms['filter_order']) + \
                 '\nLow Cut: ' + "{:.1f}".format(analysis_parms['lowcut']) + " HZ " +   \
@@ -3587,8 +3735,11 @@ def create_analysis_parms_text(x, y, plt_axes, analysis_parms):
     
         text_string = 'Sample Time: ' + "{:.2f}".format(analysis_parms['sample_time_min']) +  \
             ' (minutes) ' + "{:.2f}".format(analysis_parms['sample_time_sec']) + " (seconds)" +   \
-            '\nSample Length: ' + "{:d}".format(analysis_parms['sample_length'])
+            '\nSample Rate: ' + "{:.2f}".format(Sampling_Rate) +  \
+            ' Sample Length: ' + "{:d}".format(analysis_parms['sample_length'])
     
+
+
 
     plt.text(x, y, text_string,    
         style='italic', transform=plt_axes.transAxes,
@@ -3629,6 +3780,9 @@ Plot the data!
 '''
 
 def generate_plots(muse_EEG_data, data_fname, date_time_now):
+
+    global session_dict
+    global Sampling_Rate
 
     if Verbosity > 0:
         print("generate_plots() - Generating plots ", date_time_now)
@@ -3689,7 +3843,7 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
     else:
         plot_color_scheme = MM_Colors
     
-    # set smooting window to 2 seconds
+    # set smoothing window 
     smooth_sz = int(Sampling_Rate) * int(args.smooth_window)
 
     if (not gui_dict['checkBoxPlotMarkers']):    
@@ -3794,7 +3948,8 @@ def generate_plots(muse_EEG_data, data_fname, date_time_now):
 #         filt_df = DataFrame([data, index, columns, dtype, copy])
         filt_df = pd.DataFrame(filt_d, dtype=np.float64)
 
-        pause_and_prompt(0.1, "Plotting 3D")
+        if Verbosity > 1:
+            pause_and_prompt(0.1, "Plotting 3D")
 
         plot_3D(muse_EEG_data, filt_df, data_fname,
              out_dirname + '/plots/70-ABCS_3D_' + date_time_now + '.png', 
