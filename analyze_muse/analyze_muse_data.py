@@ -60,6 +60,7 @@ eeg_stats = []
 CVS_fname = ""
 out_dirname = ""
 EEG_data_source = 'Mind Monitor'
+CSV_file_format = 0
 Sampling_Rate = 256.0
 Filter_Lowcut  = 0.1
 Filter_Highcut  = 100.0
@@ -74,7 +75,7 @@ plot_color_scheme = {}
 first_name = ""
 last_name = ""
 data_dir = ""
-db_location = ""
+db_location = "./"
 
 # Constants
 ABCS_FORMAT_VERSION_NUM = 1.0
@@ -853,6 +854,18 @@ def read_eeg_data(fname, date_time_now):
 # Battery,
 # Elements
 
+# ABCS CSV File Format
+# 
+#     fieldnames = ['time', 'avg0', 'avg1', 'avg2', 'avg3', 
+#                 'pwr0_0', 'pwr0_1', 'pwr0_2', 'pwr0_3', 'pwr0_4', 
+#                 'pwr1_0', 'pwr1_1', 'pwr1_2', 'pwr1_3', 'pwr1_4', 
+#                 'pwr2_0', 'pwr2_1', 'pwr2_2', 'pwr2_3', 'pwr2_4', 
+#                 'pwr3_0', 'pwr3_1', 'pwr3_2', 'pwr3_3', 'pwr3_4',
+#                 'acc0', 'acc1', 'acc2', 'gyro0', 'gyro1', 'gyro2'
+#                 ]
+#                 
+
+
 # dateparse = lambda x: pd.datetime.strptime(x, '%Y-%m-%d %H:%M:%S')
 # df = pd.read_csv(infile, parse_dates=['datetime'], date_parser=dateparse)
 
@@ -915,11 +928,6 @@ def read_eeg_data(fname, date_time_now):
 #                     date_parser=pd.to_datetime, dtype=dtypes, compression='infer')
 #     num_cols = len(csv_data.columns)
     
-    dtypes={'TimeStamp': 'str', 
-            'Battery': 'float',
-            'Elements': 'str'
-            }
-
 #     csv_data = pd.read_csv(fname, parse_dates=['TimeStamp'], 
 #                     date_parser=pd.to_datetime, dtype=dtypes, compression='infer')    
     
@@ -933,14 +941,65 @@ def read_eeg_data(fname, date_time_now):
         
     check_file_type(fname)
 
+    if CSV_file_format == 1:
+        dtypes={'TimeStamp': 'float', 
+                'Battery': 'float',
+                'Elements': 'str'
+                }
+
+    # df = pd.read_csv('filename.tar.gz', compression='gzip', header=0, sep=',', quotechar='"')
+        muse_EEG_data = pd.read_csv(fname,  parse_dates=['time'], 
+                             dtype=dtypes, 
+                            compression='infer', verbose=csv_verbosity)
+#         muse_EEG_data = pd.read_csv(fname,  parse_dates=['time'], 
+#                             date_parser=pd.to_datetime, dtype=dtypes, 
+#                             compression='infer', verbose=csv_verbosity)
+
+        print("\n")
+        print("read_eeg_data(): muse_EEG_data.columns: ", muse_EEG_data.columns)
+
+        num_cols = len(muse_EEG_data.columns)
+#         ABCS_EEG_df = pd.DataFrame(muse_EEG_data)   
+        muse_EEG_data = muse_EEG_data.rename(columns={"time": "TimeStamp",
+         "avg0": "RAW_TP9",  "avg1": "RAW_AF7", "avg2": "RAW_AF8", "avg3": "RAW_TP10",
+         "pwr0_0": "Delta_TP9", "pwr0_1": "Theta_TP9", "pwr0_2": "Alpha_TP9", "pwr0_3": "Beta_TP9", "pwr0_4": "Gamma_TP9", 
+         "pwr1_0": "Delta_AF7", "pwr1_1": "Theta_AF7", "pwr1_2": "Alpha_AF7", "pwr1_3": "Beta_AF7", "pwr1_4": "Gamma_AF7", 
+         "pwr2_0": "Delta_AF8", "pwr2_1": "Theta_AF8", "pwr2_2": "Alpha_AF8", "pwr2_3": "Beta_AF8", "pwr2_4": "Gamma_AF8", 
+         "pwr3_0": "Delta_TP10", "pwr3_1": "Theta_TP10", "pwr3_2": "Alpha_TP10", "pwr3_3": "Beta_TP10", "pwr3_4": "Gamma_TP10",
+         "acc0": "Accelerometer_X", "acc1": "Accelerometer_Y", "acc2": "Accelerometer_Z", 
+         "gyro0": "Gyro_X", "gyro1": "Gyro_Y", "gyro2": "Gyro_Z"
+        
+        }) 
+
+#         muse_EEG_data.rename(columns={"time": "TimeStamp"})
 
 
-# df = pd.read_csv('filename.tar.gz', compression='gzip', header=0, sep=',', quotechar='"')
-    muse_EEG_data = pd.read_csv(fname,  parse_dates=['TimeStamp'], 
-                        date_parser=pd.to_datetime, dtype=dtypes, 
-                        compression='infer', verbose=csv_verbosity)
+        print("read_eeg_data(): muse_EEG_data.columns: ", muse_EEG_data.columns)
+        
+   #      df = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
+# #         print("read_eeg_data(): df.describe(): ", df.describe())
+#         df = df.rename(columns={"A": "a", "B": "c"})
+# #         df = df.rename(columns={0: "a", 1: "c"})
+#         print("read_eeg_data(): df.columns: ", df.columns)
+# #         print("read_eeg_data(): df.describe(): ", df.describe())
+#         print("read_eeg_data(): df: ", df)
+#         
+# pandas.to_datetime
 
-    num_cols = len(muse_EEG_data.columns)
+#         sys.exit(0)
+
+    if CSV_file_format == 0:
+        dtypes={'TimeStamp': 'str', 
+                'Battery': 'float',
+                'Elements': 'str'
+                }
+
+    # df = pd.read_csv('filename.tar.gz', compression='gzip', header=0, sep=',', quotechar='"')
+        muse_EEG_data = pd.read_csv(fname,  parse_dates=['TimeStamp'], 
+                            date_parser=pd.to_datetime, dtype=dtypes, 
+                            compression='infer', verbose=csv_verbosity)
+
+        num_cols = len(muse_EEG_data.columns)
 
     time_df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp'])    
     if Verbosity > 2:
@@ -1057,11 +1116,23 @@ def check_file_type(fname):
 
     global Sampling_Rate
     global gui_dict     
+    global CSV_file_format
 
     dtypes={'TimeStamp': 'str', 
             'Battery': 'float',
             'Elements': 'str'
             }
+
+    ABCS_dtypes={'time': 'float'}
+
+# ABCS CSV File Format
+#     fieldnames = ['time', 'avg0', 'avg1', 'avg2', 'avg3', 
+#                 'pwr0_0', 'pwr0_1', 'pwr0_2', 'pwr0_3', 'pwr0_4', 
+#                 'pwr1_0', 'pwr1_1', 'pwr1_2', 'pwr1_3', 'pwr1_4', 
+#                 'pwr2_0', 'pwr2_1', 'pwr2_2', 'pwr2_3', 'pwr2_4', 
+#                 'pwr3_0', 'pwr3_1', 'pwr3_2', 'pwr3_3', 'pwr3_4'   
+#                 ]
+
 
 #     csv_data = pd.read_csv(fname, parse_dates=['TimeStamp'], 
 #                     date_parser=pd.to_datetime, dtype=dtypes, compression='infer')    
@@ -1074,83 +1145,121 @@ def check_file_type(fname):
         csv_verbosity = 0
         
 # df = pd.read_csv('filename.tar.gz', compression='gzip', header=0, sep=',', quotechar='"')
-    muse_EEG_data = pd.read_csv(fname,  parse_dates=['TimeStamp'], 
-                        date_parser=pd.to_datetime, dtype=dtypes, 
-                        compression='infer', verbose=csv_verbosity, nrows=100)
+
+#     muse_EEG_data = pd.read_csv(fname,  parse_dates=['time'], 
+#                         date_parser=pd.to_datetime, dtype=ABCS_dtypes, 
+#                         compression='infer', verbose=csv_verbosity, nrows=100)
+#     muse_EEG_data = pd.read_csv(fname,  parse_dates=['time'], 
+#                         dtype=ABCS_dtypes, 
+#                         compression='infer', verbose=csv_verbosity, nrows=100)
+
+    muse_EEG_data = pd.read_csv(fname, compression='infer', verbose=csv_verbosity, nrows=100)
 
     num_cols = len(muse_EEG_data.columns)
-
-    time_df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp'])    
-
-
-#     time_diff = dt.datetime(2011, 1, 1, 3, 5) - pd.Timedelta('P0DT0H0M0.000000123S')
-
-    time_diff0 = time_df['TimeStamp'][0] - pd.Timedelta('P0DT0H0M0.000000001S')
-#     print("check_file_type() - time_diff: ", time_diff0)   
+    print("check_file_type() - num_cols", num_cols)
+    print("check_file_type() - muse_EEG_data.columns", muse_EEG_data.columns)
 
 
-    time_diff9 = time_df['TimeStamp'][99] - pd.Timedelta('P0DT0H0M0.000000001S')
+    # Mind Monitor CSV file
+    if muse_EEG_data.columns[0] == 'TimeStamp':
+        CSV_file_format = 0
+
+    # ABCS EEG CSV file
+    elif muse_EEG_data.columns[0] == 'time':
+        CSV_file_format = 1
     
-    time_diff_seconds = (time_diff9 - time_diff0).seconds
-    time_diff_microseconds = (time_diff9 - time_diff0).microseconds
-    time_diff_nanoseconds = (time_diff9 - time_diff0).nanoseconds
 
-#     print("check_file_type() - time_diff difference: ", time_diff9 - time_diff0)   
-# #     print("check_file_type() - time_diff difference days: ", (time_diff9 - time_diff0).days)   
-#     print("check_file_type() - time_diff difference seconds: ", (time_diff9 - time_diff0).seconds)   
-#     print("check_file_type() - time_diff difference microseconds: ", (time_diff9 - time_diff0).microseconds)   
-#     print("check_file_type() - time_diff difference nanoseconds: ", (time_diff9 - time_diff0).nanoseconds)   
+    if CSV_file_format == 1:
+        time_df = pd.DataFrame(muse_EEG_data, columns=['time'])    
+        print("check_file_type() - time_df['time'][0]", time_df['time'][0])
+#         time_diff0 = time_df['time'][0] - pd.Timedelta('P0DT0H0M0.000000001# S')
+#         print("check_file_type() - time_diff: ", time_diff0)   
 
-#     print("check_file_type() - time_diff difference: ", (time_diff9 - time_diff0).seconds)   
+        Sampling_Rate = 100
 
-#     print("check_file_type() - time_diff difference: ", type(time_diff9 - time_diff0))   
-#     print("check_file_type() - time_diff difference: ", type(time_diff0))   
-#     print("check_file_type() - time_diff difference: ", type(time_diff9))   
-
-#     print("check_file_type() - time_diff9  hour: ", time_diff9.hour)   
-#     print("check_file_type() - time_diff9  minute: ", time_diff9.minute)   
-#     print("check_file_type() - time_diff9  second: ", time_diff9.second)   
-#     print("check_file_type() - time_diff9  microsecond: ", time_diff9.microsecond)   
-#     print("check_file_type() - time_diff9  nanosecond: ", time_diff9.nanosecond)   
-#     print("check_file_type() - time_diff9  time(): ", time_diff9.time())   
-#     print("check_file_type() - time_diff9  date(): ", time_diff9.date())   
-
-	
+        return 
+        
+#     sys.exit(0)
 
 
-    if time_diff_seconds == 0:
-        Sampling_Rate = 256 
-        if Verbosity > 2:
-            print("check_file_type() - Constant: ", Sampling_Rate)  
-    elif time_diff_seconds > 1:
-        Sampling_Rate = 2 
-        if Verbosity > 2:
-            print("check_file_type() - 0.5 Sec: ", Sampling_Rate)   
-    elif time_diff_seconds > 2:
-        Sampling_Rate = 1 
-        if Verbosity > 2:
-            print("check_file_type() - 1 Sec: ", Sampling_Rate)   
-    elif time_diff_seconds > 5:
-        Sampling_Rate = 0.5 
-        if Verbosity > 2:
-            print("check_file_type() - 2 Sec: ", Sampling_Rate)   
-    elif time_diff_seconds > 30:
-        Sampling_Rate = 1/60. 
-        if Verbosity > 2:
-            print("check_file_type() - 1 Min: ", Sampling_Rate)   
-    else:
-        if Verbosity > 2:
-            print("check_file_type() - CONFUSED ")   
+    if CSV_file_format == 0:
+        muse_EEG_data = pd.read_csv(fname,  parse_dates=['TimeStamp'], 
+                            date_parser=pd.to_datetime, dtype=dtypes, 
+                            compression='infer', verbose=csv_verbosity, nrows=100)
+
+        num_cols = len(muse_EEG_data.columns)
+
+        time_df = pd.DataFrame(muse_EEG_data, columns=['TimeStamp'])    
 
 
-    if Sampling_Rate != 256:
-        gui_dict['checkBoxFilter'] = False
+    #     time_diff = dt.datetime(2011, 1, 1, 3, 5) - pd.Timedelta('P0DT0H0M0.000000123S')
 
-#     Sampling_Rate = 256 
+        time_diff0 = time_df['TimeStamp'][0] - pd.Timedelta('P0DT0H0M0.000000001S')
+    #     print("check_file_type() - time_diff: ", time_diff0)   
+
+
+        time_diff9 = time_df['TimeStamp'][99] - pd.Timedelta('P0DT0H0M0.000000001S')
+    
+        time_diff_seconds = (time_diff9 - time_diff0).seconds
+        time_diff_microseconds = (time_diff9 - time_diff0).microseconds
+        time_diff_nanoseconds = (time_diff9 - time_diff0).nanoseconds
+
+    #     print("check_file_type() - time_diff difference: ", time_diff9 - time_diff0)   
+    # #     print("check_file_type() - time_diff difference days: ", (time_diff9 - time_diff0).days)   
+    #     print("check_file_type() - time_diff difference seconds: ", (time_diff9 - time_diff0).seconds)   
+    #     print("check_file_type() - time_diff difference microseconds: ", (time_diff9 - time_diff0).microseconds)   
+    #     print("check_file_type() - time_diff difference nanoseconds: ", (time_diff9 - time_diff0).nanoseconds)   
+
+    #     print("check_file_type() - time_diff difference: ", (time_diff9 - time_diff0).seconds)   
+
+    #     print("check_file_type() - time_diff difference: ", type(time_diff9 - time_diff0))   
+    #     print("check_file_type() - time_diff difference: ", type(time_diff0))   
+    #     print("check_file_type() - time_diff difference: ", type(time_diff9))   
+
+    #     print("check_file_type() - time_diff9  hour: ", time_diff9.hour)   
+    #     print("check_file_type() - time_diff9  minute: ", time_diff9.minute)   
+    #     print("check_file_type() - time_diff9  second: ", time_diff9.second)   
+    #     print("check_file_type() - time_diff9  microsecond: ", time_diff9.microsecond)   
+    #     print("check_file_type() - time_diff9  nanosecond: ", time_diff9.nanosecond)   
+    #     print("check_file_type() - time_diff9  time(): ", time_diff9.time())   
+    #     print("check_file_type() - time_diff9  date(): ", time_diff9.date())   
+
+    
+
+
+        if time_diff_seconds == 0:
+            Sampling_Rate = 256 
+            if Verbosity > 2:
+                print("check_file_type() - Constant: ", Sampling_Rate)  
+        elif time_diff_seconds > 1:
+            Sampling_Rate = 2 
+            if Verbosity > 2:
+                print("check_file_type() - 0.5 Sec: ", Sampling_Rate)   
+        elif time_diff_seconds > 2:
+            Sampling_Rate = 1 
+            if Verbosity > 2:
+                print("check_file_type() - 1 Sec: ", Sampling_Rate)   
+        elif time_diff_seconds > 5:
+            Sampling_Rate = 0.5 
+            if Verbosity > 2:
+                print("check_file_type() - 2 Sec: ", Sampling_Rate)   
+        elif time_diff_seconds > 30:
+            Sampling_Rate = 1/60. 
+            if Verbosity > 2:
+                print("check_file_type() - 1 Min: ", Sampling_Rate)   
+        else:
+            if Verbosity > 2:
+                print("check_file_type() - CONFUSED ")   
+
+
+        if Sampling_Rate != 256:
+            gui_dict['checkBoxFilter'] = False
+
+    #     Sampling_Rate = 256 
 
       
-    if Verbosity > 1:
-        pause_and_prompt(.1, "Data successfuly checked")
+        if Verbosity > 1:
+            pause_and_prompt(.1, "Data successfuly checked")
 
 
     return 
