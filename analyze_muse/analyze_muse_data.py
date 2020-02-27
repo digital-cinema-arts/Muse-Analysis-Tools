@@ -856,7 +856,7 @@ def read_eeg_data(fname, date_time_now):
 
 # ABCS CSV File Format
 # 
-#     fieldnames = ['time', 'avg0', 'avg1', 'avg2', 'avg3', 
+#     fieldnames = ['time', 'eeg0', 'eeg1', 'eeg2', 'eeg3', 
 #                 'pwr0_0', 'pwr0_1', 'pwr0_2', 'pwr0_3', 'pwr0_4', 
 #                 'pwr1_0', 'pwr1_1', 'pwr1_2', 'pwr1_3', 'pwr1_4', 
 #                 'pwr2_0', 'pwr2_1', 'pwr2_2', 'pwr2_3', 'pwr2_4', 
@@ -941,8 +941,9 @@ def read_eeg_data(fname, date_time_now):
         
     check_file_type(fname)
 
+    # ABCS CSV file format
     if CSV_file_format == 1:
-        dtypes={'TimeStamp': 'float', 
+        dtypes={'time': 'float', 
                 'Battery': 'float',
                 'Elements': 'str'
                 }
@@ -961,7 +962,7 @@ def read_eeg_data(fname, date_time_now):
         num_cols = len(muse_EEG_data.columns)
 #         ABCS_EEG_df = pd.DataFrame(muse_EEG_data)   
         muse_EEG_data = muse_EEG_data.rename(columns={"time": "TimeStamp",
-         "avg0": "RAW_TP9",  "avg1": "RAW_AF7", "avg2": "RAW_AF8", "avg3": "RAW_TP10",
+         "eeg0": "RAW_TP9",  "eeg1": "RAW_AF7", "eeg2": "RAW_AF8", "eeg3": "RAW_TP10",
          "pwr0_0": "Delta_TP9", "pwr0_1": "Theta_TP9", "pwr0_2": "Alpha_TP9", "pwr0_3": "Beta_TP9", "pwr0_4": "Gamma_TP9", 
          "pwr1_0": "Delta_AF7", "pwr1_1": "Theta_AF7", "pwr1_2": "Alpha_AF7", "pwr1_3": "Beta_AF7", "pwr1_4": "Gamma_AF7", 
          "pwr2_0": "Delta_AF8", "pwr2_1": "Theta_AF8", "pwr2_2": "Alpha_AF8", "pwr2_3": "Beta_AF8", "pwr2_4": "Gamma_AF8", 
@@ -988,6 +989,7 @@ def read_eeg_data(fname, date_time_now):
 
 #         sys.exit(0)
 
+    # Mind Monitor CSV file format
     if CSV_file_format == 0:
         dtypes={'TimeStamp': 'str', 
                 'Battery': 'float',
@@ -1026,6 +1028,11 @@ def read_eeg_data(fname, date_time_now):
             columns=['Beta_TP9', 'Beta_AF7', 'Beta_AF8', 'Beta_TP10'])    
     gamma_df = pd.DataFrame(muse_EEG_data, 
             columns=['Gamma_TP9', 'Gamma_AF7', 'Gamma_AF8', 'Gamma_TP10'])
+
+
+    print("read_eeg_data(): time_df: ", time_df.describe())
+    print("read_eeg_data(): RAW Data: ", raw_df.describe())
+#     print("read_eeg_data(): RAW Data: ", raw_df['RAW_TP9', 'RAW_AF7', 'RAW_AF8', 'RAW_TP10'])
 
 
 #     Scale Mind Monitor brainwave data 
@@ -1126,7 +1133,7 @@ def check_file_type(fname):
     ABCS_dtypes={'time': 'float'}
 
 # ABCS CSV File Format
-#     fieldnames = ['time', 'avg0', 'avg1', 'avg2', 'avg3', 
+#     fieldnames = ['time', 'eeg0', 'eeg1', 'eeg2', 'eeg3', 
 #                 'pwr0_0', 'pwr0_1', 'pwr0_2', 'pwr0_3', 'pwr0_4', 
 #                 'pwr1_0', 'pwr1_1', 'pwr1_2', 'pwr1_3', 'pwr1_4', 
 #                 'pwr2_0', 'pwr2_1', 'pwr2_2', 'pwr2_3', 'pwr2_4', 
@@ -1175,7 +1182,7 @@ def check_file_type(fname):
 #         time_diff0 = time_df['time'][0] - pd.Timedelta('P0DT0H0M0.000000001# S')
 #         print("check_file_type() - time_diff: ", time_diff0)   
 
-        Sampling_Rate = 100
+        Sampling_Rate = 50
 
         return 
         
