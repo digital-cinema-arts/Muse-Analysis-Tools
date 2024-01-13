@@ -186,11 +186,7 @@ https://github.com/digital-cinema-arts/Muse-Analysis-Tools/wiki/Example-Plots
 
 https://paypal.me/vinyasakramayoga?locale.x=en_US
 
-If you would like to support this project, to help to contribute to disabled folks and to help youth gain access to yoga (in the Olympia, WA area) please send your kind donations to this paypal account.  We appreciate any and all help for this important work.
-
-You can read more about our outreach program here:
-
-https://xion.org/VinyasaKramaYogaOlympia/index.php/rainbow-goddess/
+If you would like to support this project, to help to contribute to disabled folks and to help youth gain access to yoga (in the Olympia, WA area) please send your kind donations to this paypal account
 
 
 :droplet:
